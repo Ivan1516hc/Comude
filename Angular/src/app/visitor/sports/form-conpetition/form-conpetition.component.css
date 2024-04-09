@@ -1,0 +1,7 @@
+.card-body .btn{margin-right: 5px;}
+
+.required:after {
+    content: '*';
+    color: red;
+  }
+  

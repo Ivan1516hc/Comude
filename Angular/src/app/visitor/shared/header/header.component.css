@@ -1,0 +1,45 @@
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+app-footer {
+    margin-top: auto;
+}
+
+header {
+    height: auto;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.logo-container {
+    margin-right: 3rem;
+}
+
+.text-end {
+    margin-right: 5rem;
+}
+
+@media (max-width: 767px) {
+    .flex-container {
+        align-items: center;
+    }
+
+    header {
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-right: 0;
+    }
+
+    .text-end {
+        margin-right: 0;
+    }
+
+    .logo-img {
+        margin-bottom: 1rem;
+    }
+}

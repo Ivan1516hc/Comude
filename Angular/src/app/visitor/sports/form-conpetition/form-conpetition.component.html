@@ -1,0 +1,176 @@
+<app-visitor>
+    <style>
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <main id="mainVisitor" class="main">
+        <div class="row">
+            <div class="col-10 offset-1 content-center">
+                <div class="pagetitle">
+                    <h1>Competición
+                    </h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a routerLink="/solicitante/dashboard">Inicio</a></li>
+                            <li class="breadcrumb-item active">Competición</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="pagetitle flex-container">
+                    <a routerLink="/solicitante/dashboard">
+                        <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Dashboard
+                    </a>
+
+                    <a
+                        [routerLink]="'/solicitante/beca-deportiva/' + miFormulario.controls['request_id'].value + '/cuenta-bancaria'">
+                        Siguiente <i class="bi bi-arrow-right"></i><span
+                            class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </div>
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div *ngIf="newData || edit">
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-info-circle-fill me-2"></i>
+                                            <div>
+                                                <strong>¡Atención!</strong> La información proporcionada es
+                                                exclusivamente del evento/competición para la cual se pide el apoyo.
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Cerrar"></button>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    <h5 class="card-title">Formulario de competición</h5>
+                                    <form class="row g-3" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
+
+                                        <div class="col-12 col-lg-8">
+                                            <label class="form-label required">Nombre de evento/competición</label>
+                                            <input type="text" class="form-control" formControlName="name">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['name'].errors && miFormulario.controls['name'].touched">
+                                                Nombre requerido.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">Tipo de competición</label>
+                                            <select class="form-control" formControlName="competition_type_id">
+                                                <option value="">-Seleccionar-</option>
+                                                <option *ngFor="let item of catalog?.conpetition_types"
+                                                    [value]="item.id">{{item.name}}</option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['competition_type_id'].errors && miFormulario.controls['competition_type_id'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">País</label>
+                                            <select class="form-control" formControlName="country_id"
+                                                (change)="getDataCountryStates()">
+                                                <option value="">-Seleccionar-</option>
+                                                <option *ngFor="let item of catalog?.countries" [value]="item.id">
+                                                    {{item.common_spa}}</option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['country_id'].errors && miFormulario.controls['country_id'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4"
+                                            *ngIf="catalog?.countries_state?.length > 0">
+                                            <label class="form-label required">Estado</label>
+                                            <select class="form-control" formControlName="countries_state_id">
+                                                <option value="">-Seleccionar-</option>
+                                                <option *ngFor="let item of catalog?.countries_state" [value]="item.id">
+                                                    {{item.name}}</option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['countries_state_id'].errors && miFormulario.controls['countries_state_id'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-2">
+                                            <label class="form-label required">Fecha de inicio</label>
+                                            <input type="date" class="form-control" formControlName="start_date">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['start_date'].errors && miFormulario.controls['start_date'].touched">
+                                                Nombre requerido.
+                                            </span>
+                                        </div>
+
+
+                                        <div class="col-12 col-md-6 col-lg-2">
+                                            <label class="form-label required">Fecha de finalización</label>
+                                            <input type="date" class="form-control" formControlName="ending_date">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['ending_date'].errors && miFormulario.controls['ending_date'].touched">
+                                                Nombre requerido.
+                                            </span>
+                                        </div>
+
+
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label">Clasifica a</label>
+                                            <input type="text" class="form-control" formControlName="classify">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['classify'].errors && miFormulario.controls['classify'].touched">
+                                                Nombre requerido.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4 "
+                                            *ngIf="miFormulario.value.competition_type_id">
+                                            <label class="form-label required">Presupuesto solicitado</label>
+                                            <div class="input-group mb-2">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control"
+                                                    formControlName="requested_budget">
+                                            </div>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['requested_budget'].errors && miFormulario.controls['requested_budget'].touched">
+                                                Tu presupuesto debe de ser entre ${{debget.minimum_budget}} a
+                                                ${{debget.maximum_budget}}.
+                                            </span>
+                                        </div>
+
+
+                                        <div class="col-12">
+                                            <label class="form-label required">Justificación (redacción clara y consisa
+                                                de los motivos para ser beneficiario de esta beca)</label>
+                                            <textarea type="text" class="form-control"
+                                                formControlName="justification"></textarea>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['justification'].errors && miFormulario.controls['justification'].touched">
+                                                Nombre requerido.
+                                            </span>
+                                        </div>
+
+
+                                        <div class="text-center" *ngIf="!onlySee">
+                                            <button type="submit" class="btn btn-primary"
+                                                [ngClass]="newData ? 'btn-success' :  'btn-primary' ">{{newData ?
+                                                'Guardar' : 'Actualizar' }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</app-visitor>

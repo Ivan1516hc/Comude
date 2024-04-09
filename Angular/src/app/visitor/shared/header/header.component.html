@@ -1,0 +1,37 @@
+<header id="header" class="header fixed-top d-flex align-items-center">
+   <div class="logo-container me-3">
+      <a [routerLink]="urlLogo" class="logo-link">
+         <img class="logo-img" src="assets/img/logo_comude.png" alt="Logo" width="120px">
+      </a>
+   </div>
+   <div class="flex-grow-1">
+      <h3 class="mb-0 d-none d-md-block">Trámites DIF Zapopan</h3>
+   </div>
+   <div class="text-end me-5">
+      <button class="btn btn-md btn-secondary" routerLink="/dashboard">Mis Solicitudes</button>
+   </div>
+   <nav class="header-nav ms-auto" style="margin-left: auto;">
+      <ul class="d-flex align-items-center mb-0">
+         <li class="nav-item dropdown">
+            <a class="nav-link nav-profile d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+               <img src="assets/img/usuario-icono.jpg" alt="Profile" class="rounded-circle"
+                  style="width: 40px; height: 40px; object-fit: cover;">
+               <span class="d-none d-md-block dropdown-toggle ps-2"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+               <li>
+                  <a class="dropdown-item d-flex align-items-center" (click)="logOut()">
+                     <i class="bi bi-box-arrow-right"></i>
+                     <span>Salir</span>
+                  </a>
+               </li>
+            </ul>
+         </li>
+      </ul>
+   </nav>
+   <div class="logo-container me-2 d-none d-md-block">
+      <a [routerLink]="urlLogo" class="logo-link">
+         <img class="logo-img" src="assets/img/escudo_casoespecial.png" alt="Logo" width="140px">
+      </a>
+   </div>
+</header>

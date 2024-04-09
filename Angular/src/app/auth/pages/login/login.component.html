@@ -1,0 +1,88 @@
+<main>
+   <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+         <div class="container">
+            <div class="row justify-content-center">
+               <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                  <div class="card mb-3">
+                     <div class="card-body">
+                        <div class="pt-4 pb-2">
+                           <a class="d-flex" style="place-content: center;"> <img
+                                  src="assets/img/logo_comude.png" width="300px"></a>
+                           <h5 class="card-title text-center pb-0 fs-4">TRÁMITES EN LÍNEA</h5>
+                        </div>
+                        <form class="row g-3 needs-validation" [formGroup]="miFormulario" (ngSubmit)="login()">
+                           <div class="col-12">
+                              <label for="yourUsername" class="form-label">Correo electrónico</label>
+                              <div class="input-group has-validation">
+                                 <input type="text" name="username" class="form-control" id="yourUsername" type="email"
+                                    formControlName="email">
+                                 <div class="invalid-feedback">Por favor ingrese su correo electrónico.</div>
+                              </div>
+                           </div>
+                           <div class="col-12">
+                              <label for="yourPassword" class="form-label">Contraseña</label>
+                              <input type="password" name="password" class="form-control" id="yourPassword"
+                                 formControlName="password">
+                              <div class="invalid-feedback">Por favor ingresa tu contraseña.</div>
+                           </div>
+                           <!-- <div class="col-12">
+                               <div class="form-check"> <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe"> <label class="form-check-label" for="rememberMe">Remember me</label></div>
+                            </div> -->
+                           <div class="col-12"> <button class="btn btn-primary w-100" type="submit"
+                                 [disabled]="miFormulario.invalid">Ingresar</button></div>
+                           <div class="col-12"> <button class="btn btn-danger w-100" routerLink="/" ><i class="bi bi-house-door-fill"></i> Regresar a inicio</button></div>
+                           <div class="col-12 ">
+                              <p class="small mb-0">¿No tienes cuenta? <a routerLink="/auth/registrar">Crear una
+                                    cuenta</a></p>
+                              <p class="small mb-0">¿Olvidaste tu contraseña? <a data-bs-toggle="modal"
+                                    data-bs-target="#resetPassword" href="#">Restablecer</a></p>
+                           </div>
+                        </form>
+                     </div>
+                  </div>
+
+               </div>
+            </div>
+         </div>
+      </section>
+   </div>
+</main>
+
+<!-- Modal para restablecer la contraseña -->
+<div class="modal fade" id="resetPassword" tabindex="-1" role="dialog" aria-labelledby="resetPasswordLabel"
+   aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md" role="document">
+      <div class="modal-content rounded-4 shadow">
+         <div class="modal-header border-bottom-0">
+            <h5 class="modal-title" id="serviceModalLabel">Restablecer contraseña</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body py-0 m-2 text-justify-custom">
+            <label for="inputEmail">Correo electrónico</label>
+            <input name="username" id="inputEmail" class="form-control" type="email" [(ngModel)]="emailReset" required
+               pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+               #emailInput="ngModel">
+            <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="text-danger">
+               <div *ngIf="emailInput.errors?.['required']">El correo electrónico es requerido.</div>
+               <div *ngIf="emailInput.errors?.['pattern']">Por favor, ingresa un correo electrónico válido.</div>
+            </div>
+         </div>
+         <div class="modal-footer border-top-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" (click)="sendEmail()"
+               [disabled]="emailInput.invalid || emailInput.pristine">
+               Enviar correo
+            </button>
+         </div>
+      </div>
+
+   </div>
+</div>
+
+<style>
+   /* Estilo para el cuerpo del modal (opcional) */
+   .modal-body {
+      padding: 1rem;
+   }
+</style>

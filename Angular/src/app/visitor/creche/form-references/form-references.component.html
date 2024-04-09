@@ -1,0 +1,306 @@
+<app-visitor>
+    <style>
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <main id="mainVisitor" class="main">
+        <div class="row">
+            <div class="col-10 offset-1 content-center">
+                <div class="pagetitle">
+                    <h1>Formulario Referencias</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a routerLink="/dashboard">Home</a></li>
+                            <li class="breadcrumb-item active">Formulario Referencias</li>
+                        </ol>
+                    </nav>
+                    <div class="pagetitle flex-container">
+                        <a *ngIf="urlPrincipal != '/cisz-guarderia'; else cisz" [routerLink]="'/guarderia/solicitud/' + request_id + '/vivienda'">
+                            <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i>
+                            Regresar
+                        </a>
+                        
+                        <ng-template #cisz>
+                            <a [routerLink]="'/cisz-guarderia/solicitud/' + request_id + '/documentos'">
+                                <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i>
+                                Regresar
+                            </a>
+                        </ng-template>
+                        
+
+                        <a [routerLink]="'/dashboard'" *ngIf="references.length >= contador ">
+                            Dashboard <i class="bi bi-arrow-right"></i><span
+                                class="glyphicon glyphicon-chevron-right"></span>
+                        </a>
+                    </div>
+                </div>
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div *ngIf="urlPrincipal != '/cisz-guarderia'; else ciszAlert"  class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong><i class="bi bi-exclamation-triangle"></i> Alerta!</strong> La información
+                                    solicitada es de {{contador}} referencias personales de los padres o tutores.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                <ng-template #ciszAlert>
+                                    <div  class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        <strong><i class="bi bi-exclamation-triangle"></i> Alerta!</strong> La información
+                                        solicitada es de {{contador}} referencias personales del trabajador.
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </ng-template>
+                                
+                                <div class="card-body" *ngIf="references.length <= (contador-1)">
+                                    <h5 class="card-title">Formulario de Referencias</h5>
+                                    <form class="row g-3" [formGroup]="miFormulario">
+                                        <h5>Nueva Referencia</h5>
+                                        <div class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">Nombre</label>
+                                            <input type="text" class="form-control" name="nombre"
+                                                formControlName="nombre">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['nombre'].errors && miFormulario.controls['nombre'].touched">
+                                                Nombre requerido.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">Apellido Paterno</label>
+                                            <input type="text" class="form-control" name="apaterno"
+                                                formControlName="apaterno">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['apaterno'].errors && miFormulario.controls['apaterno'].touched">
+                                                Apellido paterno requerido.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">Apellido Materno</label>
+                                            <input type="text" class="form-control" name="amaterno"
+                                                formControlName="amaterno">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['amaterno'].errors && miFormulario.controls['amaterno'].touched">
+                                                Apellido materno requerido.
+                                            </span>
+                                        </div>
+                                        <div class="col-10 col-md-6 col-lg-6">
+                                            <label class="form-label required">Código Postal</label>
+                                            <input type="text" class="form-control" formControlName="codigopostal"
+                                                maxlength="5" pattern="[0-9]{5}" placeholder="Ejemplo: 45100">
+                                            <span class="form-text text-danger"
+                                                *ngIf="miFormulario.controls['codigopostal'].invalid && miFormulario.controls['codigopostal'].touched">
+                                                Se requiere un código postal válido de 5 dígitos numéricos.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-6 align-self-end"
+                                            *ngIf="postalCode == false">
+                                            <button type="button" class="btn btn-md btn-success mt-1"
+                                                (click)="validatorPostCode()">Validar CP</button>
+                                        </div>
+                                        <div class="col-1 align-self-end" *ngIf="postalCode == true">
+                                            <button type="button" class="btn btn-md btn-danger mt-1"
+                                                (click)="backPostCode()"> <i
+                                                    class="bi bi-arrow-90deg-left"></i></button>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">Calle</label>
+                                            <input type="text" class="form-control" name="calle"
+                                                formControlName="calle">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['calle'].errors && miFormulario.controls['calle'].touched">
+                                                Calle requerida.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">No.Ext</label>
+                                            <input type="text" class="form-control" name="numext"
+                                                formControlName="numext">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['numext'].errors && miFormulario.controls['numext'].touched">
+                                                Numero exterior requerido.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label">No.Int</label>
+                                            <input type="text" class="form-control" name="numint"
+                                                formControlName="numint">
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-6 col-lg-3"> <label
+                                                class="form-label required">Colonia</label>
+                                            <select class="form-control" formControlName="colonia"
+                                                formControlName="colonia">
+                                                <option value="">-Seleccionar-</option>
+                                                <option *ngFor="let item of suburbs" [value]="item?.id">
+                                                    {{item.colonia}}
+                                                </option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['colonia'].errors && miFormulario.controls['colonia'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-6 col-md-6 col-lg-3">
+                                            <label class="form-label required">Municipio</label>
+                                            <select class="form-control" formControlName="municipio">
+                                                <option value="">--Seleccionar--</option>
+                                                <option value="Zapopan">Zapopan</option>
+                                                <option value="Guadalajara">Guadalajara</option>
+                                                <option value="San Pedro Tlaquepaque">San Pedro Tlaquepaque</option>
+                                                <option value="Tonala">Tonala</option>
+                                                <option value="Tlajomulco de Zuñiga">Tlajomulco de Zuñiga</option>
+                                                <option value="Zapotlanejo">Zapotlanejo</option>
+                                                <option value="El Salto">El Salto</option>
+                                                <option value="Acatlan de Juarez">Acatlan de Juarez</option>
+                                                <option value="El Arenal">El Arenal</option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['municipio'].errors && miFormulario.controls['municipio'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">Telefono</label>
+                                            <input  class="form-control" formControlName="telefono"
+                                                maxlength="10" pattern="[0-9]{10}" placeholder="Ejemplo: 5512345678">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['telefono'].errors && miFormulario.controls['telefono'].touched">
+                                                Numero de 10 digitos requerido.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-4 col-lg-4">
+                                            <label class="form-label required">Celular</label>
+                                            <input  class="form-control" formControlName="celular"
+                                                maxlength="10" pattern="[0-9]{10}" placeholder="Ejemplo: 5512345678">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['celular'].errors && miFormulario.controls['celular'].touched">
+                                                Numero de 10 digitos requerido.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <label class="form-label required">Horario para contactar:</label>
+                                            <div class="d-flex align-items-center">
+                                                <input type="time" class="form-control me-2"
+                                                    formControlName="horario_contacto_1" aria-label="Hora de inicio">
+                                                <span class="mx-2">a</span>
+                                                <input type="time" class="form-control ms-2"
+                                                    formControlName="horario_contacto_2" aria-label="Hora de fin">
+                                            </div>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['horario_contacto_1'].errors && miFormulario.controls['horario_contacto_1'].touched">
+                                                Rango de horario requerido.
+                                            </span>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['horario_contacto_2'].errors && miFormulario.controls['horario_contacto_2'].touched">
+                                                Rango de horario requerido.
+                                            </span>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-success" *ngIf="onlySee == false"
+                                                (click)="onSubmit()">Guardar</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="card-body">
+                                    <form [formGroup]="miFormularioReferences">
+                                        <div formArrayName="references">
+                                            <div *ngFor="let reference of references.controls; let i = index"
+                                                [formGroupName]="i">
+                                                <div class="col-lg-12">
+                                                    <div class="card">
+                                                        <div class="card-body row">
+                                                            <h5 class="card-title text-center">
+                                                                <strong>REFERENCIA {{(i+1)}}</strong>
+                                                            </h5>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">Nombre</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="nombre">
+                                                            </div>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">Apellido
+                                                                    Paterno</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="apaterno">
+                                                            </div>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">Apellido
+                                                                    Materno</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="amaterno">
+                                                            </div>
+                                                            <div class="col-10 col-md-6 col-lg-6">
+                                                                <label class="form-label required">Código Postal</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="codigopostal">
+                                                            </div>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">Calle</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="calle">
+                                                            </div>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">No.Ext</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="numext">
+                                                            </div>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label">No.Int</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="numint">
+                                                            </div>
+                                                            <div class="col-12 col-md-6 col-lg-3"> <label
+                                                                    class="form-label required">Colonia</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="colonia">
+                                                            </div>
+                                                            <div class="col-6 col-md-6 col-lg-3">
+                                                                <label class="form-label required">Municipio</label>
+                                                                <input type="text" class="form-control"
+                                                                    formControlName="municipio">
+                                                            </div>
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">Telefono</label>
+                                                                <input type="number" class="form-control"
+                                                                    formControlName="telefono">
+                                                            </div>
+
+                                                            <div class="col-12 col-md-4 col-lg-4">
+                                                                <label class="form-label required">Celular</label>
+                                                                <input type="number" class="form-control"
+                                                                    formControlName="celular">
+                                                            </div>
+                                                            <div class="col-12 col-md-6 col-lg-6">
+                                                                <label class="form-label required">Horario para
+                                                                    contactar:</label>
+                                                                <div class="d-flex align-items-center">
+                                                                    <input type="time" class="form-control me-2"
+                                                                        formControlName="horario_contacto_1"
+                                                                        aria-label="Hora de inicio">
+                                                                    <span class="mx-2">a</span>
+                                                                    <input type="time" class="form-control ms-2"
+                                                                        formControlName="horario_contacto_2"
+                                                                        aria-label="Hora de fin">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</app-visitor>

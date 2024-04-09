@@ -1,0 +1,62 @@
+<style>
+    .verification-inputs {
+        display: flex;
+        justify-content: center;
+        /* Centrar horizontalmente */
+        align-items: center;
+        /* Centrar verticalmente */
+    }
+
+    .verification-input {
+        width: 3rem;
+        height: 3rem;
+        /* Ajusta el ancho según sea necesario */
+        text-align: center;
+        margin: 0 0.5rem;
+        /* Ajusta el margen según sea necesario */
+        border: 1px solid #ccc;
+        /* Agrega un borde para dar un poco de estilo */
+        border-radius: 8px;
+        /* Redondea las esquinas */
+    }
+</style>
+<main>
+
+    <div class="container">
+        <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="pt-4 pb-2 text-center">
+                                    <a class="d-flex justify-content-center">
+                                        <img src="assets/img/logo_comude.png" width="300px">
+                                    </a>
+                                    <h5 class="card-title text-center pb-0 fs-4">VERIFICACIÓN DE CUENTA</h5>
+                                    <p>"Para verificar la cuenta, ingresa el código de verificación que se envió a tu
+                                        correo electrónico {{email}}.</p>
+                                    <form (ngSubmit)="submitForm()">
+                                        <div class="verification-inputs">
+                                            <input type="text" maxlength="1" class="verification-input"
+                                                [(ngModel)]="inputValues[0]" name="input0" (input)="moveToNextInput(1)">
+                                            <input type="text" maxlength="1" class="verification-input"
+                                                [(ngModel)]="inputValues[1]" name="input1" (input)="moveToNextInput(2)">
+                                            <input type="text" maxlength="1" class="verification-input"
+                                                [(ngModel)]="inputValues[2]" name="input2" (input)="moveToNextInput(3)">
+                                            <input type="text" maxlength="1" class="verification-input"
+                                                [(ngModel)]="inputValues[3]" name="input3" (input)="moveToNextInput(4)">
+                                            <input type="text" maxlength="1" class="verification-input"
+                                                [(ngModel)]="inputValues[4]" name="input4" (input)="submitForm()">
+                                        </div>
+                                        <!-- <p class="small mb-0 mt-5">¿No te llego el correo? <a (click)="resendEmailVerify()">Renviar correo</a></p> -->
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>

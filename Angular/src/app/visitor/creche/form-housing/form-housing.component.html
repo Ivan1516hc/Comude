@@ -1,0 +1,442 @@
+<app-visitor>
+    <style>
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <main id="mainVisitor" class="main">
+        <div class="row">
+            <div class="col-10 offset-1 content-center">
+                <div class="pagetitle">
+                    <h1>Formulario Vivienda y Vehículos</h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a routerLink="/dashboard">Inicio</a></li>
+                            <li class="breadcrumb-item active">Formulario Vivienda y Vehículos</li>
+                        </ol>
+                    </nav>
+                    <div class="pagetitle flex-container">
+                        <a [routerLink]="'/guarderia/solicitud/' + request_id + '/documentos'">
+                            <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i>
+                            Regresar
+                        </a>
+                        <a *ngIf="exist" [routerLink]="'/guarderia/solicitud/' + request_id + '/referencia'">
+                            Siguiente <i class="bi bi-arrow-right"></i><span
+                                class="glyphicon glyphicon-chevron-right"></span>
+                        </a>
+                    </div>
+                </div>
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong><i class="bi bi-exclamation-triangle"></i> Alerta!</strong> La información
+                                    del formulario es exclusivamente de la vivienda del niño.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Formulario de Vivienda</h5>
+                                    <form class="row g-3" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
+                                        <div *ngIf="!postalCode">
+                                            <div *ngFor="let item of addresses; let i = index"
+                                                class="alert alert-success alert-dismissible fade show" role="alert">
+                                                <strong><i class="bi bi-exclamation-triangle"></i> ¡Importante!</strong>
+                                                La dirección es '{{item.numext}} {{item.calle}}, {{item.colonia_name}},
+                                                {{item.municipio}}, JALISCO'.
+                                                <!-- Botones de confirmar y negar -->
+                                                <div class="d-flex justify-content-end mt-2">
+                                                    <button type="button" class="btn btn-success btn-sm me-2"
+                                                        (click)="confirmarDireccion(i)">SI</button>
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                        (click)="negarDireccion(i)">NO</button>
+                                                </div>
+
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-10 col-md-6 col-lg-6">
+                                            <label class="form-label required">Código Postal</label>
+                                            <input type="text" class="form-control" formControlName="codigopostal"
+                                                maxlength="5" pattern="[0-9]{5}" placeholder="Ejemplo: 45100">
+                                            <span class="form-text text-danger"
+                                                *ngIf="miFormulario.controls['codigopostal'].invalid && miFormulario.controls['codigopostal'].touched">
+                                                Se requiere un código postal válido de 5 dígitos numéricos.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-6 align-self-end" *ngIf="postalCode != true">
+                                            <button type="button" class="btn btn-md btn-success mt-1"
+                                                (click)="validatorPostCode()">Validar CP</button>
+                                        </div>
+                                        <div class="col-1 col-md-6 col-lg-6 align-self-end"
+                                            *ngIf="postalCode == true && exist == false">
+                                            <button type="button" class="btn btn-md btn-danger mt-1"
+                                                (click)="backPostCode()"> <i
+                                                    class="bi bi-arrow-90deg-left"></i></button>
+                                        </div>
+                                        <div class="col-8 col-md-6 col-lg-2">
+                                            <label class="form-label required">Valor Estimado</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" class="form-control" min="0"
+                                                    formControlName="valor_estimado">
+                                            </div>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['valor_estimado'].errors && miFormulario.controls['valor_estimado'].touched">
+                                                Debes de poner un valor estimado.
+                                            </span>
+                                        </div>
+                                        <div class="col-6 col-md-6 col-lg-2">
+                                            <label class="form-label required">Tipo de Vivienda</label>
+                                            <select class="form-control" formControlName="tipo_vivienda"
+                                                (change)="tipoVivienda()">
+                                                <option value="">-Seleccionar-</option>
+                                                <option *ngFor="let item of statusHouse" [value]="item?.id">
+                                                    {{item.vivienda}}
+                                                </option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['tipo_vivienda'].errors && miFormulario.controls['tipo_vivienda'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+                                        <div class="col-6 col-md-6 col-lg-2"
+                                            *ngIf="miFormulario.controls['tipo_vivienda'].value != 1">
+                                            <label class="form-label required">Pago/Abono Mensual</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" class="form-control"
+                                                    formControlName="pago_mensual">
+                                            </div>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['pago_mensual'].errors && miFormulario.controls['pago_mensual'].touched">
+                                                Debes de poner un valor estimado.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <label class="form-label required">Arrendador/Propietario</label>
+                                            <input type="text" class="form-control"
+                                                formControlName="arrendador_propietario">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['arrendador_propietario'].errors && miFormulario.controls['arrendador_propietario'].touched">
+                                                Debes de poner un arrendador/propietario.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">Calle</label>
+                                            <input type="text" class="form-control" formControlName="calle">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['calle'].errors && miFormulario.controls['calle'].touched">
+                                                Debes de poner una calle.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-6 col-md-6 col-lg-1">
+                                            <label class="form-label required">Num.Exterior</label>
+                                            <input type="text" class="form-control" formControlName="numext">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['numext'].errors && miFormulario.controls['numext'].touched">
+                                                Debes de poner un numero exterior.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-6 col-md-6 col-lg-1">
+                                            <label class="form-label">Num.Interior</label>
+                                            <input type="text" class="form-control" formControlName="numint">
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">Primer Cruce</label>
+                                            <input type="text" class="form-control" formControlName="primercruce">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['primercruce'].errors && miFormulario.controls['primercruce'].touched">
+                                                Debes de poner un cruce.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label">Segundo cruce</label>
+                                            <input type="text" class="form-control" formControlName="segundocruce">
+                                        </div>
+                                        <div *ngIf="postalCode == true && exist==false"
+                                            class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">Colonia</label>
+                                            <select class="form-control" formControlName="colonia">
+                                                <option value="">-Seleccionar-</option>
+                                                <option *ngFor="let item of suburbs" [value]="item?.id">
+                                                    {{item.colonia}}
+                                                </option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['colonia'].errors && miFormulario.controls['colonia'].touched">
+                                                Debes de seleccionar una colonia.
+                                            </span>
+                                        </div>
+                                        <div *ngIf="exist == true" class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">Colonia</label>
+                                            <input type="text" class="form-control" formControlName="colonia">
+                                        </div>
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-6 col-lg-4">
+                                            <label class="form-label required">Municipio</label>
+                                            <input type="text" class="form-control" formControlName="municipio">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['municipio'].errors && miFormulario.controls['municipio'].touched">
+                                                Debes de seleccionar una opcion.
+                                            </span>
+                                        </div>
+
+                                        <div *ngIf="postalCode == true" class="col-12 col-md-6 col-lg-2">
+                                            <label class="form-label required">Telefono</label>
+                                            <input type="number" class="form-control" formControlName="telefono"
+                                                maxlength="10" pattern="[0-9]{10}" placeholder="Ejemplo: 5512345678">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['telefono'].errors && miFormulario.controls['telefono'].touched">
+                                                Numero de 10 digitos requerido.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-4 col-md-6 col-lg-2"
+                                            *ngIf="miFormulario.controls['tipo_vivienda'].value != 1 && miFormulario.controls['tipo_vivienda'].value != 4 && postalCode == true">
+                                            <label class="form-label required">Contrato</label>
+                                            <select class="form-control" formControlName="contrato"
+                                                (change)="vencimientoContrato()">
+                                                <option value="">-Seleccionar-</option>
+                                                <option value="1">Si</option>
+                                                <option value="0">No</option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['contrato'].errors && miFormulario.controls['contrato'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+
+                                        <div *ngIf="postalCode == true" class="col-8 col-md-6 col-lg-2">
+                                            <label class="form-label required">Vive con Familiares</label>
+                                            <select class="form-control" formControlName="vive_con_familiares"
+                                                (change)="cantidadAporta()">
+                                                <option value="">-Seleccionar-</option>
+                                                <option value=1>Si</option>
+                                                <option value=0>No</option>
+                                            </select>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['vive_con_familiares'].errors && miFormulario.controls['vive_con_familiares'].touched">
+                                                Debes seleccionar una opción.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-2"
+                                            *ngIf="miFormulario.controls['contrato'].value == '1' && postalCode == true">
+                                            <label class="form-label required">Vencim. Contraro</label>
+                                            <input type="date" class="form-control"
+                                                formControlName="vencimiento_contrato">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['vencimiento_contrato'].errors && miFormulario.controls['vencimiento_contrato'].touched">
+                                                Debes seleccionar una fecha.
+                                            </span>
+                                        </div>
+                                        <div class="col-6 col-md-6 col-lg-2"
+                                            *ngIf="miFormulario.controls['vive_con_familiares'].value == 1 && postalCode == true">
+                                            <label class="form-label required">Cantidad Aportada</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input type="number" class="form-control"
+                                                    formControlName="cantidad_aporta">
+                                            </div>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['cantidad_aporta'].errors && miFormulario.controls['cantidad_aporta'].touched">
+                                                Debes de poner un valor estimado.
+                                            </span>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <label class="form-label required">Horario en casa:</label>
+                                            <div class="d-flex align-items-center">
+                                                <input type="time" class="form-control me-2"
+                                                    formControlName="horario_en_casa_1" aria-label="Hora de inicio">
+                                                <span class="mx-2">a</span>
+                                                <input type="time" class="form-control ms-2"
+                                                    formControlName="horario_en_casa_2" aria-label="Hora de fin">
+                                            </div>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['horario_en_casa_1'].errors && miFormulario.controls['horario_en_casa_1'].touched">
+                                                Rango de horario requerido.
+                                            </span>
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['horario_en_casa_2'].errors && miFormulario.controls['horario_en_casa_2'].touched">
+                                                Rango de horario requerido.
+                                            </span>
+                                        </div>
+
+                                        <div class="mb-3" *ngIf="exist == false">
+                                            <label class="form-label required">¿Cuentas con vehículo?</label>
+                                            <div class="d-flex align-items-center">
+                                                <div class="form-check">
+                                                    <input type="radio" class="form-check-input"
+                                                        [formControl]="cuentaConVehiculoControl" [value]="true">
+                                                    <label class="form-check-label">SI</label>
+                                                </div>
+                                                <div class="form-check ms-3">
+                                                    <input type="radio" class="form-check-input"
+                                                        [formControl]="cuentaConVehiculoControl" [value]="false">
+                                                    <label class="form-check-label">NO</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="cuentaConVehiculoControl.value && exist == false">
+                                            <h5>Datos vehiculos</h5>
+                                            <hr class="mt-1">
+                                            <div formArrayName="vehiculos">
+                                                <div *ngFor="let vehiculo of vehiculos.controls; let i = index"
+                                                    [formGroupName]="i">
+                                                    <h5>Vehiculo {{ i + 1 }}</h5>
+                                                    <div class="row g-3">
+                                                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                            <label class="form-label required">Marca</label>
+                                                            <input type="text" class="form-control"
+                                                                formControlName="marca">
+                                                            <span class="form-text text-danger form"
+                                                                *ngIf="vehiculo.get('marca')?.errors && vehiculo.get('marca')?.touched">
+                                                                Debes de poner una Marca.
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-6 col-md-6 col-lg-3">
+                                                            <label class="form-label required">Tipo</label>
+                                                            <select class="form-control" formControlName="tipo">
+                                                                <option value="">--Seleccionar--</option>
+                                                                <option value="CAMIONETA PICKUP">CAMIONETA PICKUP
+                                                                </option>
+                                                                <option value="CONVERTIBLE">CONVERTIBLE</option>
+                                                                <option value="COUPÉ">COUPÉ</option>
+                                                                <option value="DEPORTIVO">DEPORTIVO</option>
+                                                                <option value="ELÉCTRICO">ELÉCTRICO</option>
+                                                                <option value="FAMILIAR">FAMILIAR</option>
+                                                                <option value="FURGONETA">FURGONETA</option>
+                                                                <option value="HATCHBACK">HATCHBACK</option>
+                                                                <option value="MINIVAN">MINIVAN</option>
+                                                                <option value="ROADSTER">ROADSTER</option>
+                                                                <option value="SEDÁN">SEDÁN</option>
+                                                            </select>
+                                                            <span class="form-text text-danger form"
+                                                                *ngIf="vehiculo.get('tipo')?.errors && vehiculo.get('tipo')?.touched">
+                                                                Debes seleccionar una opción.
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                            <label class="form-label required">Modelo</label>
+                                                            <input type="text" class="form-control"
+                                                                formControlName="modelo">
+                                                            <span class="form-text text-danger form"
+                                                                *ngIf="vehiculo.get('modelo')?.errors && vehiculo.get('modelo')?.touched">
+                                                                Debes de poner un Modelo.
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                            <label class="form-label required">Valor Aproximado</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">$</span>
+                                                                </div>
+                                                                <input type="number" class="form-control"
+                                                                    formControlName="valor_aproximado">
+                                                                <span class="form-text text-danger form"
+                                                                    *ngIf="vehiculo.get('valor_aproximado')?.errors && vehiculo.get('valor_aproximado')?.touched">
+                                                                    Debes de poner un Valor Aproximado.
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-center">
+                                                <button type="button" class="btn btn-md btn-primary m-2"
+                                                    (click)="addVehiculo()">+
+                                                    Agregar un Vehiculo mas</button>
+                                                <button type="button" class="btn btn-md btn-dark m-2"
+                                                    (click)="deleteVehiculo()">-
+                                                    Eliminar Vehiculo</button>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="exist == true && vehicles.length > 0">
+                                            <h5>Datos vehiculos</h5>
+                                            <hr class="mt-1">
+                                            <div *ngFor="let item of vehicles; let i =index">
+                                                <h5>Vehiculo {{i+1}}</h5>
+                                                <div class="row g-3">
+                                                    <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                        <label class="form-label required">Marca</label>
+                                                        <input type="text" class="form-control" disabled
+                                                            [value]="item.marca">
+                                                    </div>
+                                                    <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                        <label class="form-label required">Tipo</label>
+                                                        <input type="text" class="form-control" disabled
+                                                            [value]="item.tipo">
+                                                    </div>
+                                                    <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                        <label class="form-label required">Modelo</label>
+                                                        <input type="text" class="form-control" disabled
+                                                            [value]="item.modelo">
+                                                    </div>
+                                                    <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                                        <label class="form-label required">Valor Aproximado</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">$</span>
+                                                            </div>
+                                                            <input type="number" class="form-control" disabled
+                                                                [value]="item.valor_aproximado">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                                data-bs-target="#mapsModal" *ngIf="exist == false"
+                                                (click)="getUbicacionByAddress()">Guardar</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</app-visitor>
+
+<div class="modal fade" id="mapsModal" tabindex="-1" aria-labelledby="mapsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg d-flex align-items-center">
+        <div class="modal-content">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body" style="overflow: hidden;">
+                <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+                    <strong><i class="bi bi-exclamation-triangle"></i> Alerta!</strong> Seleccionar la ubicación mas
+                    exacta a tu vivienda (para mover el marcador dar clic en el mapa).
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div class="col-12 mt-2">
+                    <google-map style="display: flex; place-content: center; overflow: hidden;"
+                        [center]="{lat: latitude, lng: longitude}" [zoom]="18" (mapClick)="onMapClick($event)">
+                        <map-marker [position]="marker?.position" [label]="marker?.label" [title]="marker?.title"
+                            [options]="marker?.options"></map-marker>
+                    </google-map>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                    (click)="onSubmit()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

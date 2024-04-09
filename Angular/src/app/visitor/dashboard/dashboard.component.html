@@ -1,0 +1,105 @@
+<app-visitor>
+    <main id="mainVisitor" class="main">
+        <div class="row">
+            <section class="section">
+                <div class="container">
+                    <h2>Mis solicitudes</h2>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12 col-md-6 col-lg-4 mt-2">
+                            <div class="card card-start">
+                                <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                    data-bs-whatever="@getbootstrap">
+                                    <span>Iniciar solicitud</span>
+                                </article>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mt-2">
+                            <article class="card">
+                                <img src="assets/img/logo_comude.png" class="card-img-top" alt="Imagen"
+                                    style="align-self: center">
+                                <div class="container text-card">
+                                    <h1 class="text-center"><strong>Solicitud No.705</strong></h1>
+                                    <h2 class="text-center"><strong>Fecha 28-03-2024</strong></h2>
+                                    <p><strong>Diciplina:</strong> Futbol</p>
+                                    <p><strong>Competencia:</strong> Copa America aifa 2024</p>
+                                    <p><strong>Lugar:</strong> Buenos Aires, Argentina</p>
+                                    <p><strong>Tipo de competencia:</strong> Internacional</p>
+                                    <p class="alert alert-warning text-center mt-2" role="alert">Solicitud En Proceso
+                                    </p>
+                                    <div class="d-grid gap-1">
+                                        <button type="button" class=" btn-lg btn btn-warning mt-2">Continuar</button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 mt-2">
+                            <article class="card">
+                                <img src="assets/img/logo_comude.png" class="card-img-top" alt="Imagen"
+                                    style="align-self: center">
+                                <div class="container text-card">
+                                    <h1 class="text-center"><strong>Solicitud No.625</strong></h1>
+                                    <h2 class="text-center"><strong>Fecha 04-01-2024</strong></h2>
+                                    <p><strong>Diciplina:</strong> Futbol</p>
+                                    <p><strong>Competencia:</strong> Copa America aifa 2024</p>
+                                    <p><strong>Lugar:</strong> Buenos Aires, Argentina</p>
+                                    <p><strong>Tipo de competencia:</strong> Internacional</p>
+                                    <p><strong>Presupuesto solicitado:</strong> <span
+                                            class="badge bg-warning text-dark">$15,000</span></p>
+                                    <p><strong>Presupuesto aprovado:</strong> <span
+                                            class="badge bg-info  text-dark">$10,000</span></p>
+                                    <p class="alert alert-info text-center mt-2" role="alert">Solicitud Aceptada
+                                    </p>
+                                    <div class="d-grid gap-1">
+                                        <button type="button" class=" btn-lg btn btn-info mt-2">Ver</button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</app-visitor>
+
+
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Selecciona la disciplina</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-0 text-justify-custom">
+                <!-- <h5 class="mt-2"><strong>Centros</strong></h5> -->
+                <div class="m-5">
+                    <label class="form-label">Disciplina:</label>
+                    <select class="form-select" [(ngModel)]="discipline">
+                        <option value="">-Seleccionar-</option>
+                        <option *ngFor="let item of catalog?.disciplines" [value]="item?.id">{{item?.name}}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- <div>
+                    <label class="form-label">Tipo de competición:</label>
+                    <select class="form-select" [(ngModel)]="competition" (change)="getStates()">
+                        <option value="">-Seleccionar-</option>
+                        <option *ngFor="let item of catalog.competitions" [value]="item?.id">{{item?.name}}
+                        </option>
+                    </select>
+                </div> -->
+
+            </div>
+            <div class="modal-footer flex-column border-top-0">
+                <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal"
+                    (click)="storeRequest()">Iniciar
+                    solicitud</button>
+                <button type="button" class="btn btn-lg btn-light w-100 mx-0" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+/* You can add global styles to this file, and also import other style files */
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.page-item {
+  margin: 0 5px;
+}
+
+.page-link {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.activeLink {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* En tu archivo de estilos CSS */
+.activeSidebar {
+  background-color: #c3dfff !important; /* Color de fondo para la opción activa */
+  color: #000000 !important; /* Color del texto para la opción activa */
+}
+.activeSidebar i {
+  color: #000000 !important;
+}
+.page-link {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.loading{
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  left: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* z-index: 20001; */
+}
+.back-loading{
+  position: absolute;
+  width: 100%;
+  background-color: aliceblue;
+  top: 0;
+  height: 100%;
+  opacity: .7;
+}
+.loading img{
+  position: relative;
+  z-index: 12;
+  width: 100px;
+}

@@ -1,0 +1,12 @@
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <a [routerLink]="urlLogo" class="d-flex mt-5" style="place-content: center;"> <img src="assets/img/logo_comude.png" width="200px"></a> 
+        <br>
+        <li class="nav-item" *ngFor="let opcion of opcionesSidebar">
+            <a class="nav-link collapsed" [routerLink]="opcion.route"  [routerLinkActive]="['activeSidebar']" >
+                <i class="{{ opcion.icon }}"></i>
+                <span>{{ opcion.title }}</span>
+            </a>
+        </li>
+    </ul>
+</aside>

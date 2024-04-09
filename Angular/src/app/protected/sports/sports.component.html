@@ -1,0 +1,19 @@
+<style>
+    .flex-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Establece la altura mínima de la ventana para que el footer esté siempre en la parte inferior */
+}
+
+app-footer {
+  margin-top: auto; /* Empuja el footer hacia abajo, ocupando el espacio disponible */
+}
+
+</style>
+
+<div class="flex-container">
+    <app-header></app-header>
+    <app-sidebar [opcionesSidebar]="opciones" [urlLogo]="urlLogo"></app-sidebar>
+    <ng-content></ng-content>
+    <app-footer></app-footer>
+  </div>
