@@ -198,4 +198,14 @@ export class AllVisitorService {
     const url = `${this.baseUrl}/request/competitions/show/${id}`;
     return this.http.get<any>(url);
   }
+
+  storeBankAccount(data){
+    const url = `${this.baseUrl}/request/bank-account/store`;
+    return this.http.post<any>(url, data);
+  }
+
+  getBankAccount(id){
+    const url = `${this.baseUrl}/request/bank-account/show/${id}`;
+    return this.http.get<any>(url);
+  }
 }

@@ -1,0 +1,126 @@
+.card-img-top {
+    object-fit: cover;
+    width: 80%;
+
+}
+
+.card {
+    max-width: 100%;
+    /* Asegura que la tarjeta no exceda el ancho del contenedor */
+    height: 100%;
+    /* Establece la altura de la tarjeta al 100% del contenedor */
+}
+
+.card h1 {
+    font-size: 30px;
+    margin-bottom: 0.05em;
+    /* Ajusta este valor según tus necesidades */
+}
+
+.card h2 {
+    font-size: 20px;
+    color: #545454;
+}
+
+.text-card p {
+    margin-bottom: 0.1em;
+    /* Ajusta este valor según tus necesidades */
+}
+
+.drop-zone {
+    border: 3px dashed #00b4e5;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background: url('../../../assets/img/sports.jpg') center/cover;
+    transition: transform 0.5s ease;
+    display: flex;
+    /* Usar flexbox */
+    justify-content: center;
+    /* Centrar horizontalmente */
+    align-items: center;
+    /* Centrar verticalmente */
+}
+
+.drop-zone::after {
+    content: "";
+    background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8));
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.drop-zone span {
+    position: relative;
+    z-index: 2;
+    color: #00b4e5;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.drop-zone:hover {
+    transform: scale(1.05);
+}
+
+.drop-zone:active {
+    transform: scale(0.95);
+}
+
+
+@media (max-width: 767px) {
+    .card-start {
+        max-width: 100%;
+        /* Asegura que la tarjeta no exceda el ancho del contenedor */
+        height: 150px !important;
+        /* Establece una altura fija para la tarjeta */
+        margin-bottom: 5px !important;
+    }
+
+    .drop-zone {
+        height: 150px !important;
+    }
+}
+
+
+.preview-container {
+    margin-top: 10px;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 200px;
+    /* Ajusta la altura según tus necesidades */
+    margin-bottom: 5px;
+}
+
+.file-input-placeholder p,
+.file-input-container p {
+    margin: 0;
+}
+
+.file-input-container img {
+    max-width: 100%;
+    max-height: 80px;
+    margin-bottom: 10px;
+}
+
+/* Añade cualquier estilo adicional que desees para el cuadro de archivos */
+.nav-link.btn:hover {
+    background-color: #f0f0f0;
+}
+
+.division-line {
+    border-right: 1px solid #ccc;
+    /* Cambia el color y grosor de la línea según sea necesario */
+    height: 100%;
+    margin-top: auto;
+    /* Alinea la línea de división en la parte superior del contenedor */
+    margin-bottom: auto;
+    /* Alinea la línea de división en la parte inferior del contenedor */
+}

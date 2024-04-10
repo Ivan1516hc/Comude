@@ -39,7 +39,7 @@ class BankAccountController extends Controller
             return response()->json($response);
         }
 
-        $aplicant = Aplicant::find($request->aplicant_id);
+        $aplicant = Aplicant::find($user->id);
 
         if (!$aplicant) {
             $response['message'] = "Solicitante no encontrado, no se puede vincular la cuenta bancaria.";
@@ -79,9 +79,9 @@ class BankAccountController extends Controller
 
         $model = BankAccount::query();
 
-        $model->whereHas('request', function ($query) use ($id) {
-            $query->where('id', $id);
-        })->with('state', 'competition_type', 'country');
+        $model->whereHas('aplicant.requests', function ($query) use ($id) {
+            $query->where('requests.id', $id);
+        });
 
         $query = $model->first();
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Aplicant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AplicantController extends Controller
 {
@@ -34,9 +36,18 @@ class AplicantController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Aplicant $aplicant)
+    public function show()
     {
-        //
+        $user = Auth::user();
+        if (!$user) {
+            $response['message'] = "Necesitas loguearte";
+            $response['code'] = 404;
+            return response()->json($response);
+        }
+
+        $query = Aplicant::find($user->id);
+
+        return response()->json($query);
     }
 
     /**
@@ -50,9 +61,40 @@ class AplicantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Aplicant $aplicant)
+    public function update(Request $request)
     {
-        //
+        $user = Auth::user();
+        if (!$user) {
+            $response['message'] = "Necesitas loguearte";
+            $response['code'] = 404;
+            return response()->json($response);
+        }
+
+        DB::beginTransaction();
+        try {
+            Aplicant::find($user->id)->update([
+                $request->all()
+            ]);
+            
+            DB::commit();
+            $response['message'] = "Información actualizada.";
+            $response['code'] = 200;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response['message'] = "No se a podido actualizar la información.";
+            $response['code'] = 202;
+        }
+        return response()->json($response);
+    }
+
+    public function updatePassword()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            $response['message'] = "Necesitas loguearte";
+            $response['code'] = 404;
+            return response()->json($response);
+        }
     }
 
     /**

@@ -77,6 +77,11 @@ class Aplicant extends Authenticatable implements JWTSubject
         return $this->hasOne(BankAccount::class, 'id', 'bank_account_id');
     }
 
+    public function requests()
+    {
+        return $this->hasMany(Requests::class, 'aplicant_id', 'id');
+    }
+
 
     public function setAttribute($key, $value)
     {

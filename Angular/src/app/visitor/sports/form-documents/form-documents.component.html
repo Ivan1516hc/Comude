@@ -40,9 +40,8 @@
                                         <div class="d-flex align-items-center">
                                             <i class="bi bi-info-circle-fill me-2"></i>
                                             <div>
-                                                <strong>¡Atención!</strong> La información proporcionada es
-                                                exclusivamente del niño(a) que se registrará en el trámite de
-                                                guarderías.
+                                                <strong>¡Atención!</strong> La documentación es exclusivamente de la
+                                                persona solicitante.
                                             </div>
                                         </div>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
@@ -55,10 +54,11 @@
                                             <button class="col-6 col-md-12 nav-link btn btn-link text-left"
                                                 type="button" (click)="mostrarDocumento()">Curriculum Vitae<i
                                                     class="bi bi-check-lg my-icon"></i></button>
-                                            <button class="col-6 col-md-12 btn btn-primary text-left"
-                                                type="button" (click)="mostrarImagen()">Identificación oficial</button>
+                                            <button class="col-6 col-md-12 btn btn-primary text-left" type="button"
+                                                (click)="mostrarImagen()">Identificación oficial</button>
                                             <button class="col-6 col-md-12 nav-link btn btn-link text-left disabled"
-                                                type="button" (click)="mostrarImagen()">Comprobante de domicilio</button>
+                                                type="button" (click)="mostrarImagen()">Comprobante de
+                                                domicilio</button>
                                             <button class="col-6 col-md-12 nav-link btn btn-link text-left disabled"
                                                 type="button" (click)="mostrarImagen()">Convocatoria</button>
                                             <button class="col-6 col-md-12 nav-link btn btn-link text-left disabled"
@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="col-12 col-lg-9">
                                         <form>
-                                            <div #imagen>
+                                            <div>
                                                 <label for="fileInput" class="form-label">Subir INE del tutor:</label>
                                                 <div class="drop-zone" (dragover)="onDragOver($event)"
                                                     (drop)="onDrop($event)" (click)="fileInput.click()">
@@ -90,13 +90,12 @@
                                                     PNG</small>
                                             </div>
 
-                                            <div #documento>
+                                            <div>
                                                 <label for="fileInput" class="form-label">Subir INE del tutor:</label>
                                                 <div class="drop-zone" (dragover)="onDragOver($event)"
                                                     (drop)="onDrop($event)" (click)="fileInput.click()">
                                                     <input #fileInput type="file" class="visually-hidden"
-                                                        accept=".pdf, .xdoc, .doc"
-                                                        (change)="onFileSelected($event)"
+                                                        accept=".pdf, .xdoc, .doc" (change)="onFileSelected($event)"
                                                         (drop)="onFileSelected($event)">
                                                     <div class="preview-container" *ngIf="selectedFileName">
                                                         <img [src]="selectedFilePreview" alt="Archivo seleccionado"
@@ -107,7 +106,8 @@
                                                         <p>Arrastra o selecciona un archivo</p>
                                                     </div>
                                                 </div>
-                                                <small class="form-text text-muted">Formatos permitidos: PDF, DOC, XDOC</small>
+                                                <small class="form-text text-muted">Formatos permitidos: PDF, DOC,
+                                                    XDOC</small>
                                             </div>
                                             <div class="text-center">
                                                 <button type="submit" class="btn btn-success">Guardar</button>

@@ -104,8 +104,9 @@ class RequestsController extends Controller
             return response()->json($response);
         }
 
-        $aplicant = Aplicant::with('bank_account')->find($user->id);
-        if (!$aplicant->bank_account) {
+        $aplicant = Aplicant::find($user->id);
+        
+        if (!$aplicant->phone_number || !$aplicant->rfc  || !$aplicant->birtdate || !$aplicant->name) {
             $response['message'] = "No tiene su perfil completo.";
             $response['code'] = 201;
             return response()->json($response);

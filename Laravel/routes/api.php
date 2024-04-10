@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AplicantController;
 use App\Http\Controllers\Catalogs\CatalogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BeneficiaryController;
@@ -122,6 +123,11 @@ Route::middleware('cors')->group(function () {
         //Bank Accounts Routs
         Route::get('request/bank-account/show/{id}', [BankAccountController::class, 'show']);
         Route::post('request/bank-account/store', [BankAccountController::class, 'store']);
+
+        //Bank Accounts Routs
+        Route::get('request/aplicant/show', [AplicantController::class, 'show']);
+        Route::put('request/aplicant/update', [AplicantController::class, 'update']);
+        Route::put('request/aplicant/update/password', [AplicantController::class, 'updatePassword']);
 
         Route::get('request/message/form', [MessageRequestController::class, 'typeForm']);
         Route::get('request/message/history', [MessageRequestController::class, 'index']);

@@ -247,9 +247,9 @@ export class FormConpetitionComponent {
     Swal.fire(swalOptions).then((result) => {
       if (result.isConfirmed && !this.edit) {
         this.miFormulario.reset();
-        this.router.navigateByUrl(this.urlPrincipal + '/solicitud/' + this.miFormulario.value.request_id + '/padres');
+        this.router.navigateByUrl(this.urlPrincipal + '/solicitante/beca-deportiva/' + this.miFormulario.value.request_id + '/cuenta-bancaria');
       } else if (result.isDenied) {
-        this.router.navigateByUrl(this.urlPrincipal + '/beneficiario/' + response.beneficiary_id + '/' + this.miFormulario.value.request_id);
+        this.router.navigateByUrl(this.urlPrincipal + '/solicitante/beca-deportiva/'+this.miFormulario.value.request_id + '/competicion');
       }
     });
   }

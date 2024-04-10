@@ -67,26 +67,27 @@
                                         </div>
                                         <div class="tab-pane fade  profile-edit pt-3" id="profile-edit">
                                             <form>
-
                                                 <div class="row mb-3">
                                                     <label for="fullName"
                                                         class="col-md-4 col-lg-3 col-form-label">Nombre completo</label>
                                                     <div class="col-md-8 col-lg-9"> <input name="fullName" type="text"
-                                                            class="form-control" id="fullName" value="BENJAMÍN IVÁN HERNÁNDEZ CASTRO"></div>
+                                                            class="form-control" id="fullName"
+                                                            value="BENJAMÍN IVÁN HERNÁNDEZ CASTRO"></div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="about"
                                                         class="col-md-4 col-lg-3 col-form-label">CURP</label>
                                                     <div class="col-md-8 col-lg-9">
-                                                        <input name="about" type="text"
-                                                            class="form-control" id="about" value="HECB000817HMNRSNA5" disabled>
+                                                        <input name="about" type="text" class="form-control" id="about"
+                                                            value="HECB000817HMNRSNA5" disabled>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="company"
                                                         class="col-md-4 col-lg-3 col-form-label">RFC</label>
                                                     <div class="col-md-8 col-lg-9"> <input name="company" type="text"
-                                                            class="form-control" id="company" value="HECB000817SU8"></div>
+                                                            class="form-control" id="company" value="HECB000817SU8">
+                                                    </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="Job" class="col-md-4 col-lg-3 col-form-label">Fecha de
@@ -98,7 +99,8 @@
                                                     <label for="Country"
                                                         class="col-md-4 col-lg-3 col-form-label">Telefono</label>
                                                     <div class="col-md-8 col-lg-9"> <input name="country" type="text"
-                                                            class="form-control" id="Country" value="(352) 1530 046"></div>
+                                                            class="form-control" id="Country" value="(352) 1530 046">
+                                                    </div>
                                                 </div>
 
                                                 <div class="text-center"> <button type="submit"
@@ -136,6 +138,56 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card-footer">
+                                    <h5 class="card-title">Logros importantes</h5>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 col-lg-4 mt-2">
+                                            <div class="card card-start">
+                                                <article class="drop-zone" data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">
+                                                    <span>Registrar logro</span>
+                                                </article>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-4 mt-2">
+                                            <article class="card">
+                                                <img src="assets/img/logro-1.png" class="card-img-top" alt="Imagen"
+                                                    style="align-self: center">
+                                                <div class="container text-card">
+                                                    <p><strong>Diciplina:</strong> Futbol</p>
+                                                    <p><strong>Competencia:</strong> Copa America aifa 2024</p>
+                                                    <p><strong>Lugar:</strong> Buenos Aires, Argentina</p>
+                                                    <p><strong>Tipo de competencia:</strong> Internacional</p>
+
+                                                    <div class="d-grid gap-1">
+                                                        <button type="button"
+                                                            class=" btn-lg btn btn-warning mt-2">Eliminar</button>
+                                                        <button type="button"
+                                                            class=" btn-lg btn btn-info mt-2">Cambiar</button>
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-4 mt-2">
+                                            <article class="card">
+                                                <img src="assets/img/logro-2.png" class="card-img-top" alt="Imagen"
+                                                    style="align-self: center">
+                                                <div class="container text-card">
+                                                    <p><strong>Diciplina:</strong> Futbol</p>
+                                                    <p><strong>Competencia:</strong> Copa America aifa 2024</p>
+                                                    <p><strong>Lugar:</strong> Buenos Aires, Argentina</p>
+                                                    <p><strong>Tipo de competencia:</strong> Internacional</p>
+                                                    <div class="d-grid gap-1">
+                                                        <button type="button"
+                                                            class=" btn-lg btn btn-warning mt-2">Eliminar</button>
+                                                        <button type="button"
+                                                            class=" btn-lg btn btn-info mt-2">Cambiar</button>
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -143,4 +195,64 @@
             </div>
         </div>
     </main>
+
+    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Registrar logro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-0 text-justify-custom">
+                    <form>
+                        <div>
+                            <label for="fileInput" class="form-label">Subir INE del tutor:</label>
+                            <div class="drop-zone" (dragover)="onDragOver($event)"
+                                (drop)="onDrop($event)" (click)="fileInput.click()">
+                                <input #fileInput type="file" class="visually-hidden"
+                                    accept=".pdf, .jpg, .jpeg, .png"
+                                    (change)="onFileSelected($event)"
+                                    (drop)="onFileSelected($event)">
+                                <div class="preview-container" *ngIf="selectedFileName">
+                                    <img [src]="selectedFilePreview" alt="Archivo seleccionado"
+                                        class="preview-image">
+                                    <p>{{ selectedFileName }}</p>
+                                </div>
+                                <div class="file-input-placeholder" *ngIf="!selectedFileName">
+                                    <p>Arrastra o selecciona un archivo</p>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Formatos permitidos: PDF, JPG, JPEG,
+                                PNG</small>
+                        </div> 
+
+                        <div class="row mb-3">
+                            <label for="company" class="col-md-4 col-lg-3 col-form-label">RFC</label>
+                            <div class="col-md-8 col-lg-9"> <input name="company" type="text" class="form-control"
+                                    id="company" value="HECB000817SU8">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="Job" class="col-md-4 col-lg-3 col-form-label">Fecha de
+                                nacimiento</label>
+                            <div class="col-md-8 col-lg-9"> <input name="job" type="text" class="form-control" id="Job"
+                                    value="17-08-2000"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="Country" class="col-md-4 col-lg-3 col-form-label">Telefono</label>
+                            <div class="col-md-8 col-lg-9"> <input name="country" type="text" class="form-control"
+                                    id="Country" value="(352) 1530 046">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer flex-column border-top-0">
+                    <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal">Guardar
+                        logro</button>
+                    <button type="button" class="btn btn-lg btn-light w-100 mx-0"
+                        data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </app-visitor>

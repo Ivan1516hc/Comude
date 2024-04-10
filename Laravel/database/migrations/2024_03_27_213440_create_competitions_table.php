@@ -27,7 +27,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('countries_state_id');
             $table->foreign('countries_state_id')->references('id')->on('countries_states');
 
-            $table->unsignedSmallInteger('competition_type_id');
+            $table->unsignedTinyInteger('competition_type_id');
             $table->foreign('competition_type_id')->references('id')->on('competition_types');
 
             $table->timestamps();
