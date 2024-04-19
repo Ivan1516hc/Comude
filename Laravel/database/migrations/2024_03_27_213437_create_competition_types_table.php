@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('competition_types', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name');
-            $table->unsignedInteger('minimum_budget');
-            $table->unsignedInteger('maximum_budget');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,5 +1,0 @@
-/* Estilo para el asterisco rojo */
-.required:after {
-  content: '*';
-  color: red;
-}

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { RequestsResponse } from '../interfaces/request-aplicant';
 
 @Injectable({
   providedIn: 'root'
@@ -76,9 +77,9 @@ export class AllVisitorService {
     return this.employee_number;
   }
 
-  indexRequestVisitor(): Observable<any> {
+  indexRequestVisitor(): Observable<RequestsResponse> {
     const url = `${this.baseUrl}/visitor/request`;
-    return this.http.get<any>(url);
+    return this.http.get<RequestsResponse>(url);
   }
 
   showBeneficiaryVisitor(id: number): Observable<any> {
@@ -200,12 +201,50 @@ export class AllVisitorService {
   }
 
   storeBankAccount(data){
-    const url = `${this.baseUrl}/request/bank-account/store`;
-    return this.http.post<any>(url, data);
+    const headers = new HttpHeaders({
+      'Content-Type': 'multipart/form-data',
+    });
+
+    return this.http.post<any>(`${this.baseUrl}/request/bank-account/store`, data, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error en la solicitud:', error);
+          throw error; // Puedes manejar el error según tus necesidades
+        })
+      );
   }
 
   getBankAccount(id){
     const url = `${this.baseUrl}/request/bank-account/show/${id}`;
     return this.http.get<any>(url);
+  }
+
+  storeDocument(data){
+    const headers = new HttpHeaders({
+      'Content-Type': 'multipart/form-data',
+    });
+
+    return this.http.post<any>(`${this.baseUrl}/request/documents/store`, data, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error en la solicitud:', error);
+          throw error; // Puedes manejar el error según tus necesidades
+        })
+      );
+  }
+
+  getDocuments(id){
+    const url = `${this.baseUrl}/request/documents/show/${id}`;
+    return this.http.get<any>(url);
+  }
+
+  getInfo(){
+    const url = `${this.baseUrl}/request/aplicant/show`;
+    return this.http.get<any>(url);
+  }
+
+  updateInfo(data){
+    const url = `${this.baseUrl}/request/aplicant/update`;
+    return this.http.put<any>(url,data);
   }
 }

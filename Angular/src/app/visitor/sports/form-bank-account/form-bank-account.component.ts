@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-form-bank-account',
@@ -11,12 +12,16 @@ import Swal from 'sweetalert2';
 })
 export class FormBankAccountComponent {
 
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  selectedFileName: string | null = null;
+  selectedFilePreview: string | null = null;
   request_id: number;
   urlPrincipal: string;
   catalog: any;
   newData: boolean = true;
   onlySee: boolean = false;
   edit: boolean = false;
+  baseUrl = environment.dowload;
 
   constructor(
     private router: Router,
@@ -56,14 +61,19 @@ export class FormBankAccountComponent {
   }
 
   miFormulario: FormGroup = this.fb.group({
+    request_id: ['', [Validators.required]],
     account: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(8), Validators.maxLength(18)]],
     key_account: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(18), Validators.maxLength(18)]],
     titular_persona_name: ['', [Validators.required]],
-    bank: ['', [Validators.required]]
+    bank: ['', [Validators.required]],
+    account_status_url: ['', [Validators.required]]
   });
 
 
   showAccountBank(id: any): void {
+    this.miFormulario.patchValue({
+      request_id: id
+    });
     this.allService.getBankAccount(id).subscribe({
       next: (response) => {
         if (response.id) {
@@ -79,11 +89,13 @@ export class FormBankAccountComponent {
   }
 
   populateForm(response: any): void {
+    console.log(response)
     this.miFormulario.patchValue({
       account: response.account,
       key_account: response.key_account,
       titular_persona_name: response.titular_persona_name,
       bank: response.bank,
+      account_status_url: response.account_status_url
     });
     this.miFormulario.disable();
   }
@@ -97,8 +109,15 @@ export class FormBankAccountComponent {
     if (this.miFormulario.invalid) {
       return this.miFormulario.markAllAsTouched();
     }
-    const data = this.miFormulario.getRawValue();
-    this.allService.storeCompetition(data).subscribe({
+
+    const formData = new FormData();
+    formData.append('account', this.miFormulario.get('account').value);
+    formData.append('key_account', this.miFormulario.get('key_account').value);
+    formData.append('titular_persona_name', this.miFormulario.get('titular_persona_name').value);
+    formData.append('bank', this.miFormulario.get('bank').value);
+    formData.append('account_status_url', this.miFormulario.get('account_status_url').value);
+
+    this.allService.storeBankAccount(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.handleSuccessResponse(response);
@@ -131,10 +150,10 @@ export class FormBankAccountComponent {
     }
     Swal.fire(swalOptions).then((result) => {
       if (result.isConfirmed && !this.edit) {
-        this.miFormulario.reset();
-        this.router.navigateByUrl(this.urlPrincipal + '/solicitante/beca-deportiva/' + this.miFormulario.value.request_id + '/documentacion');
+        this.miFormulario.disable();
+        this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/documentacion');
       } else if (result.isDenied) {
-        this.router.navigateByUrl(this.urlPrincipal + '/solicitante/beca-deportiva/' + this.miFormulario.value.request_id + '/cuenta-bancaria');
+        this.ngOnInit();
       }
     });
   }
@@ -147,5 +166,37 @@ export class FormBankAccountComponent {
       showConfirmButton: false,
       timer: 2000
     });
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    const files = (event.dataTransfer?.files || []) as FileList;
+    this.onFileSelected({ target: { files } });
+  }
+
+  onFileSelected(event: any): void {
+    const files = event.target.files || event.dataTransfer.files;
+
+    if (files.length > 0) {
+      const file = files[0];
+
+      this.miFormulario.patchValue({ account_status_url: file });
+
+      this.selectedFileName = file.name;
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.selectedFilePreview = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.selectedFilePreview = null;
+      }
+    }
   }
 }

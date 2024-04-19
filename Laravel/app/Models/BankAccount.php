@@ -12,7 +12,8 @@ class BankAccount extends Model
         'account',
         'key_account',
         'titular_persona_name',
-        'bank'
+        'bank',
+        'account_status_url'
     ];
 
     protected $casts = [

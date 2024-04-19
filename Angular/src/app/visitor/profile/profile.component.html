@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-10 offset-1 content-center">
                 <div class="pagetitle">
-                    <h1>Mi perfil
+                    <h1>Logros importantes
                     </h1>
                     <nav>
                         <ol class="breadcrumb">
@@ -29,7 +29,7 @@
                                     <ul class="nav nav-tabs nav-tabs-bordered">
                                         <li class="nav-item"> <button class="nav-link active" data-bs-toggle="tab"
                                                 data-bs-target="#profile-overview">Descripción general</button></li>
-                                        <li class="nav-item"> <button class="nav-link" data-bs-toggle="tab"
+                                        <li class="nav-item"> <button #myButton class="nav-link" data-bs-toggle="tab"
                                                 data-bs-target="#profile-edit">Editar perfil</button></li>
                                         <li class="nav-item"> <button class="nav-link" data-bs-toggle="tab"
                                                 data-bs-target="#profile-change-password">Cambiar contraseña</button>
@@ -38,117 +38,133 @@
                                     <div class="tab-content pt-2">
                                         <div class="tab-pane fade show active profile-overview" id="profile-overview">
                                             <h5 class="card-title">Detalles de perfil</h5>
+
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Nombre completo</div>
-                                                <div class="col-lg-9 col-md-8">BENJAMÍN IVÁN HERNÁNDEZ CASTRO</div>
+                                                <div class="col-lg-9 col-md-8">{{miFormulario.controls['name'].value}}
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label">CURP</div>
-                                                <div class="col-lg-9 col-md-8">HECB000817HMNRSNA5</div>
+                                                <div class="col-lg-9 col-md-8">{{miFormulario.controls['curp'].value}}
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label">RFC</div>
-                                                <div class="col-lg-9 col-md-8">HECB000817SU8</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {{miFormulario.controls['rfc'].value}}</div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label">Email</div>
-                                                <div class="col-lg-9 col-md-8">IVAN1516HC@GMAIL.COM</div>
+                                                <div class="col-lg-9 col-md-8">{{miFormulario.controls['email'].value}}
+                                                </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label">Fecha de nacimiento</div>
-                                                <div class="col-lg-9 col-md-8">17-08-2000</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {{miFormulario.controls['birtdate'].value}}
+                                                </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label">Telefono</div>
-                                                <div class="col-lg-9 col-md-8">(352) 1530 046</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {{miFormulario.controls['phone_number'].value}}</div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade  profile-edit pt-3" id="profile-edit">
-                                            <form>
+                                            <form [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
                                                 <div class="row mb-3">
-                                                    <label for="fullName"
-                                                        class="col-md-4 col-lg-3 col-form-label">Nombre completo</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="fullName" type="text"
-                                                            class="form-control" id="fullName"
-                                                            value="BENJAMÍN IVÁN HERNÁNDEZ CASTRO"></div>
+                                                    <label for="name"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Nombre
+                                                        completo</label>
+                                                    <div class="col-md-8 col-lg-9"> <input name="name" type="text"
+                                                            formControlName="name" class="form-control" id="name"></div>
                                                 </div>
                                                 <div class="row mb-3">
-                                                    <label for="about"
-                                                        class="col-md-4 col-lg-3 col-form-label">CURP</label>
+                                                    <label for="curp"
+                                                        class="col-md-4 col-lg-3 col-form-label required">CURP</label>
                                                     <div class="col-md-8 col-lg-9">
-                                                        <input name="about" type="text" class="form-control" id="about"
-                                                            value="HECB000817HMNRSNA5" disabled>
+                                                        <input name="curp" type="text" class="form-control" id="curp"
+                                                            formControlName="curp">
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
-                                                    <label for="company"
+                                                    <label for="rfc"
                                                         class="col-md-4 col-lg-3 col-form-label">RFC</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="company" type="text"
-                                                            class="form-control" id="company" value="HECB000817SU8">
+                                                    <div class="col-md-8 col-lg-9"> <input name="rfc" type="text"
+                                                            class="form-control" id="rfc" formControlName="rfc">
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
-                                                    <label for="Job" class="col-md-4 col-lg-3 col-form-label">Fecha de
-                                                        nacimiento</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="job" type="text"
-                                                            class="form-control" id="Job" value="17-08-2000"></div>
+                                                    <label for="birtdate"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Fecha
+                                                        de nacimiento</label>
+                                                    <div class="col-md-8 col-lg-9"> <input name="birtdate" type="date"
+                                                            class="form-control" id="birtdate"
+                                                            formControlName="birtdate"></div>
                                                 </div>
                                                 <div class="row mb-3">
-                                                    <label for="Country"
-                                                        class="col-md-4 col-lg-3 col-form-label">Telefono</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="country" type="text"
-                                                            class="form-control" id="Country" value="(352) 1530 046">
+                                                    <label for="phone_number"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Telefono</label>
+                                                    <div class="col-md-8 col-lg-9"> <input name="phone_number"
+                                                            type="text" class="form-control" id="phone_number"
+                                                            formControlName="phone_number">
                                                     </div>
                                                 </div>
 
-                                                <div class="text-center"> <button type="submit"
-                                                        class="btn btn-primary">Guardar cambios</button></div>
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn btn-primary">Guardar
+                                                        cambios</button>
+                                                </div>
                                             </form>
                                         </div>
                                         <div class="tab-pane fade pt-3" id="profile-change-password">
-                                            <form>
+                                            <form [formGroup]="miFormularioPassword" (ngSubmit)="changePassword()">
                                                 <div class="row mb-3">
-                                                    <label for="currentPassword"
+                                                    <label for="password"
                                                         class="col-md-4 col-lg-3 col-form-label">Contraseña
                                                         actual</label>
                                                     <div class="col-md-8 col-lg-9"> <input name="password"
-                                                            type="password" class="form-control" id="currentPassword">
+                                                            type="password" class="form-control" id="password"
+                                                            formControlName="password">
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
-                                                    <label for="newPassword"
+                                                    <label for="new_password"
                                                         class="col-md-4 col-lg-3 col-form-label">Nueva
                                                         contraseña</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="newpassword"
-                                                            type="password" class="form-control" id="newPassword"></div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <label for="renewPassword"
-                                                        class="col-md-4 col-lg-3 col-form-label">Repetir nueva
-                                                        contraseña</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="renewpassword"
-                                                            type="password" class="form-control" id="renewPassword">
+                                                    <div class="col-md-8 col-lg-9"> <input name="new_password"
+                                                            type="password" class="form-control" id="new_password"
+                                                            formControlName="new_password">
                                                     </div>
                                                 </div>
-                                                <div class="text-center"> <button type="submit"
-                                                        class="btn btn-primary">Cambiar contraseña</button></div>
+                                                <div class="row mb-3">
+                                                    <label for="new_password_repeat"
+                                                        class="col-md-4 col-lg-3 col-form-label">Repetir nueva
+                                                        contraseña</label>
+                                                    <div class="col-md-8 col-lg-9"> <input name="new_password_repeat"
+                                                            type="password" class="form-control"
+                                                            id="new_password_repeat"
+                                                            formControlName="new_password_repeat">
+                                                    </div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn btn-primary">Cambiar
+                                                        contraseña</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <h5 class="card-title">Logros importantes</h5>
+                                    <div class="d-sm-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-2 mb-sm-0">Logros importantes</h5>
+                                        <button class="btn btn-primary">Registrar logros</button>
+                                    </div>
+
                                     <div class="row">
-                                        <div class="col-12 col-md-6 col-lg-4 mt-2">
-                                            <div class="card card-start">
-                                                <article class="drop-zone" data-bs-toggle="modal"
-                                                    data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">
-                                                    <span>Registrar logro</span>
-                                                </article>
-                                            </div>
-                                        </div>
                                         <div class="col-12 col-md-6 col-lg-4 mt-2">
                                             <article class="card">
                                                 <img src="assets/img/logro-1.png" class="card-img-top" alt="Imagen"
@@ -196,63 +212,5 @@
         </div>
     </main>
 
-    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog  modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Registrar logro</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body py-0 text-justify-custom">
-                    <form>
-                        <div>
-                            <label for="fileInput" class="form-label">Subir INE del tutor:</label>
-                            <div class="drop-zone" (dragover)="onDragOver($event)"
-                                (drop)="onDrop($event)" (click)="fileInput.click()">
-                                <input #fileInput type="file" class="visually-hidden"
-                                    accept=".pdf, .jpg, .jpeg, .png"
-                                    (change)="onFileSelected($event)"
-                                    (drop)="onFileSelected($event)">
-                                <div class="preview-container" *ngIf="selectedFileName">
-                                    <img [src]="selectedFilePreview" alt="Archivo seleccionado"
-                                        class="preview-image">
-                                    <p>{{ selectedFileName }}</p>
-                                </div>
-                                <div class="file-input-placeholder" *ngIf="!selectedFileName">
-                                    <p>Arrastra o selecciona un archivo</p>
-                                </div>
-                            </div>
-                            <small class="form-text text-muted">Formatos permitidos: PDF, JPG, JPEG,
-                                PNG</small>
-                        </div> 
 
-                        <div class="row mb-3">
-                            <label for="company" class="col-md-4 col-lg-3 col-form-label">RFC</label>
-                            <div class="col-md-8 col-lg-9"> <input name="company" type="text" class="form-control"
-                                    id="company" value="HECB000817SU8">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="Job" class="col-md-4 col-lg-3 col-form-label">Fecha de
-                                nacimiento</label>
-                            <div class="col-md-8 col-lg-9"> <input name="job" type="text" class="form-control" id="Job"
-                                    value="17-08-2000"></div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="Country" class="col-md-4 col-lg-3 col-form-label">Telefono</label>
-                            <div class="col-md-8 col-lg-9"> <input name="country" type="text" class="form-control"
-                                    id="Country" value="(352) 1530 046">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer flex-column border-top-0">
-                    <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal">Guardar
-                        logro</button>
-                    <button type="button" class="btn btn-lg btn-light w-100 mx-0"
-                        data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </app-visitor>

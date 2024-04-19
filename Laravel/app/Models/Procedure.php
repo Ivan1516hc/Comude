@@ -17,10 +17,16 @@ class Procedure extends Model
         'updated_at' => 'datetime:Y-m-d H:00',
     ];
 
-    public function requests()
+    public function announcements()
     {
-        return $this->hasMany(Requests::class, 'procedure_id', 'id');
+        return $this->hasMany(Announcement::class, 'procedure_id', 'id');
     }
+
+    public function documents_procedure()
+    {
+        return $this->hasMany(DocumentProcedure::class, 'procedure_id', 'id');
+    }
+
 
     public function setAttribute($key, $value)
     {

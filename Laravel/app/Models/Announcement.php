@@ -24,6 +24,16 @@ class Announcement extends Model
         'updated_at' => 'datetime:Y-m-d H:00',
     ];
 
+    public function procedure()
+    {
+        return $this->belongsTo(Procedure::class, 'procedure_id', 'id');
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(Requests::class, 'announcement_id', 'id');
+    }
+
     public function setAttribute($key, $value)
     {
         parent::setAttribute($key, $value);

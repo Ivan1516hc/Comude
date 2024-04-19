@@ -9,9 +9,7 @@ class CompetitionType extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name',
-        'minimum_budget',
-        'maximum_budget'
+        'name'
     ];
 
     protected $casts = [

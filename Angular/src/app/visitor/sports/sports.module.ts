@@ -7,13 +7,15 @@ import { FormBankAccountComponent } from './form-bank-account/form-bank-account.
 import { FormConpetitionComponent } from './form-conpetition/form-conpetition.component';
 import { VisitorModule } from '../visitor.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormImportanArchievementComponent } from './form-importan-archievement/form-importan-archievement.component';
 
 
 @NgModule({
   declarations: [
     FormDocumentsComponent,
     FormBankAccountComponent,
-    FormConpetitionComponent
+    FormConpetitionComponent,
+    FormImportanArchievementComponent
   ],
   imports: [
     CommonModule,

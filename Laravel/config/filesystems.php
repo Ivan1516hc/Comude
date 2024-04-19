@@ -70,6 +70,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'sports' => [
+            'driver' => 'local',
+            'root' => public_path('documents/sports'),
+            'url' => env('APP_URL') . '/documents/sports',
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*

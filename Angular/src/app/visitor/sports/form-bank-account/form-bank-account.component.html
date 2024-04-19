@@ -85,8 +85,9 @@
                                         </div>
 
 
-                                        <div class="col-12 col-md-6 col-lg-4">
-                                            <label class="form-label required">Banco <span class="text-danger" *ngIf="newData || edit">(debe ser
+                                        <div class="col-12 col-lg-4">
+                                            <label class="form-label required">Banco <span class="text-danger"
+                                                    *ngIf="newData || edit">(debe ser
                                                     reconocido en México)</span></label>
                                             <input type="text" class="form-control" formControlName="bank">
                                             <span class="form-text text-danger form"
@@ -95,6 +96,36 @@
                                             </span>
                                         </div>
 
+                                        <div *ngIf="!edit && !onlySee; else existFile">
+                                            <label for="fileInput" class="form-label">Estado de cuenta:</label>
+                                            <div class="drop-zone" (dragover)="onDragOver($event)"
+                                                (drop)="onDrop($event)" (click)="fileInput.click()">
+                                                <input #fileInput type="file" class="visually-hidden"
+                                                    accept=".pdf, .jpg, .jpeg, .png" (change)="onFileSelected($event)"
+                                                    (drop)="onFileSelected($event)">
+                                                <div class="preview-container" *ngIf="selectedFileName">
+                                                    <img [src]="selectedFilePreview" alt="Archivo seleccionado"
+                                                        class="preview-image">
+                                                    <p>{{ selectedFileName }}</p>
+                                                </div>
+                                                <div class="file-input-placeholder" *ngIf="!selectedFileName">
+                                                    <p>Arrastra o selecciona un archivo</p>
+                                                </div>
+                                            </div>
+                                            <small class="form-text text-muted">Formatos permitidos: PDF, JPG, JPEG,
+                                                PNG</small>
+                                        </div>
+
+                                        <ng-template #existFile>
+                                            <div class="text-center">
+                                                <a class="mt-3"
+                                                    href="{{ baseUrl+'sports/'+miFormulario.controls['account_status_url'].value }}"
+                                                    download  target="_blank" rel="noopener noreferrer">
+                                                    <i class="bi bi-file-earmark-arrow-down-fill my-icon"></i>
+                                                    <h2>Descargar estado de cuenta</h2>
+                                                </a>
+                                            </div>
+                                        </ng-template>
 
 
                                         <div class="text-center" *ngIf="!onlySee">

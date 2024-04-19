@@ -28,6 +28,31 @@ class Requests extends Model
         return $this->belongsTo(Competition::class, 'competition_id', 'id');
     }
 
+    public function aplicant()
+    {
+        return $this->belongsTo(Aplicant::class, 'aplicant_id', 'id');
+    }
+
+    public function status_request()
+    {
+        return $this->belongsTo(StatusRequest::class, 'status_request_id', 'id');
+    }
+
+    public function announcement()
+    {
+        return $this->belongsTo(Announcement::class, 'announcement_id', 'id');
+    }
+
+    public function discipline()
+    {
+        return $this->belongsTo(Discipline::class, 'discipline_id', 'id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(DocumentsRequest::class, 'request_id', 'id');
+    }
+
     public function modify_forms()
     {
         return $this->hasMany(ModifyForm::class, 'request_id', 'id');

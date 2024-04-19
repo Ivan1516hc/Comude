@@ -10,6 +10,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyController;
+use App\Http\Controllers\Documents\DocumentController;
 use App\Http\Controllers\Payments\BankAccountController;
 use App\Http\Controllers\SportProcedure\CompetitionController;
 use Illuminate\Http\Request;
@@ -101,7 +102,6 @@ Route::middleware('cors')->group(function () {
         Route::post('service/beneficiary/createofservice', [BeneficiaryController::class, 'beneficiaryOfService']);
 
         Route::post('creche/request/create', [RequestsController::class, 'store']);
-        Route::get('visitor/request', [RequestsController::class, 'showVisitorRequest']);
 
         Route::get('request/beneficiary/{request_id}', [RequestsController::class, 'getBeneficiariesRequest']);
         Route::get('request/parents/document/{request_id}', [RequestsController::class, 'getParentsRequest']);
@@ -115,6 +115,8 @@ Route::middleware('cors')->group(function () {
         Route::post('request/update/status', [RequestsController::class, 'changeStatus']);
         Route::post('request/changecenter', [RequestsController::class, 'changeCenter']); //Pendiente
 
+        //Request Visitor Routs
+        Route::get('visitor/request', [RequestsController::class, 'showVisitorRequest']);
 
         //Competitions Routs
         Route::get('request/competitions/show/{id}', [CompetitionController::class, 'show']);
@@ -124,7 +126,11 @@ Route::middleware('cors')->group(function () {
         Route::get('request/bank-account/show/{id}', [BankAccountController::class, 'show']);
         Route::post('request/bank-account/store', [BankAccountController::class, 'store']);
 
-        //Bank Accounts Routs
+        //Documents Routs
+        Route::get('request/documents/show/{id}', [DocumentController::class, 'show']);
+        Route::post('request/documents/store', [DocumentController::class, 'store']);
+
+        //Aplicant Profile Routs
         Route::get('request/aplicant/show', [AplicantController::class, 'show']);
         Route::put('request/aplicant/update', [AplicantController::class, 'update']);
         Route::put('request/aplicant/update/password', [AplicantController::class, 'updatePassword']);

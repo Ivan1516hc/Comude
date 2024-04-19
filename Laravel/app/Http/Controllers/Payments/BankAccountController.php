@@ -8,6 +8,7 @@ use App\Models\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BankAccountController extends Controller
 {
@@ -32,38 +33,58 @@ class BankAccountController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        if (!$user) {
-            $response['message'] = "Necesitas loguearte";
-            $response['code'] = 404;
-            return response()->json($response);
-        }
-
-        $aplicant = Aplicant::find($user->id);
-
-        if (!$aplicant) {
-            $response['message'] = "Solicitante no encontrado, no se puede vincular la cuenta bancaria.";
-            $response['code'] = 202;
-            return response()->json($response);
-        }
-
-        DB::beginTransaction();
         try {
-            $newIdBankAccount = BankAccount::create($request->all())->id;
-            $aplicant->update([
-                'bank_account_id' => $newIdBankAccount
-            ]);
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
+            }
+
+            $aplicant = Aplicant::find($user->id);
+            if (!$aplicant) {
+                return response()->json(['message' => 'Solicitante no encontrado, no se puede vincular la cuenta bancaria.', 'code' => 202]);
+            }
+
+            DB::beginTransaction();
+
+            // Validar y guardar el archivo
+            $customFileName = null;
+            if ($request->hasFile('account_status_url')) {
+                $file = $request->file('account_status_url');
+                $fileExtension = $file->getClientOriginalExtension();
+                $allowedExtensions = ['pdf', 'docx', 'doc'];
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    return response()->json(['message' => 'La extensión del archivo no es válida.', 'code' => 201]);
+                }
+                $maxFileSize = 700 * 1024; // 700kB
+                if ($file->getSize() > $maxFileSize) {
+                    return response()->json(['message' => 'El tamaño del archivo "Estado de cuenta" es demasiado grande.', 'code' => 201]);
+                }
+                $customFileName = 'solicitud_' . $request->request_id . '_cuenta_bancaria.' . $fileExtension;
+                $filePath = Storage::disk('sports')->put($customFileName, file_get_contents($file));
+                if (!$filePath) {
+                    throw new \Exception('Error al guardar el archivo.');
+                }
+            }
+
+            // Crear cuenta bancaria
+            $bankAccountData = $request->except('account_status_url');
+            if ($customFileName) {
+                $bankAccountData['account_status_url'] = $customFileName;
+            }
+            $bankAccount = BankAccount::create($bankAccountData);
+
+            // Asignar cuenta bancaria al solicitante
+            $aplicant->update(['bank_account_id' => $bankAccount->id]);
 
             DB::commit();
-            $response['message'] = "Información bancaria registrada correctamente.";
-            $response['code'] = 200;
+
+            return response()->json(['message' => 'Información bancaria registrada correctamente.', 'code' => 200]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response['message'] = "No se a podido registrar la información.";
-            $response['code'] = 202;
+            return response()->json(['message' => 'Error al registrar la información.', 'code' => 202]);
         }
-        return response()->json($response);
     }
+
 
     /**
      * Display the specified resource.

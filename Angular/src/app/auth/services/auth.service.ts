@@ -21,10 +21,10 @@ export class AuthService {
 
   constructor(private http:HttpClient) { }
 
-  login(email:string, password:string){
+  login(curp:string, password:string){
 
     const url =`${this.baseUrl}/auth/login`
-    const body={email, password}
+    const body={curp, password}
 
     return this.http.post<AuthResponse>(url,body).pipe(
       tap(response =>{

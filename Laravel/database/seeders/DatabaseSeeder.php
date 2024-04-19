@@ -4,13 +4,16 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Announcement;
+use App\Models\Aplicant;
+use App\Models\CompetitionType;
 use App\Models\Discipline;
-use App\Models\DocumentType;
-use App\Models\Form;
+use App\Models\DocumentProcedure;
 use App\Models\MessageMotive;
 use App\Models\Procedure;
 use App\Models\Role;
 use App\Models\StatusRequest;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -64,7 +67,8 @@ class DatabaseSeeder extends Seeder
                 'name' => $deporte
             ]);
         }
-        
+
+        //Status de solicitud
         StatusRequest::create([
             'name'  => 'SIN TERMINAR'
         ]);
@@ -89,7 +93,11 @@ class DatabaseSeeder extends Seeder
         StatusRequest::create([
             'name'  => 'MODIFICANDO'
         ]);
+        StatusRequest::create([
+            'name'  => 'ENVIADA'
+        ]);
 
+        //Roles de usuario
         Role::create([
             'name'  => 'PROCEDURE ADMIN',
         ]);
@@ -97,33 +105,12 @@ class DatabaseSeeder extends Seeder
             'name'  => 'GENERAL ADMIN',
         ]);
 
+        //Trámites
         Procedure::create([
             'name' => 'SPORTS SCHOLARSHIPS'
         ]);
 
-        
-        
-
-        // Form::create([
-        //     'name' => 'INFANTE',
-        //     'procedure_id' => 2,
-        //     'description' => '',
-        //     'url' => '/beneficiario'
-        // ]);
-        // Form::create([
-        //     'name' => 'PADRES/TUTORES',
-        //     'procedure_id' => 2,
-        //     'description' => '',
-        //     'url' => '/padres'
-        // ]);
-        // Form::create([
-        //     'name' => 'DOCUMENTACIÓN',
-        //     'procedure_id' => 2,
-        //     'description' => '',
-        //     'url' => '/documentos'
-        // ]);
-
-
+        //Motivos de mensajes
         MessageMotive::create([
             'name' => 'OBSERVACIÓN'
         ]);
@@ -137,18 +124,89 @@ class DatabaseSeeder extends Seeder
             'name' => 'CORRECCIÓN'
         ]);
 
-        DocumentType::create([
-            'name' => 'INE',
-            'descripcion' => 'IMAGEN DE INE FRONTAL Y TRASERA.'
-        ]);
-        DocumentType::create([
-            'name' => 'DOCUMENTO CISZ',
-            'descripcion' => 'DOCUMENTO LLENADO.'
-        ]);
-        DocumentType::create([
-            'name' => 'IDENTIFICACIÓN DE EMPLEADO',
-            'descripcion' => 'IDENTIFICACIÓN DE EMPLEADO O INE FRONTRAL.'
+        //Usuario
+        User::create([
+            'name' => 'Benjamin Ivan Hernandez Castro',
+            'role_id' => 1,
+            'procedure_id' => 1,
+            'email' => 'bihernandez@difzapopan.gob.mx',
+            'password' =>  bcrypt('123456'),
         ]);
 
+        //Convocatoria
+        Announcement::create([
+            'name' => 'CONVOCATORIA 2024',
+            'start_budget' => '1000000',
+            'start_date' => '2024-01-01',
+            'ending_date' => '2024-12-31',
+            'status' => 1,
+            'user_id' => 1,
+            'procedure_id' => 1
+        ]);
+
+        //Tipos de competencia
+        CompetitionType::create([
+            'name' => 'ESTATAL'
+        ]);
+
+        //Tipos de competencia
+        CompetitionType::create([
+            'name' => 'NACIONAL'
+        ]);
+
+        //Tipos de competencia
+        CompetitionType::create([
+            'name' => 'INTERNACIONAL'
+        ]);
+
+        //Usuario
+        Aplicant::create([
+            'curp' => 'HECB000817HMNRSNA5',
+            'email' => 'ivan1516hc@gmail.com',
+            'password' =>  bcrypt('123456'),
+            'email_verified_at' => '2024-04-16 11:36:08'
+        ]);
+
+        DocumentProcedure::create([
+            'name' => 'Curriculum Vitae',
+            'descripcion' => 'Test',
+            'force' => 1,
+            'procedure_id' => 1,
+        ]);
+
+        DocumentProcedure::create([
+            'name' => 'Identificación oficial',
+            'descripcion' => 'Test',
+            'force' => 1,
+            'procedure_id' => 1
+        ]);
+
+        DocumentProcedure::create([
+            'name' => 'Comprobante de domicilio',
+            'descripcion' => 'Test',
+            'force' => 1,
+            'procedure_id' => 1
+        ]);
+
+        DocumentProcedure::create([
+            'name' => 'Convocatoria',
+            'descripcion' => 'Test',
+            'force' => 1,
+            'procedure_id' => 1
+        ]);
+
+        DocumentProcedure::create([
+            'name' => 'CURP',
+            'descripcion' => 'Test',
+            'force' => 1,
+            'procedure_id' => 1
+        ]);
+
+        DocumentProcedure::create([
+            'name' => 'Fotografía',
+            'descripcion' => 'Test',
+            'force' => 1,
+            'procedure_id' => 1
+        ]);
     }
 }

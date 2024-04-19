@@ -40,7 +40,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'curp' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
 
@@ -49,10 +49,10 @@ class AuthController extends Controller
         }
 
         $credentials = $validator->validated();
-        $user = Aplicant::where('email', $credentials['email'])->first();
+        $user = Aplicant::where('curp', $credentials['curp'])->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Correo y Contraseña no coinciden'], 401);
+            return response()->json(['message' => 'CURP de usuario y contraseña no coinciden'], 401);
         }
 
         if (!$user->email_verified_at || $user->email_verified_at->lt(Carbon::now()->subMonths(6))) {
@@ -60,7 +60,7 @@ class AuthController extends Controller
         }
 
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['message' => 'Correo y Contraseña no coinciden'], 401);
+            return response()->json(['message' => 'Nombre de usuario y contraseña no coinciden'], 401);
         }
 
         $this->createNewToken($token);
@@ -68,8 +68,9 @@ class AuthController extends Controller
         $query = $user->role_id;
         $ok = true;
         $name = $user->name;
+        $email = $user->email;
 
-        return response()->json(compact('ok', 'token', 'query', 'id', 'name'));
+        return response()->json(compact('ok', 'token', 'query', 'id', 'name', 'email'));
     }
 
     /**
@@ -224,15 +225,15 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Token inválido'], 401);
         }
-    
+
         if ($user instanceof Aplicant) {
             return response()->json(['ok' => true], 200);
         } else {
             return response()->json(['error' => 'El token no corresponde a un Aplicant'], 401);
         }
     }
-    
-    
+
+
     public function validateUserAdmin()
     {
         JWTAuth::parseToken()->authenticate();

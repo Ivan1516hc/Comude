@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AllVisitorService } from '../services/all-visitor.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { DataRequest, Datum } from '../interfaces/request-aplicant';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,18 +21,37 @@ export class DashboardComponent implements OnInit {
         this.catalog = response;
       }
     })
+
+    this.visitorService.indexRequestVisitor().subscribe({
+      next: (response) => {
+        if (response.code == 200) {
+          this.requests = response.data;
+          this.hasBankAccount = response.hasBankAccount;
+        } else {
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000
+          })
+        }
+      }
+    })
+    this.currentUrl = window.location.pathname;
+    console.log (this.currentUrl.lastIndexOf('/'));
   }
   catalog: any;
-
+  requests: DataRequest;
   competition: number;
   discipline: number;
+  hasBankAccount: boolean = false;
+  currentUrl = window.location.pathname;
 
   storeRequest() {
     const data = { 'discipline_id': this.discipline }
     this.visitorService.storeRequest(data).subscribe({
       next: (response) => {
-        // Obtener la ruta actual
-        const currentUrl = window.location.pathname;
         if (response.code == 201) {
           Swal.fire({
             position: 'center',
@@ -44,7 +64,7 @@ export class DashboardComponent implements OnInit {
           }).then((result) => {
             if (result.isConfirmed) {
               // Obtener la ruta relativa deseada ('../perfil')
-              const relativeUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/solicitante/perfil';
+              const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/perfil';
               // Navegar a la ruta relativa
               this.router.navigateByUrl(relativeUrl);
             } else if (result.isDenied) {
@@ -70,13 +90,35 @@ export class DashboardComponent implements OnInit {
             timer: 2000
           })
           // Obtener la ruta relativa deseada ('../perfil')
-          const relativeUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + response.request_id + '/competicion';
+          const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + response.request_id + '/competicion';
           this.router.navigateByUrl(relativeUrl);
         }
       }, error: (err) => {
 
       }
     })
+  }
+
+  updateStatus(id, status_request_id) {
+
+  }
+
+  continuar(request: Datum): any {
+    if (request.finished) {
+      return
+    }
+    if (!request.competition) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/competicion';
+      return this.router.navigateByUrl(relativeUrl);
+    }
+    if (!this.hasBankAccount) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/cuenta-bancaria';
+      return this.router.navigateByUrl(relativeUrl);
+    }
+    if (request.documents_count < 5) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/documentacion';
+      return this.router.navigateByUrl(relativeUrl);
+    }
   }
 
 }

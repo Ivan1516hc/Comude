@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document_types', function (Blueprint $table) {
+        Schema::create('document_procedures', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name');
             $table->string('descripcion');
             $table->boolean('force')->default(1);
+
+            $table->unsignedTinyInteger('procedure_id');
+            $table->foreign('procedure_id')->references('id')->on('procedures');
+
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document_types');
+        Schema::dropIfExists('document_procedures');
     }
 };

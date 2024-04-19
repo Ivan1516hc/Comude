@@ -10,7 +10,7 @@ class DocumentsRequest extends Model
     use HasFactory;
     protected $fillable = [
         'file_name',
-        'type_document_id',
+        'document_procedure_id',
         'request_id',
     ];
 
@@ -19,11 +19,13 @@ class DocumentsRequest extends Model
         'updated_at' => 'datetime:Y-m-d H:00',
     ];
 
-    public function setAttribute($key, $value)
+    public function requests()
     {
-        parent::setAttribute($key, $value);
+        return $this->hasMany(Requests::class, 'id', 'request_id');
+    }
 
-        if (is_string($value))
-            $this->attributes[$key] = trim(mb_strtoupper($value));
+    public function procedure()
+    {
+        return $this->belongsTo(Procedure::class, 'document_procedure_id', 'id');
     }
 }

@@ -14,6 +14,9 @@ use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
 
 class RequestsController extends Controller
 {
@@ -23,7 +26,9 @@ class RequestsController extends Controller
     public function index()
     {
         $user = Auth::user();
-
+        if (!$user) {
+            return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
+        }
         $model = Requests::query();
 
         // Las solicitudes deben de tener beneficiarios y se ordenan por edad los beneficiarios
@@ -40,20 +45,45 @@ class RequestsController extends Controller
         return response()->json($query);
     }
 
-
     public function showVisitorRequest()
     {
-        $user = Auth::user();
-        // if($user->role_id == 1){
-        //     return;
-        // }
-        $model = Requests::query();
-        $model->where('user_id', $user->id)->with('requestDocuments', 'references', 'housings', 'beneficiaries', 'quotes', 'priority', 'procedure', 'center', 'status_request', 'modify_forms.form');
-        $model = $model->with('crecheRequest.degree');
-        $query = $model->paginate();
-        return response()->json($query);
-    }
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
+            }
 
+            $requests = Requests::query()
+                ->where('aplicant_id', $user->id)
+                ->with([
+                    'competition' => function ($query) {
+                        $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+                    },
+                    'status_request:id,name',
+                    'announcement:id,name',
+                    'discipline:id,name', 'announcement.procedure'
+                ])->withCount('documents')
+                ->paginate(5);
+
+            // Verificar si el usuario tiene un registro en la tabla bank_accounts relacionada
+            $hasBankAccount = !is_null($user->bank_account);
+
+
+            if ($requests->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron solicitudes para este usuario.', 'code' => 404]);
+            }
+
+            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'hasBankAccount' => $hasBankAccount]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'No se encontró el usuario.', 'code' => 404]);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Error de validación: ' . $e->getMessage(), 'code' => 422]);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'Error de base de datos: ' . $e->getMessage(), 'code' => 500]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Ocurrió un error inesperado: ' . $e->getMessage(), 'code' => 500]);
+        }
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -105,7 +135,7 @@ class RequestsController extends Controller
         }
 
         $aplicant = Aplicant::find($user->id);
-        
+
         if (!$aplicant->phone_number || !$aplicant->rfc  || !$aplicant->birtdate || !$aplicant->name) {
             $response['message'] = "No tiene su perfil completo.";
             $response['code'] = 201;
@@ -132,7 +162,7 @@ class RequestsController extends Controller
             return response()->json($response);
         }
 
-        
+
         DB::beginTransaction();
         try {
             $newRequestId = Requests::create([
@@ -141,11 +171,11 @@ class RequestsController extends Controller
                 'status_request_id' => 1,
                 'discipline_id' => $request->discipline_id,
             ])->id;
-            
+
             DB::commit();
             $response['message'] = "Solicitud iniciada.";
             $response['code'] = 200;
-            $response['request_id']= $newRequestId;
+            $response['request_id'] = $newRequestId;
         } catch (\Throwable $th) {
             DB::rollBack();
             $response['message'] = "No se a podido iniciar la solicitud.";

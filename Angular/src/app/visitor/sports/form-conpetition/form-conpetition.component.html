@@ -24,8 +24,8 @@
                         <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Dashboard
                     </a>
 
-                    <a
-                        [routerLink]="'/solicitante/beca-deportiva/' + miFormulario.controls['request_id'].value + '/cuenta-bancaria'">
+                    <a [routerLink]="'/solicitante/beca-deportiva/' + miFormulario.controls['request_id'].value + '/cuenta-bancaria'"
+                        *ngIf="onlySee">
                         Siguiente <i class="bi bi-arrow-right"></i><span
                             class="glyphicon glyphicon-chevron-right"></span>
                     </a>
@@ -88,7 +88,7 @@
                                             </span>
                                         </div>
 
-                                        <div class="col-12 col-md-6 col-lg-4"
+                                        <div class="col-12 col-md-6 col-lg-3"
                                             *ngIf="catalog?.countries_state?.length > 0">
                                             <label class="form-label required">Estado</label>
                                             <select class="form-control" formControlName="countries_state_id">
@@ -112,7 +112,7 @@
                                         </div>
 
 
-                                        <div class="col-12 col-md-6 col-lg-2">
+                                        <div class="col-12 col-md-6 col-lg-3">
                                             <label class="form-label required">Fecha de finalización</label>
                                             <input type="date" class="form-control" formControlName="ending_date">
                                             <span class="form-text text-danger form"

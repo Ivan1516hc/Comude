@@ -69,12 +69,13 @@ class AplicantController extends Controller
             $response['code'] = 404;
             return response()->json($response);
         }
-
+        // dd($user->id);
         DB::beginTransaction();
         try {
-            Aplicant::find($user->id)->update([
+            $aplicant = Aplicant::find($user->id);
+            $aplicant->update(
                 $request->all()
-            ]);
+            );
             
             DB::commit();
             $response['message'] = "Información actualizada.";

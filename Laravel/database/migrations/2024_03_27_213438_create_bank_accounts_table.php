@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('key_account');
             $table->string('titular_persona_name');
             $table->string('bank');
+            $table->string('account_status_url');
             $table->timestamps();
             $table->softDeletes();
         });

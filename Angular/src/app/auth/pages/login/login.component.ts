@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 })
 export class LoginComponent {
   miFormulario: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    curp: ['', [Validators.required, Validators.pattern(/^[A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]{2}$/),Validators.minLength(18), Validators.maxLength(18)]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
   procedure: string;
@@ -29,8 +29,8 @@ export class LoginComponent {
   }
 
   login() {
-    const { email, password } = this.miFormulario.value;
-    this.authService.login(email, password).
+    const { curp, password } = this.miFormulario.value;
+    this.authService.login(curp, password).
       subscribe(response => {
         if (response.ok === true) {
           this.router.navigateByUrl('/solicitante/dashboard')
@@ -44,7 +44,7 @@ export class LoginComponent {
           }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-              this.authService.resendVerificationEmail(email).subscribe({
+              this.authService.resendVerificationEmail(response.email).subscribe({
                 next: (response) => {
                   if (response.code == 200) {
                     Swal.fire({
@@ -53,7 +53,7 @@ export class LoginComponent {
                       title: response.message,
                       showConfirmButton: true
                     })
-                    this.router.navigateByUrl('/auth/verificar/' + email)
+                    this.router.navigateByUrl('/auth/verificar/' + response.email)
                   } else {
                     Swal.fire({
                       position: 'center',

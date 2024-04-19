@@ -6,7 +6,7 @@ import { validarUserGuard } from './guards/validar-user.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'solicitante/dashboard',
     pathMatch: 'full'
   },
   {
@@ -30,7 +30,7 @@ const routes: Routes = [
   // },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: 'solicitante/dashboard'
   },
 ];
 

@@ -16,8 +16,8 @@ return new class extends Migration
 
             $table->string('file_name');
 
-            $table->unsignedTinyInteger('document_type_id');
-            $table->foreign('document_type_id')->references('id')->on('document_types');
+            $table->unsignedTinyInteger('document_procedure_id');
+            $table->foreign('document_procedure_id')->references('id')->on('document_procedures');
 
             $table->unsignedBigInteger('request_id');
             $table->foreign('request_id')->references('id')->on('requests');

@@ -1,6 +1,65 @@
-.card-body .btn{margin-right: 5px;}
+.card-body .btn {
+  margin-right: 5px;
+}
 
 .required:after {
-    content: '*';
-    color: red;
-  }
+  content: '*';
+  color: red;
+}
+
+.drop-zone {
+  border: 2px dashed #4154f1;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.file-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+}
+
+.preview-container {
+  margin-top: 10px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 200px;
+  /* Ajusta la altura según tus necesidades */
+  margin-bottom: 5px;
+}
+
+.file-input-placeholder p,
+.file-input-container p {
+  margin: 0;
+}
+
+.file-input-container img {
+  max-width: 100%;
+  max-height: 80px;
+  margin-bottom: 10px;
+}
+
+/* Añade cualquier estilo adicional que desees para el cuadro de archivos */
+.nav-link.btn:hover {
+  background-color: #f0f0f0;
+}
+
+.division-line {
+  border-right: 1px solid #ccc;
+  /* Cambia el color y grosor de la línea según sea necesario */
+  height: 100%;
+  margin-top: auto;
+  /* Alinea la línea de división en la parte superior del contenedor */
+  margin-bottom: auto;
+  /* Alinea la línea de división en la parte inferior del contenedor */
+}
+
+.my-icon {
+  font-size: 100px;
+}
