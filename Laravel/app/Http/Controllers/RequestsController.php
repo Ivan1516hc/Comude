@@ -40,7 +40,7 @@ class RequestsController extends Controller
 
     public function show($id)
     {
-        $query = Requests::with('user', 'modify_forms.form', 'employee')->where('id', $id)->first();
+        $query = Requests::where('id', $id)->first();
 
         return response()->json($query);
     }
@@ -61,9 +61,13 @@ class RequestsController extends Controller
                     },
                     'status_request:id,name',
                     'announcement:id,name',
-                    'discipline:id,name', 'announcement.procedure'
-                ])->withCount('documents')
+                    'discipline:id,name',
+                    'announcement.procedure'
+                ])
+                ->withCount('documents')
+                ->orderBy('id', 'desc') // Ordenar por ID de forma ascendente
                 ->paginate(5);
+
 
             // Verificar si el usuario tiene un registro en la tabla bank_accounts relacionada
             $hasBankAccount = !is_null($user->bank_account);
@@ -187,8 +191,8 @@ class RequestsController extends Controller
 
     public function changeStatus(Request $request)
     {
-        $query = Requests::find($request->id);
-        if ($request->status_request_id == 2) {
+        $query = Requests::find($request->request_id);
+        if ($request->status_request_id == 9) {
             $query->update([
                 'status_request_id' => $request->status_request_id
             ]);
@@ -196,15 +200,15 @@ class RequestsController extends Controller
                 'finished' => Carbon::now()
             ]);
 
-            // Enviar el correo electrónico utilizando la vista personalizada
-            $email = $query->user->email;
-            Mail::send('emails.send-request', [
-                'name' => $query->user->name,
-                'request' => $query
-            ], function (Message $message) use ($email) {
-                $message->to($email)
-                    ->subject('Solicitud Enviada');
-            });
+            // // Enviar el correo electrónico utilizando la vista personalizada
+            // $email = $query->user->email;
+            // Mail::send('emails.send-request', [
+            //     'name' => $query->user->name,
+            //     'request' => $query
+            // ], function (Message $message) use ($email) {
+            //     $message->to($email)
+            //         ->subject('Solicitud Enviada');
+            // });
 
             //LOG PENDIENTE
 
@@ -240,29 +244,29 @@ class RequestsController extends Controller
                 'finished' => null
             ]);
             // Enviar el correo electrónico utilizando la vista personalizada
-            $email = $query->user->email;
-            $label = 'Solicitud No.' . $query->invoice . ' ha sido actualizada, los administradores del centro ' . $query->center_id . ' han cambiado el estado a ' . $query->status_request_id . '.';
+            // $email = $query->user->email;
+            $label = 'Solicitud No.' . $query->id . ' ha sido actualizada, los administradores del centro ' . $query->center_id . ' han cambiado el estado a ' . $query->status_request_id . '.';
             $response['code'] = 200;
             $response['message'] = "Actualizacion exitosa";
         }
 
-        Mail::send('emails.request-status-change', [
-            'name' => $query->user->name,
-            'request' => $query,
-            'label' => $label
-        ], function (Message $message) use ($email) {
-            $message->to($email)
-                ->subject('Estado De Solicitud Actualizado');
-        });
+        // Mail::send('emails.request-status-change', [
+        //     'name' => $query->user->name,
+        //     'request' => $query,
+        //     'label' => $label
+        // ], function (Message $message) use ($email) {
+        //     $message->to($email)
+        //         ->subject('Estado De Solicitud Actualizado');
+        // });
 
-        Log::create([
-            'user_id' => auth()->id(), // o null si el usuario no está autenticado
-            'request_id' => $query->id,
-            'action' => 'Solicitud actualizada',
-            'description' => $label,
-            'status' => 0,
-            'read' => 0
-        ]);
+        // Log::create([
+        //     'user_id' => auth()->id(), // o null si el usuario no está autenticado
+        //     'request_id' => $query->id,
+        //     'action' => 'Solicitud actualizada',
+        //     'description' => $label,
+        //     'status' => 0,
+        //     'read' => 0
+        // ]);
 
         return response()->json($response);
     }

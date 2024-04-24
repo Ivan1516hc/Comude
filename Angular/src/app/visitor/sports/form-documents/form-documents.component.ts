@@ -87,7 +87,9 @@ export class FormDocumentsComponent {
         this.documents = response;
         // Encontrar el índice del primer documento con documents_request de longitud 0
         this.primerDocumentoDisponibleIndex = this.documents.findIndex(item => item.documents_request.length === 0);
-        if (this.primerDocumentoDisponibleIndex <= 0 || this.primerDocumentoDisponibleIndex >= this.documents.length) {
+        console.log(this.primerDocumentoDisponibleIndex)
+
+        if (this.primerDocumentoDisponibleIndex < 0 || this.primerDocumentoDisponibleIndex >= this.documents.length) {
           this.primerDocumentoDisponibleIndex = this.documents.length - 1;
         }
         this.mostrar(this.documents[this.primerDocumentoDisponibleIndex], this.primerDocumentoDisponibleIndex);
@@ -97,6 +99,7 @@ export class FormDocumentsComponent {
 
   mostrar(data: any, index) {
     this.indexMayor = index > this.indexMayor ? index : this.indexMayor;
+    console.log(this.indexMayor);
     this.activeDocument = data;
     this.miFormulario.patchValue({
       'file': data.documents_request ?? '',
@@ -120,9 +123,19 @@ export class FormDocumentsComponent {
       next: (response) => {
         if (response.code == 200) {
           this.ngOnInit();
-          console.log(response);
           if (response.total_documents == this.documents.length) {
             this.handleSuccessResponse(response);
+          } else {
+            this.fileInput = null;
+            this.selectedFileName = null;
+            this.selectedFilePreview = null;
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            });
           }
         } else {
           this.handleErrorResponse(response);
@@ -137,7 +150,7 @@ export class FormDocumentsComponent {
     this.fileInput = null;
     this.selectedFileName = null;
     this.selectedFilePreview = null;
-    const message = 'Documentos guardados correctamente, tu solicitud esta completamente contestada ¿desea enviarla para su revisión?';
+    const message = 'Documentos guardados correctamente ¿desea continuar con el reglamento y aviso de privacidad?';
     const swalOptions: any = {
       title: message,
       showCancelButton: true,
@@ -146,10 +159,9 @@ export class FormDocumentsComponent {
     };
     Swal.fire(swalOptions).then((result) => {
       if (result.isConfirmed) {
-        console.log('Enviar solicitud');
         this.ngOnInit();
+        this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/reglamento');
       } else {
-        console.log('No enviar solicitud');
         this.ngOnInit();
       }
     });

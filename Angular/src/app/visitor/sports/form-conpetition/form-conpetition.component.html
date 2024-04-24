@@ -104,31 +104,29 @@
 
                                         <div class="col-12 col-md-6 col-lg-2">
                                             <label class="form-label required">Fecha de inicio</label>
-                                            <input type="date" class="form-control" formControlName="start_date">
+                                            <input type="date" class="form-control" formControlName="start_date"
+                                                [min]="minDate()" (change)="onStartDateChange()">
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['start_date'].errors && miFormulario.controls['start_date'].touched">
-                                                Nombre requerido.
+                                                Fecha de inicio requerida.
                                             </span>
                                         </div>
-
 
                                         <div class="col-12 col-md-6 col-lg-3">
                                             <label class="form-label required">Fecha de finalización</label>
-                                            <input type="date" class="form-control" formControlName="ending_date">
+                                            <input type="date" class="form-control" formControlName="ending_date"
+                                                [min]="minEndingDate()">
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['ending_date'].errors && miFormulario.controls['ending_date'].touched">
-                                                Nombre requerido.
+                                                Fecha de finalización requerida.
                                             </span>
                                         </div>
+
 
 
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <label class="form-label">Clasifica a</label>
                                             <input type="text" class="form-control" formControlName="classify">
-                                            <span class="form-text text-danger form"
-                                                *ngIf="miFormulario.controls['classify'].errors && miFormulario.controls['classify'].touched">
-                                                Nombre requerido.
-                                            </span>
                                         </div>
 
                                         <div class="col-12 col-md-6 col-lg-4 "
@@ -136,13 +134,12 @@
                                             <label class="form-label required">Presupuesto solicitado</label>
                                             <div class="input-group mb-2">
                                                 <span class="input-group-text">$</span>
-                                                <input type="number" class="form-control"
-                                                    formControlName="requested_budget">
+                                                <input type="text" class="form-control"
+                                                    formControlName="requested_budget" maxlength="6">
                                             </div>
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['requested_budget'].errors && miFormulario.controls['requested_budget'].touched">
-                                                Tu presupuesto debe de ser entre ${{debget.minimum_budget}} a
-                                                ${{debget.maximum_budget}}.
+                                                Presupuesto a solicitar requerido.
                                             </span>
                                         </div>
 
@@ -154,7 +151,7 @@
                                                 formControlName="justification"></textarea>
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['justification'].errors && miFormulario.controls['justification'].touched">
-                                                Nombre requerido.
+                                                Justificación requerida.
                                             </span>
                                         </div>
 

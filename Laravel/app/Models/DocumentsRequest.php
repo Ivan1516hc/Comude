@@ -28,4 +28,12 @@ class DocumentsRequest extends Model
     {
         return $this->belongsTo(Procedure::class, 'document_procedure_id', 'id');
     }
+
+    public function setAttribute($key, $value)
+    {
+        parent::setAttribute($key, $value);
+
+        if (is_string($value) && $key != 'file_name')
+            $this->attributes[$key] = trim(mb_strtoupper($value));
+    }
 }

@@ -24,17 +24,32 @@ export class ProfileComponent {
   miFormulario: FormGroup = this.fb.group({
     name: ['', [Validators.required]],
     email: ['', [Validators.required]],
-    phone_number: ['', [Validators.required]],
+    phone_number: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(10), Validators.maxLength(10)]],
     curp: [{ value: '', disabled: true }, [Validators.required]],
-    rfc: ['', [Validators.required]],
+    rfc: ['', [Validators.minLength(13), Validators.maxLength(13)]],
     birtdate: ['', [Validators.required]],
   });
 
   miFormularioPassword: FormGroup = this.fb.group({
-    password: ['', [Validators.required]],
-    new_password: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    new_password: ['', [Validators.required, Validators.minLength(6)]],
     new_password_repeat: ['', [Validators.required]]
+  }, {
+    validators: this.passwordsMatchValidator
   });
+  // Método para validar si las contraseñas coinciden
+  passwordsMatchValidator(formGroup: FormGroup) {
+    const newPassword = formGroup.get('new_password').value;
+    const newPasswordRepeat = formGroup.get('new_password_repeat').value;
+
+    // Si las contraseñas no coinciden, establecer un error en el control de new_password_repeat
+    if (newPassword !== newPasswordRepeat) {
+      formGroup.get('new_password_repeat').setErrors({ passwordsMismatch: true });
+    } else {
+      // Si coinciden, borrar cualquier error que pueda haber
+      formGroup.get('new_password_repeat').setErrors(null);
+    }
+  }
 
   private subscribeToNumberFieldChanges(fieldName: string): void {
     this.miFormulario.get(fieldName).valueChanges.subscribe(value => {
@@ -85,7 +100,7 @@ export class ProfileComponent {
 
   }
 
-  
+
 
   onSubmit() {
     if (this.miFormulario.invalid) {
@@ -93,17 +108,35 @@ export class ProfileComponent {
     }
     const data = this.miFormulario.getRawValue();
 
-    this.allService.updateInfo(data).subscribe({
-      next: (response) => {
-        if (response.code == 200) {
-          this.handleSuccessResponse(response);
-        } else {
-          this.handleErrorResponse(response);
-        }
-      }, error: (err) => {
-        Swal.fire("Error", "error")
+
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea actualizar su información de perfil?',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.allService.updateInfo(data).subscribe(response => {
+          if (response.code == 200) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            });
+            this.getDataUser();
+          } else {
+            Swal.fire("Error", "error")
+          }
+        })
+      } else if (result.isDenied) {
+        return;
       }
-    });
+    })
   }
 
   changePassword() {
@@ -112,22 +145,50 @@ export class ProfileComponent {
     }
     const data = this.miFormularioPassword.getRawValue();
 
-    this.allService.storeCompetition(data).subscribe({
-      next: (response) => {
-        if (response.code == 200) {
-          this.handleSuccessResponse(response);
-        } else {
-          this.handleErrorResponse(response);
-        }
-      }, error: (err) => {
-        Swal.fire("Error", "error")
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea actualizar su contraseña?',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.allService.changePassword(data).subscribe({
+          next: (response) => {
+            if (response.code == 200) {
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: response.message,
+                showConfirmButton: false,
+                timer: 2000
+              });
+              this.getDataUser();
+              this.miFormularioPassword.reset();
+            } else {
+              Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: response.message,
+                showConfirmButton: false,
+                timer: 2000
+              });
+            }
+          }, error: (err) => {
+            Swal.fire("Error", "error")
+          }
+        });
+      } else {
+        return;
       }
-    });
+    })
   }
 
   handleSuccessResponse(accion): void {
-    this.miFormulario.disable();
-    const message = accion ? 'Información de la competición actualizada.' : 'Información de la competición guardada correctamente ¿desea continuar con la documentación?';
+    this.getDataUser();
+    const message = '';
     const swalOptions: any = {
       title: message,
       showCancelButton: true,
@@ -139,6 +200,7 @@ export class ProfileComponent {
     swalOptions.showConfirmButton = false;
     swalOptions.showCancelButton = false,
       swalOptions.timer = 2000;
+
   }
 
   handleErrorResponse(response: any): void {

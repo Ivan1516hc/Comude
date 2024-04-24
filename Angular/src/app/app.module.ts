@@ -10,7 +10,6 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { LoaderInterceptor } from './interceptors/loader-interceptor.service';
 
-
 @NgModule({
   declarations: [
     AppComponent
@@ -20,7 +19,6 @@ import { LoaderInterceptor } from './interceptors/loader-interceptor.service';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},
     [{provide: HTTP_INTERCEPTORS, useClass:HeadersInterceptorService, multi:true},

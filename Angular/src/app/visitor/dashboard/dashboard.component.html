@@ -53,21 +53,28 @@
                                         </p>
 
                                         <div class="d-grid gap-1">
-                                            <ng-container *ngIf="item.status_request_id == 1">
+                                            <ng-container
+                                                *ngIf="item.status_request_id === 1 || (!item.competition || !hasBankAccount || item.documents_count < 6)">
                                                 <button type="button" class="btn-lg btn btn-warning mt-2"
                                                     (click)="continuar(item)">Continuar</button>
                                             </ng-container>
-                                            <ng-container *ngIf="item.status_request_id != 1">
-                                                <button type="button" class="btn-lg btn btn-info mt-2">Ver</button>
+
+
+                                            <ng-container
+                                                *ngIf="item.status_request_id != 1 && (item.competition && hasBankAccount && item.documents_count >= 6)">
+                                                <button type="button" class="btn-lg btn btn-info mt-2"
+                                                    [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/competicion'">Ver</button>
                                             </ng-container>
+
+                                            <ng-container *ngIf="item.status_request_id == 7">
+                                                <button type="button" class="btn-lg btn btn-danger mt-2"
+                                                    (click)="updateStatus(item.id,9)">Enviar solicitud</button>
+                                            </ng-container>
+
                                             <ng-container
                                                 *ngIf="item.status_request_id != 4 && item.status_request_id !=6">
                                                 <button type="button" class="btn-lg btn btn-danger mt-2"
                                                     (click)="updateStatus(item,6)">Cancelar</button>
-                                            </ng-container>
-                                            <ng-container *ngIf="item.status_request_id == 7">
-                                                <button type="button" class="btn-lg btn btn-danger mt-2"
-                                                    (click)="updateStatus(item.id,9)">Enviar</button>
                                             </ng-container>
                                         </div>
                                     </div>

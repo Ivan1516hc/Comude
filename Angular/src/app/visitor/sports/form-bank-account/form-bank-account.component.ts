@@ -81,15 +81,12 @@ export class FormBankAccountComponent {
           this.newData = false;
           this.populateForm(response);
           this.handleForm(response);
-        } else {
-
         }
       }
     });
   }
 
   populateForm(response: any): void {
-    console.log(response)
     this.miFormulario.patchValue({
       account: response.account,
       key_account: response.key_account,
@@ -111,6 +108,7 @@ export class FormBankAccountComponent {
     }
 
     const formData = new FormData();
+    formData.append('request_id', this.miFormulario.get('request_id').value);
     formData.append('account', this.miFormulario.get('account').value);
     formData.append('key_account', this.miFormulario.get('key_account').value);
     formData.append('titular_persona_name', this.miFormulario.get('titular_persona_name').value);
@@ -134,7 +132,7 @@ export class FormBankAccountComponent {
     this.newData = false;
     this.onlySee = true;
     this.miFormulario.disable();
-    const message = this.edit ? 'Información bancaria actualizada.' : 'Información bancaria guardada correctamente ¿desea continuar con la documentación?';
+    const message = this.edit ? 'Información bancaria actualizada.' : 'Información bancaria guardada correctamente ¿desea continuar?';
     const swalOptions: any = {
       title: message,
       showCancelButton: true,
@@ -150,9 +148,9 @@ export class FormBankAccountComponent {
     }
     Swal.fire(swalOptions).then((result) => {
       if (result.isConfirmed && !this.edit) {
-        this.miFormulario.disable();
-        this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/documentacion');
-      } else if (result.isDenied) {
+        this.ngOnInit();
+        this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/logros-importantes');
+      } else  {
         this.ngOnInit();
       }
     });

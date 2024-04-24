@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('countries_states', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->string('name');
-            $table->string('state_code')->nullable();
 
             $table->unsignedTinyInteger('country_id');
             $table->foreign('country_id')->references('id')->on('countries');

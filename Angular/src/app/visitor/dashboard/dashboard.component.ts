@@ -13,7 +13,12 @@ export class DashboardComponent implements OnInit {
 
   constructor(private router: Router, private visitorService: AllVisitorService) {
   }
-
+  catalog: any;
+  requests: DataRequest;
+  competition: number;
+  discipline: number;
+  hasBankAccount: boolean = false;
+  currentUrl = window.location.pathname;
 
   ngOnInit(): void {
     this.visitorService.getDataDiscipline().subscribe({
@@ -24,9 +29,9 @@ export class DashboardComponent implements OnInit {
 
     this.visitorService.indexRequestVisitor().subscribe({
       next: (response) => {
-        if (response.code == 200) {
-          this.requests = response.data;
-          this.hasBankAccount = response.hasBankAccount;
+        if (response.code == 200 || response.code == 404) {
+          this.requests = response.data ?? null;
+          this.hasBankAccount = response.hasBankAccount ?? null;
         } else {
           Swal.fire({
             position: 'center',
@@ -39,14 +44,7 @@ export class DashboardComponent implements OnInit {
       }
     })
     this.currentUrl = window.location.pathname;
-    console.log (this.currentUrl.lastIndexOf('/'));
   }
-  catalog: any;
-  requests: DataRequest;
-  competition: number;
-  discipline: number;
-  hasBankAccount: boolean = false;
-  currentUrl = window.location.pathname;
 
   storeRequest() {
     const data = { 'discipline_id': this.discipline }
@@ -115,10 +113,13 @@ export class DashboardComponent implements OnInit {
       const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/cuenta-bancaria';
       return this.router.navigateByUrl(relativeUrl);
     }
-    if (request.documents_count < 5) {
+    if (request.documents_count < 6) {
       const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/documentacion';
       return this.router.navigateByUrl(relativeUrl);
     }
+    if (request.status_request_id == 1) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/reglamento';
+      return this.router.navigateByUrl(relativeUrl);
+    }
   }
-
 }

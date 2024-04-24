@@ -1,0 +1,21 @@
+.checkbox-label {
+    /* display: flex; */
+    align-items: center;
+}
+
+.checkbox-label .link {
+    margin-left: 5px;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.terms-description {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.my-icon {
+    font-size: 100px;
+    color: #4154f1;
+  }

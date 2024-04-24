@@ -1,0 +1,103 @@
+<app-visitor>
+    <style>
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <main id="mainVisitor" class="main">
+        <div class="row">
+            <div class="col-10 offset-1 content-center">
+                <div class="pagetitle">
+                    <h1>Reglamento y aviso de privacidad
+                    </h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a routerLink="/solicitante/dashboard">Inicio</a></li>
+                            <li class="breadcrumb-item active">Reglamento y aviso de privacidad</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="pagetitle flex-container">
+                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/documentacion'">
+                        <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Anterior
+                    </a>
+
+                    <a [routerLink]="'/solicitante/dashboard'">
+                        Siguiente <i class="bi bi-arrow-right"></i><span
+                            class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </div>
+
+                <section class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div>
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-info-circle-fill me-2"></i>
+                                            <div>
+                                                <strong>¡Atención!</strong> Leer el reglamento y aviso de privacidad.
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Cerrar"></button>
+                                    </div>
+                                </div>
+                                <div class="card-body mt-4">
+                                    <form class="row g-3" [formGroup]="miFormulario" (ngSubmit)="onSubmit()"
+                                        *ngIf="request?.status_request_id == 1; else llena">
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="checkbox_privacidad" class="form-check-input"
+                                                    formControlName="regulations">
+                                                <label for="checkbox_privacidad"
+                                                    class="form-check-label checkbox-label">He leído el <a
+                                                        href="https://www.comudezapopan.gob.mx/transparencia/articulo8/comudezapopan-avisodeprivacidad.pdf"
+                                                        class="link" target="_blank">aviso de privacidad </a> y estoy de
+                                                    acuerdo.</label>
+                                            </div>
+                                            <p class="terms-description">Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. Ducimus fuga libero ratione distinctio sint obcaecati,
+                                                nihil doloremque dolorem, in minima laboriosam ipsa vel ad? Deserunt
+                                                iste ratione amet ipsum impedit?</p>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="checkbox_reglamento" class="form-check-input"
+                                                    formControlName="privacy_notice">
+                                                <label for="checkbox_reglamento"
+                                                    class="form-check-label checkbox-label">He leído el <a
+                                                        href="http://comudezapopan.gob.mx/index.php/tramites-y-servicios/oficialia-de-partes-solicitud-beca-a-deportistas"
+                                                        class="link" target="_blank">reglamento</a> y estoy de acuerdo
+                                                    en todas las bases.</label>
+                                            </div>
+                                            <p class="terms-description">Lorem ipsum dolor sit amet consectetur
+                                                adipisicing elit. Ducimus fuga libero ratione distinctio sint obcaecati,
+                                                nihil doloremque dolorem, in minima laboriosam ipsa vel ad? Deserunt
+                                                iste ratione amet ipsum impedit?</p>
+                                        </div>
+
+                                        <div class="text-center mt-4">
+                                            <button class="btn btn-success btn-lg">Enviar solicitud</button>
+                                        </div>
+                                    </form>
+
+                                    <ng-template #llena>
+                                        <div class="text-center">
+                                            <i class="bi bi-check-all my-icon"></i>
+                                            <h2 style="color: #4154f1;">Reglamento y aviso de privacidad leídos.</h2>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</app-visitor>

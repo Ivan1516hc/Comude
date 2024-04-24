@@ -77,6 +77,11 @@ export class AllVisitorService {
     return this.employee_number;
   }
 
+  changePassword(data: any) {
+    const url = `${this.baseUrl}/request/aplicant/update/password`;
+    return this.http.patch<any>(url, data);
+  }
+
   indexRequestVisitor(): Observable<RequestsResponse> {
     const url = `${this.baseUrl}/visitor/request`;
     return this.http.get<RequestsResponse>(url);
@@ -142,6 +147,7 @@ export class AllVisitorService {
     const url = `${this.baseUrl}/request/show/` + id;
     return this.http.get<any>(url);
   }
+  
   uploadFileWithFormData(formData: FormData) {
     const headers = new HttpHeaders({
       'Content-Type': 'multipart/form-data',
@@ -212,6 +218,30 @@ export class AllVisitorService {
           throw error; // Puedes manejar el error según tus necesidades
         })
       );
+  }
+
+  storeImportantArchivement(data){
+    const headers = new HttpHeaders({
+      'Content-Type': 'multipart/form-data',
+    });
+
+    return this.http.post<any>(`${this.baseUrl}/request/important-archivement/store`, data, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error en la solicitud:', error);
+          throw error; // Puedes manejar el error según tus necesidades
+        })
+      );
+  }
+
+  getImportantArchivement(){
+    const url = `${this.baseUrl}/request/important-archivement/show`;
+    return this.http.get<any>(url);
+  }
+
+  deleteImportantArchivement(id){
+    const url = `${this.baseUrl}/request/important-archivement/delete/${id}`;
+    return this.http.delete<any>(url);
   }
 
   getBankAccount(id){

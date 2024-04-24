@@ -22,20 +22,49 @@ export class FormConpetitionComponent {
   newData: boolean = true;
   onlySee: boolean = false;
   edit: boolean = false;
+  previousStartDate: string;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private route: ActivatedRoute, private allService: AllVisitorService
   ) {
-    
+
     this.miFormulario.get('competition_type_id')?.valueChanges.subscribe((id) => {
-      if(this.newData || this.edit){
+      if (this.newData || this.edit) {
         this.select(id);
       }
 
     });
 
+  }
+
+  // Obtener la fecha actual en formato ISO (por ejemplo, "2023-09-15")
+  currentDate = new Date().toISOString().split('T')[0];
+
+  // Función para calcular la fecha mínima permitida (día siguiente a la fecha actual)
+  minDate() {
+    const tomorrow = new Date();
+    tomorrow.setDate(new Date().getDate() + 1); // Obtener el día siguiente
+    return tomorrow.toISOString().split('T')[0];
+  }
+
+  // Método para obtener la fecha mínima permitida para la fecha de finalización
+  minEndingDate(): string {
+    const startDate = this.miFormulario.get('start_date').value;
+    return startDate ? startDate : '';
+  }
+
+  // Método para detectar cambios en la fecha de inicio
+  onStartDateChange(): void {
+    const startDate = this.miFormulario.get('start_date').value;
+    // Verificar si la fecha de inicio ha cambiado y si la fecha de finalización ya estaba establecida y es menor que la nueva fecha de inicio
+    if (startDate !== this.previousStartDate && this.miFormulario.get('ending_date').value < startDate) {
+      // Borrar la fecha de finalización si es menor que la nueva fecha de inicio
+      this.miFormulario.get('ending_date').setValue('');
+    }
+    // Actualizar el valor anterior de la fecha de inicio
+    this.previousStartDate = startDate;
   }
 
   ngOnInit(): void {
@@ -56,6 +85,9 @@ export class FormConpetitionComponent {
     numberFields.forEach(field => {
       this.subscribeToNumberFieldChanges(field);
     });
+
+    // Guardar el valor inicial de la fecha de inicio
+    this.previousStartDate = this.miFormulario.get('start_date').value;
   }
 
   private subscribeToNumberFieldChanges(fieldName: string): void {
@@ -76,7 +108,7 @@ export class FormConpetitionComponent {
 
       this.miFormulario.patchValue({
         'country_id': 120,
-        'countries_state_id': 2632
+        'countries_state_id': 15
       })
       this.debget = {
         minimum_budget: 500,
@@ -154,14 +186,16 @@ export class FormConpetitionComponent {
     request_id: ['', [Validators.required]],
     name: ['PANAMERICANOS 2024', [Validators.required]],
     country_id: [{ value: '190', disabled: true }, [Validators.required]],
-    countries_state_id: ['945', [Validators.required]],
+    countries_state_id: [null, [Validators.required]],
     start_date: ['2024-12-02', [Validators.required]],
     ending_date: ['2024-12-06', [Validators.required]],
     classify: ['olímpicos', [Validators.required]],
     justification: ['aaaaaaaaaaaaaaaaaaaaaaaaaaaa', [Validators.required]],
-    requested_budget: ['20000', [Validators.required, Validators.min(500), Validators.max(20000)]],
+    requested_budget: ['20000', [Validators.required]],
     competition_type_id: ['3', [Validators.required]],
   });
+
+
 
 
   showConpetition(id: any): void {
@@ -233,6 +267,7 @@ export class FormConpetitionComponent {
     const message = this.edit ? 'Información de la competición actualizada.' : 'Información de la competición guardada correctamente ¿desea continuar con la cuenta bancaria?';
     const swalOptions: any = {
       title: message,
+      icon: 'info',
       showCancelButton: true,
       confirmButtonText: 'Continuar',
       denyButtonText: `No`,

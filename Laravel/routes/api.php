@@ -11,6 +11,7 @@ use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Documents\DocumentController;
+use App\Http\Controllers\Documents\ImportantArchievementController;
 use App\Http\Controllers\Payments\BankAccountController;
 use App\Http\Controllers\SportProcedure\CompetitionController;
 use Illuminate\Http\Request;
@@ -112,11 +113,13 @@ Route::middleware('cors')->group(function () {
         Route::post('request/references/create', [RequestsController::class, 'storeReference']);
         Route::get('request/references/show/{id}', [RequestsController::class, 'showReferences']);
         Route::get('request/housing/show/{id}', [RequestsController::class, 'showHousing']);
-        Route::post('request/update/status', [RequestsController::class, 'changeStatus']);
+
         Route::post('request/changecenter', [RequestsController::class, 'changeCenter']); //Pendiente
 
         //Request Visitor Routs
         Route::get('visitor/request', [RequestsController::class, 'showVisitorRequest']);
+
+        Route::post('request/update/status', [RequestsController::class, 'changeStatus']);
 
         //Competitions Routs
         Route::get('request/competitions/show/{id}', [CompetitionController::class, 'show']);
@@ -130,10 +133,15 @@ Route::middleware('cors')->group(function () {
         Route::get('request/documents/show/{id}', [DocumentController::class, 'show']);
         Route::post('request/documents/store', [DocumentController::class, 'store']);
 
+        //Important Archivement Routs
+        Route::get('request/important-archivement/show', [ImportantArchievementController::class, 'show']);
+        Route::post('request/important-archivement/store', [ImportantArchievementController::class, 'store']);
+        Route::delete('request/important-archivement/delete/{id}', [ImportantArchievementController::class, 'delete']);
+
         //Aplicant Profile Routs
         Route::get('request/aplicant/show', [AplicantController::class, 'show']);
         Route::put('request/aplicant/update', [AplicantController::class, 'update']);
-        Route::put('request/aplicant/update/password', [AplicantController::class, 'updatePassword']);
+        Route::patch('request/aplicant/update/password', [AplicantController::class, 'updatePassword']);
 
         Route::get('request/message/form', [MessageRequestController::class, 'typeForm']);
         Route::get('request/message/history', [MessageRequestController::class, 'index']);

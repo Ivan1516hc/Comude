@@ -6,6 +6,8 @@ use App\Models\Aplicant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Validator;
 
 class AplicantController extends Controller
 {
@@ -88,14 +90,35 @@ class AplicantController extends Controller
         return response()->json($response);
     }
 
-    public function updatePassword()
+    public function updatePassword(Request $request)
     {
         $user = Auth::user();
         if (!$user) {
-            $response['message'] = "Necesitas loguearte";
-            $response['code'] = 404;
-            return response()->json($response);
+            return response()->json(['message' => 'Necesitas iniciar sesión', 'code' => 404]);
         }
+    
+        // Validar los datos del formulario
+        $validator = Validator::make($request->all(), [
+            'password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:6'],
+            'new_password_repeat' => ['required', 'string', 'same:new_password'],
+        ]);
+    
+        // Si la validación falla, devolver los errores
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first(), 'code' => 400]);
+        }
+    
+        // Verificar si la contraseña actual es correcta
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'La contraseña actual es incorrecta.', 'code' => 400]);
+        }
+    
+        // Actualizar la contraseña del usuario
+        $user->password = $request->new_password;
+        $user->save();
+    
+        return response()->json(['message' => 'Contraseña actualizada correctamente.', 'code' => 200]);
     }
 
     /**

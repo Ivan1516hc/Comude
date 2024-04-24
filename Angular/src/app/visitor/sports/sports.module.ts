@@ -8,6 +8,7 @@ import { FormConpetitionComponent } from './form-conpetition/form-conpetition.co
 import { VisitorModule } from '../visitor.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormImportanArchievementComponent } from './form-importan-archievement/form-importan-archievement.component';
+import { FormNoticePrivacyComponent } from './form-notice-privacy/form-notice-privacy.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { FormImportanArchievementComponent } from './form-importan-archievement/
     FormDocumentsComponent,
     FormBankAccountComponent,
     FormConpetitionComponent,
-    FormImportanArchievementComponent
+    FormImportanArchievementComponent,
+    FormNoticePrivacyComponent
   ],
   imports: [
     CommonModule,

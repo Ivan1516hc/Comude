@@ -7,14 +7,17 @@ namespace Database\Seeders;
 use App\Models\Announcement;
 use App\Models\Aplicant;
 use App\Models\CompetitionType;
+use App\Models\CountriesStates;
 use App\Models\Discipline;
 use App\Models\DocumentProcedure;
+use App\Models\JustificationTypes;
 use App\Models\MessageMotive;
 use App\Models\Procedure;
 use App\Models\Role;
 use App\Models\StatusRequest;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,41 +27,111 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
+        $estados = [
+            'Aguascalientes',
+            'Baja California',
+            'Baja California Sur',
+            'Campeche',
+            'Chiapas',
+            'Chihuahua',
+            'Ciudad de México',
+            'Coahuila',
+            'Colima',
+            'Durango',
+            'Estado de México',
+            'Guanajuato',
+            'Guerrero',
+            'Hidalgo',
+            'Jalisco',
+            'Michoacán',
+            'Morelos',
+            'Nayarit',
+            'Nuevo León',
+            'Oaxaca',
+            'Puebla',
+            'Querétaro',
+            'Quintana Roo',
+            'San Luis Potosí',
+            'Sinaloa',
+            'Sonora',
+            'Tabasco',
+            'Tamaulipas',
+            'Tlaxcala',
+            'Veracruz',
+            'Yucatán',
+            'Zacatecas'
+        ];
+
         // Lista de deportes olímpicos
         $deportesOlimpicos = [
-            'Atletismo',
-            'Bádminton',
-            'Baloncesto',
-            'Balonmano',
-            'Béisbol',
-            'Boxeo',
-            'Canotaje',
-            'Ciclismo',
-            'Clavados',
-            'Ecuestre',
-            'Esgrima',
-            'Fútbol',
-            'Gimnasia',
-            'Golf',
-            'Halterofilia',
-            'Hockey sobre césped',
-            'Judo',
-            'Karate',
-            'Lucha',
-            'Natación',
-            'Pentatlón moderno',
-            'Remo',
-            'Rugby',
-            'Saltos ecuestres',
-            'Skateboarding',
-            'Surf',
-            'Taekwondo',
-            'Tenis',
-            'Tenis de mesa',
-            'Tiro',
-            'Triatlón',
-            'Vela',
-            'Voleibol',
+            'ACONDICIONAMIENTO FÍSICO',
+            'AGUAS ABIERTAS',
+            'AIKIDO',
+            'AJEDREZ',
+            'APNEA',
+            'ARCO COMPUESTO',
+            'ARCO RECURVO',
+            'ATLETISMO',
+            'BÁDMINTON',
+            'BAILE Y DANZA DEPORTIVA',
+            'BALLROOM',
+            'BALONCESTO',
+            'BÉISBOL',
+            'BOLICHE',
+            'BOXEO',
+            'BREAKING',
+            'BUCEO',
+            'CANOA',
+            'CHARRERÍA',
+            'CICLISMO DE MONTAÑA',
+            'CICLISMO DE PISTA',
+            'CICLISMO DE RUTA',
+            'CLAVADOS',
+            'ESCALADA DEPORTIVA',
+            'ESGRIMA',
+            'FISICOCONSTRUCTIVISMO',
+            'FLAG',
+            'FRONTÓN',
+            'FUT 7',
+            'FUTBOL AMERICANO',
+            'FUTBOL ASOCIACIÓN',
+            'FUTBOL RÁPIDO',
+            'FUTSAL',
+            'GIMNASIA AERÓBICA',
+            'GIMNASIA ARTÍSTICA',
+            'GIMNASIA CON TRAMPOLÍN',
+            'HALTEROFILIA',
+            'HANDBALL',
+            'HOCKEY SOBRE PASTO',
+            'JUDO',
+            'KARATE DO',
+            'KAYAC',
+            'KENDO',
+            'KICKBOXING',
+            'KIU DO',
+            'KUNG FU',
+            'LACROSSE',
+            'LEVANTAMIENTO DE POTENCIA',
+            'LIMA LAMA',
+            'LUCHA ASOCIADAS',
+            'MONTAÑISMO',
+            'NATACIÓN',
+            'PICKLEBALL',
+            'POLO ACUÁTICO',
+            'REMO',
+            'RUGBY',
+            'SOFTBOL',
+            'SQUASH',
+            'TAEKWONDO',
+            'TAI CHI',
+            'TENIS',
+            'TENIS DE MESA',
+            'TRIATLÓN',
+            'ULAMA',
+            'ULTIMATE',
+            'VOLEIBOL DE PLAYA',
+            'VOLEIBOL',
+            'YOGA'
         ];
 
         // Crear un registro para cada deporte olímpico
@@ -67,6 +140,15 @@ class DatabaseSeeder extends Seeder
                 'name' => $deporte
             ]);
         }
+
+        // Crear un registro para cada deporte olímpico
+        foreach ($estados as $item) {
+            CountriesStates::create([
+                'name' => $item,
+                'country_id' => 120
+            ]);
+        }
+
 
         //Status de solicitud
         StatusRequest::create([
@@ -130,7 +212,7 @@ class DatabaseSeeder extends Seeder
             'role_id' => 1,
             'procedure_id' => 1,
             'email' => 'bihernandez@difzapopan.gob.mx',
-            'password' =>  bcrypt('123456'),
+            'password' => Hash::make('150870266'),
         ]);
 
         //Convocatoria
@@ -159,11 +241,23 @@ class DatabaseSeeder extends Seeder
             'name' => 'INTERNACIONAL'
         ]);
 
+        JustificationTypes::create([
+            'name' => 'viáticos'
+        ]);
+
+        JustificationTypes::create([
+            'name' => 'transporte'
+        ]);
+
+        JustificationTypes::create([
+            'name' => 'hospedaje'
+        ]);
+
         //Usuario
         Aplicant::create([
             'curp' => 'HECB000817HMNRSNA5',
             'email' => 'ivan1516hc@gmail.com',
-            'password' =>  bcrypt('123456'),
+            'password' => '150870266',
             'email_verified_at' => '2024-04-16 11:36:08'
         ]);
 

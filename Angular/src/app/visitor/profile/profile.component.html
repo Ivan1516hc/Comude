@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-10 offset-1 content-center">
                 <div class="pagetitle">
-                    <h1>Logros importantes
+                    <h1>Mi perfil
                     </h1>
                     <nav>
                         <ol class="breadcrumb">
@@ -81,6 +81,10 @@
                                                         completo</label>
                                                     <div class="col-md-8 col-lg-9"> <input name="name" type="text"
                                                             formControlName="name" class="form-control" id="name"></div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['name'].errors && miFormulario.controls['name'].touched">
+                                                        Nombre requerido.
+                                                    </span>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="curp"
@@ -96,6 +100,10 @@
                                                     <div class="col-md-8 col-lg-9"> <input name="rfc" type="text"
                                                             class="form-control" id="rfc" formControlName="rfc">
                                                     </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['rfc'].errors && miFormulario.controls['rfc'].touched">
+                                                        El RFC debe de tener 13 caracteres de longitud.
+                                                    </span>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="birtdate"
@@ -104,14 +112,23 @@
                                                     <div class="col-md-8 col-lg-9"> <input name="birtdate" type="date"
                                                             class="form-control" id="birtdate"
                                                             formControlName="birtdate"></div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['birtdate'].errors && miFormulario.controls['birtdate'].touched">
+                                                        Fecha de nacimiento requerida.
+                                                    </span>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="phone_number"
                                                         class="col-md-4 col-lg-3 col-form-label required">Telefono</label>
                                                     <div class="col-md-8 col-lg-9"> <input name="phone_number"
                                                             type="text" class="form-control" id="phone_number"
+                                                            maxlength="10" minlength="10"
                                                             formControlName="phone_number">
                                                     </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['phone_number'].errors && miFormulario.controls['phone_number'].touched">
+                                                        Número de telefonico requerido con logitud de 10 números.
+                                                    </span>
                                                 </div>
 
                                                 <div class="text-center">
@@ -130,6 +147,10 @@
                                                             type="password" class="form-control" id="password"
                                                             formControlName="password">
                                                     </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormularioPassword.controls['password'].errors && miFormularioPassword.controls['password'].touched">
+                                                        La contraseña tiene minimo 6 digitos.
+                                                    </span>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="new_password"
@@ -139,6 +160,10 @@
                                                             type="password" class="form-control" id="new_password"
                                                             formControlName="new_password">
                                                     </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormularioPassword.controls['new_password'].errors && miFormularioPassword.controls['new_password'].touched">
+                                                        La nueva contraseña debe de tener minimo 6 digitos.
+                                                    </span>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <label for="new_password_repeat"
@@ -149,6 +174,10 @@
                                                             id="new_password_repeat"
                                                             formControlName="new_password_repeat">
                                                     </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormularioPassword.controls['new_password_repeat'].errors && miFormularioPassword.controls['new_password_repeat'].touched">
+                                                        No coincide con la nueva contraseña.
+                                                    </span>
                                                 </div>
                                                 <div class="text-center">
                                                     <button type="submit" class="btn btn-primary">Cambiar
@@ -159,50 +188,8 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <div class="d-sm-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-2 mb-sm-0">Logros importantes</h5>
-                                        <button class="btn btn-primary">Registrar logros</button>
-                                    </div>
+                                    <app-important-archievement></app-important-archievement>
 
-                                    <div class="row">
-                                        <div class="col-12 col-md-6 col-lg-4 mt-2">
-                                            <article class="card">
-                                                <img src="assets/img/logro-1.png" class="card-img-top" alt="Imagen"
-                                                    style="align-self: center">
-                                                <div class="container text-card">
-                                                    <p><strong>Diciplina:</strong> Futbol</p>
-                                                    <p><strong>Competencia:</strong> Copa America aifa 2024</p>
-                                                    <p><strong>Lugar:</strong> Buenos Aires, Argentina</p>
-                                                    <p><strong>Tipo de competencia:</strong> Internacional</p>
-
-                                                    <div class="d-grid gap-1">
-                                                        <button type="button"
-                                                            class=" btn-lg btn btn-warning mt-2">Eliminar</button>
-                                                        <button type="button"
-                                                            class=" btn-lg btn btn-info mt-2">Cambiar</button>
-                                                    </div>
-                                                </div>
-                                            </article>
-                                        </div>
-                                        <div class="col-12 col-md-6 col-lg-4 mt-2">
-                                            <article class="card">
-                                                <img src="assets/img/logro-2.png" class="card-img-top" alt="Imagen"
-                                                    style="align-self: center">
-                                                <div class="container text-card">
-                                                    <p><strong>Diciplina:</strong> Futbol</p>
-                                                    <p><strong>Competencia:</strong> Copa America aifa 2024</p>
-                                                    <p><strong>Lugar:</strong> Buenos Aires, Argentina</p>
-                                                    <p><strong>Tipo de competencia:</strong> Internacional</p>
-                                                    <div class="d-grid gap-1">
-                                                        <button type="button"
-                                                            class=" btn-lg btn btn-warning mt-2">Eliminar</button>
-                                                        <button type="button"
-                                                            class=" btn-lg btn btn-info mt-2">Cambiar</button>
-                                                    </div>
-                                                </div>
-                                            </article>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -211,6 +198,4 @@
             </div>
         </div>
     </main>
-
-
 </app-visitor>

@@ -53,13 +53,12 @@ class DocumentController extends Controller
 
             $totalDocuments = DocumentsRequest::where('request_id', $request->request_id)->get()->count();
 
-
             DB::commit();
 
             return response()->json(['message' => 'Documento registrado correctamente.', 'code' => 200, 'total_documents' => $totalDocuments]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['message' => 'Error al registrar el documento.', 'code' => 202]);
+            return response()->json(['message' => $th->getMessage(), 'code' => 202]);
         }
     }
 
@@ -107,11 +106,14 @@ class DocumentController extends Controller
             return response()->json(['message' => 'No se encontró ningún procedimiento para la solicitud dada', 'code' => 404]);
         }
 
-        // Obtener los documentos asociados al procedimiento
         $documents = DocumentProcedure::where('procedure_id', $procedure->id)
-            ->with(['documents_request.requests' => function ($query) use ($id) {
-                return $query->where('requests.id', $id);
-            }])->get();
+            ->with(['documents_request' => function ($query) use ($id) {
+                $query->whereHas('requests', function ($subQuery) use ($id) {
+                    $subQuery->where('requests.id', $id);
+                });
+            }])
+            ->get();
+
 
         return response()->json($documents);
     }

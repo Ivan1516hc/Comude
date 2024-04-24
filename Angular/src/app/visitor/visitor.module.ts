@@ -8,8 +8,7 @@ import { VisitorComponent } from './visitor.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { HeaderHomepageComponent } from './shared/header-homepage/header-homepage.component';
 import { ProfileComponent } from './profile/profile.component';
-
-
+import { ImportantArchievementComponent } from './shared/important-archievement/important-archievement.component';
 
 @NgModule({
   declarations: [
@@ -17,13 +16,14 @@ import { ProfileComponent } from './profile/profile.component';
     VisitorComponent,
     FooterComponent,
     HeaderHomepageComponent,
-    ProfileComponent
+    ProfileComponent,
+    ImportantArchievementComponent
   ],
   imports: [
     CommonModule,
     VisitorRoutingModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
-  exports: [VisitorComponent, HeaderHomepageComponent]
+  exports: [VisitorComponent, HeaderHomepageComponent, ImportantArchievementComponent]
 })
 export class VisitorModule { }
