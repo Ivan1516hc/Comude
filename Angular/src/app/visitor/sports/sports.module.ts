@@ -9,6 +9,7 @@ import { VisitorModule } from '../visitor.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormImportanArchievementComponent } from './form-importan-archievement/form-importan-archievement.component';
 import { FormNoticePrivacyComponent } from './form-notice-privacy/form-notice-privacy.component';
+import { FormJustificationComponent } from './form-justification/form-justification.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { FormNoticePrivacyComponent } from './form-notice-privacy/form-notice-pr
     FormBankAccountComponent,
     FormConpetitionComponent,
     FormImportanArchievementComponent,
-    FormNoticePrivacyComponent
+    FormNoticePrivacyComponent,
+    FormJustificationComponent
   ],
   imports: [
     CommonModule,

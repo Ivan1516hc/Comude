@@ -30,7 +30,7 @@ class BankAccount extends Model
     {
         parent::setAttribute($key, $value);
 
-        if (is_string($value))
+        if (is_string($value) && $key != 'account_status_url')
             $this->attributes[$key] = trim(mb_strtoupper($value));
     }
 }

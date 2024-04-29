@@ -234,14 +234,48 @@ export class AllVisitorService {
       );
   }
 
+  showJustificationType(){
+    const url = `${this.baseUrl}/request/important-archivement/show`;
+    return this.http.get<any>(url);
+  }
+
+  storeJustification(data){
+    const headers = new HttpHeaders({
+      'Content-Type': 'multipart/form-data',
+    });
+
+    return this.http.post<any>(`${this.baseUrl}/request/justification/store`, data, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error en la solicitud:', error);
+          throw error; // Puedes manejar el error según tus necesidades
+        })
+      );
+  }
+
   getImportantArchivement(){
     const url = `${this.baseUrl}/request/important-archivement/show`;
+    return this.http.get<any>(url);
+  }
+
+  getJustification(id){
+    const url = `${this.baseUrl}/request/justification/show/${id}`;
     return this.http.get<any>(url);
   }
 
   deleteImportantArchivement(id){
     const url = `${this.baseUrl}/request/important-archivement/delete/${id}`;
     return this.http.delete<any>(url);
+  }
+
+  deleteJustification(id){
+    const url = `${this.baseUrl}/request/justification/delete/${id}`;
+    return this.http.delete<any>(url);
+  }
+
+  finishJustification(id){
+    const url = `${this.baseUrl}/request/justification/finish/${id}`;
+    return this.http.get<any>(url);
   }
 
   getBankAccount(id){

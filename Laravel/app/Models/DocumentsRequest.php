@@ -29,6 +29,12 @@ class DocumentsRequest extends Model
         return $this->belongsTo(Procedure::class, 'document_procedure_id', 'id');
     }
 
+    public function document_procedure()
+    {
+        return $this->belongsTo(DocumentProcedure::class, 'document_procedure_id', 'id');
+    }
+
+
     public function setAttribute($key, $value)
     {
         parent::setAttribute($key, $value);

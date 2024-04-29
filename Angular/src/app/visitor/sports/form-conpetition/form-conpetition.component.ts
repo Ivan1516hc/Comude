@@ -184,15 +184,15 @@ export class FormConpetitionComponent {
 
   miFormulario: FormGroup = this.fb.group({
     request_id: ['', [Validators.required]],
-    name: ['PANAMERICANOS 2024', [Validators.required]],
-    country_id: [{ value: '190', disabled: true }, [Validators.required]],
+    name: ['', [Validators.required]],
+    country_id: [{ value: '', disabled: true }, [Validators.required]],
     countries_state_id: [null, [Validators.required]],
-    start_date: ['2024-12-02', [Validators.required]],
-    ending_date: ['2024-12-06', [Validators.required]],
-    classify: ['olímpicos', [Validators.required]],
-    justification: ['aaaaaaaaaaaaaaaaaaaaaaaaaaaa', [Validators.required]],
-    requested_budget: ['20000', [Validators.required]],
-    competition_type_id: ['3', [Validators.required]],
+    start_date: ['', [Validators.required]],
+    ending_date: ['', [Validators.required]],
+    classify: ['', [Validators.required]],
+    justification: ['', [Validators.required]],
+    requested_budget: ['', [Validators.required]],
+    competition_type_id: ['', [Validators.required]],
   });
 
 

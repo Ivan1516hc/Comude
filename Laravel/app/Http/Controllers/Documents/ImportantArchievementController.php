@@ -45,7 +45,7 @@ class ImportantArchievementController extends Controller
             return response()->json(['message' => 'Documento registrado correctamente.', 'code' => 200]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['message' => 'Error al registrar el documento.', 'code' => 202]);
+            return response()->json(['message' => $th->getMessage(), 'code' => 202]);
         }
     }
 
@@ -65,7 +65,7 @@ class ImportantArchievementController extends Controller
                 throw new \Exception('La extensión del archivo no es válida.');
             }
 
-            $maxFileSize = 700 * 1024; // 700kB
+            $maxFileSize = 1024  * 1024; // 1MB
 
             if ($file->getSize() > $maxFileSize) {
                 throw new \Exception('El tamaño del archivo es demasiado grande.');

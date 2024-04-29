@@ -71,7 +71,7 @@ class DocumentController extends Controller
             if (!in_array($fileExtension, $allowedExtensions)) {
                 throw new \Exception('La extensión del archivo no es válida.');
             }
-            $maxFileSize = 700 * 1024; // 700kB
+            $maxFileSize = 1024  * 1024; // 1MB
             if ($file->getSize() > $maxFileSize) {
                 throw new \Exception('El tamaño del archivo es demasiado grande.');
             }

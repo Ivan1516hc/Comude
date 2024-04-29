@@ -1,30 +1,32 @@
 <app-sports>
-    <main id="main" class="main">
-       <div class="pagetitle">
-          <h1>Solicitudes</h1>
-          <nav>
-             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
-                <li class="breadcrumb-item active">Solicitudes</li>
-             </ol>
-          </nav>
-       </div>
-       <section class="section dashboard">
-         
-         
+   <main id="main" class="main">
+      <div class="pagetitle">
+         <h1>Solicitudes</h1>
+         <nav>
+            <ol class="breadcrumb">
+               <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
+               <li class="breadcrumb-item active">Solicitudes</li>
+            </ol>
+         </nav>
+      </div>
+      <section class="section dashboard">
+
+
          <div class="card">
             <div class="card-body">
                <h5 class="card-title">Tabla de solicitudes</h5>
                <div class="search-container">
                   <ul class="nav nav-tabs w-100" id="myTabs">
                      <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#personalizada" (click)="search(1)">Todas</a>
+                        <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
+                           (click)="search(1)">Todas</a>
                      </li>
                      <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#search">Buscador</a>
                      </li>
                      <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#personalizada" (click)="search('status:3')">Aceptadas</a>
+                        <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                           (click)="search('status:3')">Aceptadas</a>
                      </li>
                      <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
@@ -47,8 +49,8 @@
                         <div class="content-section">
                            <div class="card xu-card">
                               <div class="card-body">
-                                 <input type="text" class="form-control mt-2" placeholder="Buscar..." [(ngModel)]="searchTerm"
-                                    (input)="onSearchTermChange(searchTerm)">
+                                 <input type="text" class="form-control mt-2" placeholder="Buscar..."
+                                    [(ngModel)]="searchTerm" (input)="onSearchTermChange(searchTerm)">
                               </div>
                            </div>
                         </div>
@@ -56,7 +58,7 @@
                      <!-- Aquí puedes agregar más pestañas con su contenido según sea necesario -->
                   </div>
                </div>
-         
+
                <div class="table-container" *ngIf="data?.data?.length > 0">
                   <table class="table table-striped">
                      <thead>
@@ -68,20 +70,23 @@
                         <tr *ngFor="let item of data.data; index as i">
                            <th scope="row">{{i+1}}</th>
                            <th>{{item.invoice}}</th>
-                           <td>{{item.beneficiaries[0].nombre}} {{item.beneficiaries[0].apaterno}}</td>
-                           <td>{{calculateAge(item.beneficiaries[0].fechanacimiento) }}</td>
-                           <td>{{item.beneficiaries[1]?.nombre ?? null}} {{item.beneficiaries[1]?.apaterno ?? null}}</td>
+                           <td>{{item.aplicant?.name}}</td>
+                           <td>{{item.discipline?.name}}</td>
+                           <td>{{item.competition?.competition_type?.name}}</td>
+                           <td>{{item.competition?.start_date}} a {{item.competition?.ending_date}}</td>
+                           <!-- <td>{{calculateAge(item.beneficiaries[0].fechanacimiento) }}</td> -->
                            <td>{{formatDate(item.finished) ?? null}}</td>
                            <td>
                               <div class="text-center"
                                  [ngClass]="item.status_request_id === 4 ? 'alert-danger' : item.status_request_id === 2 ? 'alert-warning' : item.status_request_id === 8 ? 'alert-warning' :'alert-success'">
-                                 {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id == 3 ? 'Aceptado' :
+                                 {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id == 3 ?
+                                 'Aceptado' :
                                  (item.status_request_id == 4 ? 'Rechazado'
-                                 : (item.status_request_id == 8 ? 'En modificación' :null)))}}</div>
+                                 : (item.status_request_id == 8 ? 'En modificación' :(item.status_request_id == 7 ? 'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
                            </td>
-                           <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
+                           <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
                               <div class="alert-success">Cita Agendada</div>
-                           </td>
+                           </td> -->
                            <td>
                               <div class="dropdown">
                                  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
@@ -90,32 +95,33 @@
                                  </button>
                                  <!-- Aplica la clase "striped" de manera condicional a cada elemento de menú -->
                                  <ul class="dropdown-menu" [attr.aria-labelledby]="'optionsDropdown_' + item.id">
-                                    <li *ngIf="item.quotes_count == 0 && item.status_request_id == 3">
-                                       <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#quoteModal"
-                                          (click)="getRequest(item)">Agendar Cita</button>
-                                    </li>
-                                    <li *ngIf="item.status_request_id != 3 && item.status_request_id != 4">
+
+                                    <li *ngIf="item.status_request_id == 9">
                                        <button class="dropdown-item"
                                           (click)="changeStatus({ id: item.id, status_request_id: 3 })">Aceptar</button>
                                     </li>
+
                                     <li *ngIf="item.status_request_id == 2">
                                        <button class="dropdown-item"
                                           (click)="changeStatus({ id: item.id, status_request_id: 4 })">Rechazar</button>
                                     </li>
+
                                     <li *ngIf="item.status_request_id == 4">
                                        <button class="dropdown-item"
                                           (click)="changeStatus({ id: item.id, status_request_id: 2 })">Reactivar</button>
                                     </li>
                                     <li
                                        *ngIf="item.status_request_id != 3 && item.status_request_id != 4 && item.procedure_id == 2">
-                                       <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#locationModal"
-                                          (click)="getLocations(1, item)">Cambiar Centro</button>
+                                       <button class="dropdown-item" data-bs-toggle="modal"
+                                          data-bs-target="#locationModal" (click)="getLocations(1, item)">Cambiar
+                                          Centro</button>
                                     </li>
                                     <li *ngIf="item.procedure_id == 1 || item.procedure_id == 2 ">
-                                       <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#messageModal"
-                                          (click)="getRequest(item)">Enviar mensaje</button>
+                                       <button class="dropdown-item" data-bs-toggle="modal"
+                                          data-bs-target="#messageModal" (click)="getRequest(item)">Enviar
+                                          mensaje</button>
                                     </li>
-                                    <li *ngIf="item.procedure_id == 1 || item.procedure_id == 2 ">
+                                    <li >
                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#datosModal"
                                           (click)="selectData(item.id)">Ver información</button>
                                     </li>
@@ -129,12 +135,13 @@
                <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
                   <ul class="pagination">
                      <li class="page-item" *ngFor="let item of data.links; let i = index">
-                        <button class="page-link" [ngClass]="{'activeLink': item.active}" (click)="onPageChange(item.url)"
-                           *ngIf="item.url != null">
+                        <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                           (click)="onPageChange(item.url)" *ngIf="item.url != null">
                            <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
                            <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
                            <ng-container *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
-                              {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' : item.label }}
+                              {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' : item.label
+                              }}
                            </ng-container>
                         </button>
                      </li>
@@ -142,12 +149,13 @@
                </nav>
             </div>
          </div>
-         
+
          <div class="modal fade" id="quoteModal" tabindex="-1" aria-labelledby="quoteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                <div class="modal-content">
                   <div class="modal-header">
-                     <h5 class="modal-title" id="quoteModalLabel">Agendar Cita para {{id?.beneficiaries[0]?.nombre ?? null}}
+                     <h5 class="modal-title" id="quoteModalLabel">Agendar Cita para {{id?.beneficiaries[0]?.nombre ??
+                        null}}
                         {{id?.beneficiaries[0]?.apaterno ?? null}}</h5>
                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
@@ -172,12 +180,13 @@
                </div>
             </div>
          </div>
-         
+
          <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                <div class="modal-content">
                   <div class="modal-header">
-                     <h5 class="modal-title" id="messageModalLabel">Enviar mensaje para la solicitud con folio No.{{ id?.invoice
+                     <h5 class="modal-title" id="messageModalLabel">Enviar mensaje para la solicitud con folio No.{{
+                        id?.invoice
                         ??
                         null }}</h5>
                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -190,7 +199,7 @@
                            <option *ngFor="let item of motivosMessage" [value]="item?.id">{{ item?.name }}</option>
                         </select>
                      </div>
-         
+
                      <div class="mb-3" *ngIf="motivoMessage == 4">
                         <label for="lugarCorreccion" class="form-label">Lugar</label>
                         <select class="form-select" id="lugarCorreccion" [(ngModel)]="lugarCorreccion">
@@ -198,13 +207,14 @@
                            <option *ngFor="let item of typeForms" [value]="item?.id">{{ item?.name }}</option>
                         </select>
                      </div>
-         
+
                      <div class="mb-3">
                         <label for="newMessage" class="form-label">Mensaje:</label>
                         <textarea class="form-control" id="newMessage" [(ngModel)]="newMessage"
                            placeholder="Escriba el contenido del mensaje." rows="10"></textarea>
                      </div>
-                     <a (click)="toggleHistory()" style="color: blue;" *ngIf="historyMessages?.length > 0">{{ showHistory ?
+                     <a (click)="toggleHistory()" style="color: blue;" *ngIf="historyMessages?.length > 0">{{
+                        showHistory ?
                         'Ocultar' : 'Mostrar' }} historial ({{historyMessages?.length}})</a>
                      <div class="mb-3" *ngIf="showHistory">
                         <div class="table-responsive">
@@ -239,9 +249,9 @@
                </div>
             </div>
          </div>
-         
-         <div class="modal fade  py-5" id="locationModal" tabindex="-1" role="dialog" aria-labelledby="locationModalLabel"
-            aria-hidden="true">
+
+         <div class="modal fade  py-5" id="locationModal" tabindex="-1" role="dialog"
+            aria-labelledby="locationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                <div class="modal-content  rounded-4 shadow">
                   <div class="modal-header border-bottom-0">
@@ -271,7 +281,7 @@
                </div>
             </div>
          </div>
-         
+
          <div class="modal fade py-5" id="datosModal" tabindex="-1" role="dialog" aria-labelledby="datosModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -288,10 +298,12 @@
                            <a class="nav-link" id="tab-vivienda" data-bs-toggle="tab" href="#tabVivienda">Vivienda</a>
                         </li> -->
                         <li class="nav-item">
-                           <a class="nav-link" id="tab-referencias" data-bs-toggle="tab" href="#tabReferencias">Referencias</a>
+                           <a class="nav-link" id="tab-referencias" data-bs-toggle="tab"
+                              href="#tabReferencias">Referencias</a>
                         </li>
                         <li class="nav-item">
-                           <a class="nav-link" id="tab-documentos" data-bs-toggle="tab" href="#tabDocumentos">Documentos</a>
+                           <a class="nav-link" id="tab-documentos" data-bs-toggle="tab"
+                              href="#tabDocumentos">Documentos</a>
                         </li>
                      </ul>
                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -307,30 +319,36 @@
                                        {{
                                        dataShow.child?.amaterno }}</h6>
                                     <p class="card-text"><b>CURP:</b> {{ dataShow.child?.curp }}</p>
-                                    <p class="card-text"><b>Fecha de Nacimiento:</b> {{ dataShow.child?.fechanacimiento }}</p>
-                                    <p class="card-text"><b>Edad:</b> {{ calculateAge(dataShow.child?.fechanacimiento) }}</p>
-                                    <p class="card-text"><b>Sexo:</b> {{ dataShow.child?.sexo == 2? 'MUJER' : 'HOMBRE' }}</p>
+                                    <p class="card-text"><b>Fecha de Nacimiento:</b> {{ dataShow.child?.fechanacimiento
+                                       }}</p>
+                                    <p class="card-text"><b>Edad:</b> {{ calculateAge(dataShow.child?.fechanacimiento)
+                                       }}</p>
+                                    <p class="card-text"><b>Sexo:</b> {{ dataShow.child?.sexo == 2? 'MUJER' : 'HOMBRE'
+                                       }}</p>
                                     <p class="card-text"><b>Tipo de sangre:</b> {{ dataShow.child?.tipo_sangre }}</p>
                                     <!-- Agrega más información según tus necesidades con las clases xu-style y xu-card -->
                                  </div>
                               </div>
                            </div>
                         </div>
-         
+
                         <!-- Pestaña de Padres -->
                         <div class="tab-pane fade" id="tabPadres"
                            *ngIf="dataShow && dataShow.parents && dataShow.parents.length > 0">
                            <div class="content-section">
                               <div *ngFor="let padre of dataShow.parents" class="card xu-card">
                                  <div class="card-body">
-                                    <h6 class="card-title">{{ padre?.nombre }} {{ padre?.apaterno }} {{ padre?.amaterno }}
+                                    <h6 class="card-title">{{ padre?.nombre }} {{ padre?.apaterno }} {{ padre?.amaterno
+                                       }}
                                     </h6>
                                     <div class="row">
                                        <div class="col-12 col-lg-6">
                                           <p class="card-text"><b>CURP:</b> {{ padre?.curp }}</p>
-                                          <p class="card-text"><b>Fecha de nacimiento:</b> {{ padre?.fechanacimiento }}</p>
+                                          <p class="card-text"><b>Fecha de nacimiento:</b> {{ padre?.fechanacimiento }}
+                                          </p>
                                           <p class="card-text"><b>Tipo de sangre:</b> {{ padre?.tipo_sangre }}</p>
-                                          <p class="card-text"><b>Lugar de nacimiento:</b> {{ padre?.economic[0].lugar_nacimiento
+                                          <p class="card-text"><b>Lugar de nacimiento:</b> {{
+                                             padre?.economic[0].lugar_nacimiento
                                              }}</p>
                                        </div>
                                        <div class="col-12 col-lg-6">
@@ -338,15 +356,20 @@
                                           <p class="card-text"><b>Estado civil:</b> {{ showCatalogo?.estado_civil }}</p>
                                           <p class="card-text"><b>Escolaridad:</b> {{ showCatalogo?.escolaridad }}</p>
                                        </div>
-         
+
                                        <hr class="mt-2">
-                                       <p class="card-text tex" style="color: #002d6f;"><b>INFORMACIÓN DE DIRECCIÓN</b></p>
+                                       <p class="card-text tex" style="color: #002d6f;"><b>INFORMACIÓN DE DIRECCIÓN</b>
+                                       </p>
                                        <div class="col-12 col-lg-6">
                                           <p class="card-text"><b>Calle:</b> {{ padre?.address[0]?.calle }}</p>
-                                          <p class="card-text"><b>Numero exterior:</b> {{ padre?.address[0]?.numext }}</p>
-                                          <p class="card-text"><b>Numero interior:</b> {{ padre?.address[0]?.numint }}</p>
-                                          <p class="card-text"><b>Primer cruce:</b> {{ padre?.address[0]?.primercruce }}</p>
-                                          <p class="card-text"><b>Segundo cruce:</b> {{ padre?.address[0]?.segundocruce }}</p>
+                                          <p class="card-text"><b>Numero exterior:</b> {{ padre?.address[0]?.numext }}
+                                          </p>
+                                          <p class="card-text"><b>Numero interior:</b> {{ padre?.address[0]?.numint }}
+                                          </p>
+                                          <p class="card-text"><b>Primer cruce:</b> {{ padre?.address[0]?.primercruce }}
+                                          </p>
+                                          <p class="card-text"><b>Segundo cruce:</b> {{ padre?.address[0]?.segundocruce
+                                             }}</p>
                                        </div>
                                        <div class="col-12 col-lg-6">
                                           <p class="card-text"><b>Colonia:</b> {{ padre?.address[0]?.colonia_name }}</p>
@@ -354,35 +377,49 @@
                                           <p class="card-text"><b>Estado:</b> {{ padre?.address[0]?.estado }}</p>
                                           <p class="card-text"><b>Celular:</b> {{ padre?.address[0]?.celular }}</p>
                                        </div>
-         
+
                                        <hr class="mt-2">
-                                       <p class="card-text tex" style="color: #002d6f;"><b>INFORMACIÓN DE TRABAJO</b></p>
+                                       <p class="card-text tex" style="color: #002d6f;"><b>INFORMACIÓN DE TRABAJO</b>
+                                       </p>
                                        <div class="col-12 col-lg-6">
                                           <p class="card-text"><b>Dependencia:</b> {{ showCatalogo?.dependencia }}</p>
                                           <p class="card-text"><b>Puesto:</b> {{ padre?.economic[0].puesto }}</p>
-                                          <p class="card-text"><b>Antiguedad:</b> {{ padre?.economic[0].antiguedad }}</p>
-                                          <p class="card-text"><b>Jefe inmediato:</b> {{ padre?.economic[0].jefe_inmediato }}</p>
-                                          <p class="card-text"><b>Telefono:</b> {{ padre?.economic[0].telefono_trabajo }}</p>
-                                          <p class="card-text"><b>Extención:</b> {{ padre?.economic[0].telefono_ext_trabajo }}
+                                          <p class="card-text"><b>Antiguedad:</b> {{ padre?.economic[0].antiguedad }}
+                                          </p>
+                                          <p class="card-text"><b>Jefe inmediato:</b> {{
+                                             padre?.economic[0].jefe_inmediato }}</p>
+                                          <p class="card-text"><b>Telefono:</b> {{ padre?.economic[0].telefono_trabajo
+                                             }}</p>
+                                          <p class="card-text"><b>Extención:</b> {{
+                                             padre?.economic[0].telefono_ext_trabajo }}
                                           </p>
                                           <p class="card-text"><b>Calle:</b> {{ padre?.economic[0].calle_trabajo }}</p>
-                                          <p class="card-text"><b>Número exterior:</b> {{ padre?.economic[0].numext_trabajo }}
+                                          <p class="card-text"><b>Número exterior:</b> {{
+                                             padre?.economic[0].numext_trabajo }}
                                           </p>
-                                          <p class="card-text"><b>Número interior:</b> {{ padre?.economic[0].numint_trabajo }}
+                                          <p class="card-text"><b>Número interior:</b> {{
+                                             padre?.economic[0].numint_trabajo }}
                                           </p>
-         
+
                                        </div>
                                        <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>Primer cruce:</b> {{ padre?.economic[0].primer_cruce_trabajo }}
+                                          <p class="card-text"><b>Primer cruce:</b> {{
+                                             padre?.economic[0].primer_cruce_trabajo }}
                                           </p>
-                                          <p class="card-text"><b>Segundo cruce:</b> {{ padre?.economic[0].segundo_cruce_trabajo
+                                          <p class="card-text"><b>Segundo cruce:</b> {{
+                                             padre?.economic[0].segundo_cruce_trabajo
                                              }}</p>
-                                          <p class="card-text"><b>Colonia:</b> {{ padre?.economic[0].colonia_name_trabajo }}</p>
-                                          <p class="card-text"><b>Municipio:</b> {{ padre?.economic[0].municipio_trabajo }}</p>
-                                          <p class="card-text"><b>Estado:</b> {{ padre?.economic[0].estado_trabajo }}</p>
-                                          <p class="card-text"><b>Horario de entrada:</b> {{ padre?.economic[0].entrada_trabajo
+                                          <p class="card-text"><b>Colonia:</b> {{
+                                             padre?.economic[0].colonia_name_trabajo }}</p>
+                                          <p class="card-text"><b>Municipio:</b> {{ padre?.economic[0].municipio_trabajo
                                              }}</p>
-                                          <p class="card-text"><b>Horario de salida:</b> {{ padre?.economic[0].salida_trabajo }}
+                                          <p class="card-text"><b>Estado:</b> {{ padre?.economic[0].estado_trabajo }}
+                                          </p>
+                                          <p class="card-text"><b>Horario de entrada:</b> {{
+                                             padre?.economic[0].entrada_trabajo
+                                             }}</p>
+                                          <p class="card-text"><b>Horario de salida:</b> {{
+                                             padre?.economic[0].salida_trabajo }}
                                           </p>
                                        </div>
                                     </div>
@@ -390,7 +427,7 @@
                               </div>
                            </div>
                         </div>
-         
+
                         <!-- Pestaña de Vivienda -->
                         <div class="tab-pane fade" id="tabVivienda" *ngIf="dataShow && dataShow.housing">
                            <div class="content-section">
@@ -398,10 +435,12 @@
                                  <div class="card-body">
                                     <h6 class="card-title">Información de la Vivienda</h6>
                                     <p class="card-text">Tipo de Vivienda: {{ dataShow.housing?.tipo_vivienda }}</p>
-                                    <p class="card-text">Calle: {{ dataShow.housing?.address[0]?.calle }}, Número Exterior: {{
+                                    <p class="card-text">Calle: {{ dataShow.housing?.address[0]?.calle }}, Número
+                                       Exterior: {{
                                        dataShow.housing?.address[0]?.numext }}, Número Interior: {{
                                        dataShow.housing?.address[0]?.numint }}</p>
-                                    <p class="card-text">Municipio: {{ dataShow.housing?.address[0]?.municipio }}, Código Postal:
+                                    <p class="card-text">Municipio: {{ dataShow.housing?.address[0]?.municipio }},
+                                       Código Postal:
                                        {{
                                        dataShow.housing?.address[0]?.codigopostal }}</p>
                                     <!-- Agrega más información según tus necesidades con las clases xu-style y xu-card -->
@@ -409,7 +448,7 @@
                               </div>
                            </div>
                         </div>
-         
+
                         <!-- Pestaña de Referencias Personales -->
                         <div class="tab-pane fade" id="tabReferencias"
                            *ngIf="dataShow && dataShow.references && dataShow.references.length > 0">
@@ -418,21 +457,24 @@
                                  <div class="card-body">
                                     <h6 class="card-title">{{ referencia?.nombre }} {{referencia?.apaterno}}
                                        {{referencia?.amaterno}}</h6>
-                                    <p class="card-text"><b>Domicilio:</b> calle {{ referencia?.calle }}, número exterior: {{
-                                       referencia?.numext }} {{referencia?.numint != null ? ', número interior: ': ''}} {{
+                                    <p class="card-text"><b>Domicilio:</b> calle {{ referencia?.calle }}, número
+                                       exterior: {{
+                                       referencia?.numext }} {{referencia?.numint != null ? ', número interior: ': ''}}
+                                       {{
                                        referencia?.numint }} </p>
                                     <p class="card-text"><b>Colonia:</b> {{ referencia?.colonia_name }}</p>
                                     <p class="card-text"><b>Municipio:</b> {{ referencia?.municipio }}</p>
                                     <p class="card-text"><b>Teléfono:</b> {{ referencia?.telefono }}</p>
                                     <p class="card-text"><b>Celular:</b> {{ referencia?.celular }}</p>
-                                    <p class="card-text"><b>Horario para contactar:</b> {{ referencia?.horario_contacto_1 }} a {{
+                                    <p class="card-text"><b>Horario para contactar:</b> {{
+                                       referencia?.horario_contacto_1 }} a {{
                                        referencia?.horario_contacto_2 }}</p>
                                     <!-- Agrega más información según tus necesidades con las clases xu-style y xu-card -->
                                  </div>
                               </div>
                            </div>
                         </div>
-         
+
                         <!-- Pestaña de Vivienda -->
                         <div class="tab-pane fade" id="tabDocumentos" *ngIf="dataShow ">
                            <div class="content-section">
@@ -444,12 +486,13 @@
                                           *ngFor="let item of dataShow.documents">
                                           <a class="mt-3" href="{{ baseUrl+'cisz/'+item.url }}" download>
                                              <p>
-                                                {{item.required_document_id == 2 ? "Descargar 'Carta intención NIDOCISZ'" :
+                                                {{item.required_document_id == 2 ? "Descargar 'Carta intención
+                                                NIDOCISZ'" :
                                                 "Descargar identificación de trabajador"}}
                                              </p>
                                              <span><i
                                                    [ngClass]="{'bi': true, 'bi-file-earmark-arrow-down-fill': item.required_document_id == 2, 'bi-person-badge-fill': item.required_document_id != 2}"></i></span>
-         
+
                                           </a>
                                        </div>
                                     </div>
@@ -462,6 +505,6 @@
                </div>
             </div>
          </div>
-       </section>
-    </main>
- </app-sports>
+      </section>
+   </main>
+</app-sports>

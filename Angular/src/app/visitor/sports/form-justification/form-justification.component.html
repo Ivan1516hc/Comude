@@ -1,0 +1,133 @@
+<app-visitor>
+    <style>
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <main id="mainVisitor" class="main">
+        <div class="row">
+            <div class="col-10 offset-1 content-center">
+                <div class="pagetitle">
+                    <h1>Evidencias
+                    </h1>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a routerLink="/solicitante/dashboard">Inicio</a></li>
+                            <li class="breadcrumb-item active">Evidencias</li>
+                        </ol>
+                    </nav>
+                </div>
+                <section class="section profile">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-body">
+                                        <div class="d-sm-flex justify-content-between align-items-center">
+                                            <h5 class="card-title mb-2 mb-sm-0">Evidencias</h5>
+                                            <button class="btn btn-primary" *ngIf="documents.length > 0 && request?.status_request_id == 3"
+                                                (click)="sendJustification()">Enviar evidencias</button>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 col-lg-4 mt-2" *ngIf="request?.status_request_id == 3">
+                                                <div class="card card-start">
+                                                    <article class="drop-zone" data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">
+                                                        <span>Registrar evidencia</span>
+                                                    </article>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-4 "
+                                                *ngFor="let item of documents; let i = index">
+                                                <article class="card">
+                                                    <img [src]="baseUrl+'sports/'+item.file_name"
+                                                        class="card-img-top m-1" alt="Imagen"
+                                                        style="align-self: center">
+                                                    <div class="container">
+                                                        <p><strong>Descripción:</strong></p>
+                                                        <p *ngIf="item.mostrarTextoCompleto">{{item.description}}</p>
+                                                        <p *ngIf="!item.mostrarTextoCompleto">{{item.description |
+                                                            slice:0:50}}</p>
+                                                        <!-- Mostrar solo los primeros 50 caracteres -->
+                                                        <div class="d-grid gap-1">
+                                                            <!-- Cambiamos el botón por un enlace -->
+                                                            <a href="javascript:void(0);"
+                                                                *ngIf="isLongText(item.description)"
+                                                                (click)="toggleText(item)">
+                                                                {{ item.mostrarTextoCompleto ? 'Ver menos' : 'Leer más'
+                                                                }}
+                                                            </a>
+                                                            <button *ngIf="request?.status_request_id == 3" type="button" class="btn-lg btn btn-warning mt-2"
+                                                                (click)="delete(item?.id)">Eliminar</button>
+                                                        </div>
+                                                    </div>
+                                                </article>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Registrar evidencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-0 text-justify-custom">
+                    <form class="row g-3 mt-2" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
+                        <div>
+                            <label for="fileInput" class="form-label">Subir evidencia:</label>
+                            <div class="drop-zone-new" (dragover)="onDragOver($event)" (drop)="onDrop($event)"
+                                (click)="fileInput.click()">
+                                <input #fileInput type="file" class="visually-hidden" accept=".pdf, .jpg, .jpeg, .png"
+                                    (change)="onFileSelected($event)" (drop)="onFileSelected($event)">
+                                <div class="preview-container" *ngIf="selectedFileName">
+                                    <img [src]="selectedFilePreview" alt="Archivo seleccionado" class="preview-image">
+                                    <p><span>{{ selectedFileName }}</span></p>
+                                </div>
+                                <div class="file-input-placeholder" *ngIf="!selectedFileName">
+                                    <span>Arrastra o selecciona un archivo</span>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Formatos permitidos: pdf, jpg, jpeg,
+                                png</small><br>
+                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB.</small>
+                        </div>
+                        <div>
+                            <label for="justification_type_id" class="col-form-label">Tipo de evidencia:</label>
+                            <select class="form-control" name="justification_type_id" id="justification_type_id"
+                                formControlName="justification_type_id">
+                                <option value="">-Seleccionar-</option>
+                                <option *ngFor="let item of justificationType" [value]="item.id">{{item.name}}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="description" class="col-form-label">Descripción breve:</label>
+                            <textarea name="description" type="text" class="form-control" id="description"
+                                formControlName="description" maxlength="150"> </textarea>
+                        </div>
+
+                        <div class="modal-footer flex-column border-top-0">
+                            <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2"
+                                data-bs-dismiss="modal">Guardar
+                                evidencia</button>
+                            <button type="button" class="btn btn-lg btn-light w-100 mx-0"
+                                data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</app-visitor>

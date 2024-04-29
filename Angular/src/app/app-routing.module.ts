@@ -16,8 +16,9 @@ const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./protected/protected.module').then(m => m.ProtectedModule),
-    canActivateChild: [ValidarRolTramiteGuard],
-    data: { expectedRoles: [2], expectedPlatforms: [1] }
+    canActivateChild: [validarUserGuard]
+    // canActivateChild: [ValidarRolTramiteGuard],
+    // data: { expectedRoles: [2], expectedPlatforms: [1] }
   },
   {
     path: 'solicitante',

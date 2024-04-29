@@ -21,21 +21,25 @@
                                     <img src="assets/img/logo_comude.png" class="card-img-top" alt="Imagen"
                                         style="align-self: center">
                                     <div class="container text-card">
-                                        <h1 class="text-center"><strong>Solicitud No.{{item.invoice ??
+                                        <h1 class="text-center"><strong>Solicitud No.BECA2024-000{{item.invoice ??
                                                 item.id}}</strong></h1>
                                         <h2 class="text-center" *ngIf="item.finished"><strong>Fecha
                                                 {{item.finished}}</strong></h2>
-                                        <p *ngIf="item?.discipline"><strong>Diciplina:</strong> {{item.discipline.name}}
+                                        <p *ngIf="item?.discipline"><strong>Disciplina:</strong> {{item.discipline.name}}
                                         </p>
                                         <p *ngIf="item?.competition"><strong>Competencia:</strong>
                                             {{item.competition.name}}</p>
                                         <p *ngIf="item?.competition?.country"><strong>Lugar:</strong>
-                                            {{item.competition.state.name ?
+                                            {{item.competition?.state?.name ?
                                             item.competition.state.name+',':''}} {{item.competition.country.common_spa}}
                                         </p>
                                         <p *ngIf="item?.competition?.competition_type"><strong>Tipo de
                                                 competencia:</strong>
                                             {{item.competition.competition_type.name}}</p>
+
+                                        <p *ngIf="item?.competition?.start_date"><strong>Fechas de competición:</strong>
+                                            {{item?.competition?.start_date}} a {{item?.competition?.ending_date}}
+                                        </p>
 
                                         <p *ngIf="item?.competition?.requested_budget"><strong>Presupuesto
                                                 solicitado:</strong> <span
@@ -47,7 +51,7 @@
                                                 class="badge bg-info  text-dark">${{item.competition.approved_budget}}</span>
                                         </p>
 
-                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 9 ? 'alert-primary': (item.status_request.id == 2 ? 'alert-warning' : (item.status_request.id == 4 ? 'alert-danger' : '')))"
+                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 9 ? 'alert-primary': (item.status_request.id == 2 ? 'alert-warning' : (item.status_request.id == 4 ? 'alert-danger' : (item.status_request.id == 3 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-success' : '')))))"
                                             class="alert text-center mt-2" role="alert">Solicitud
                                             {{item.status_request.name}}
                                         </p>
@@ -66,13 +70,17 @@
                                                     [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/competicion'">Ver</button>
                                             </ng-container>
 
-                                            <ng-container *ngIf="item.status_request_id == 7">
-                                                <button type="button" class="btn-lg btn btn-danger mt-2"
-                                                    (click)="updateStatus(item.id,9)">Enviar solicitud</button>
+                                            <ng-container
+                                                *ngIf="item.status_request_id == 3 && isCompetitionOver(item.competition.ending_date)">
+                                                <button type="button" class="btn-lg btn btn-primary mt-2"
+                                                    [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/evidencias'">
+                                                    Enviar evidencias
+                                                </button>
                                             </ng-container>
 
+
                                             <ng-container
-                                                *ngIf="item.status_request_id != 4 && item.status_request_id !=6">
+                                                *ngIf="item.status_request_id != 9 && item.status_request_id != 4 && item.status_request_id !=6 && item.status_request_id != 3 && item.status_request_id != 7">
                                                 <button type="button" class="btn-lg btn btn-danger mt-2"
                                                     (click)="updateStatus(item,6)">Cancelar</button>
                                             </ng-container>
@@ -106,15 +114,6 @@
                         </option>
                     </select>
                 </div>
-
-                <!-- <div>
-                    <label class="form-label">Tipo de competición:</label>
-                    <select class="form-select" [(ngModel)]="competition" (change)="getStates()">
-                        <option value="">-Seleccionar-</option>
-                        <option *ngFor="let item of catalog.competitions" [value]="item?.id">{{item?.name}}
-                        </option>
-                    </select>
-                </div> -->
 
             </div>
             <div class="modal-footer flex-column border-top-0">

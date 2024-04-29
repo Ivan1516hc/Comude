@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use App\Models\Aplicant;
+use App\Models\BankAccount;
+use App\Models\DocumentProcedure;
+use App\Models\DocumentsRequest;
 use App\Models\Log;
 use App\Models\Procedure;
 use App\Models\Requests;
@@ -32,7 +35,13 @@ class RequestsController extends Controller
         $model = Requests::query();
 
         // Las solicitudes deben de tener beneficiarios y se ordenan por edad los beneficiarios
-        $query = $model->with('competition')->paginate(10);
+        $query = $model->with(
+            [
+                'competition' => function ($query) {
+                    $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+                }, 'discipline', 'announcement', 'aplicant'
+            ]
+        )->where('status_request_id', '<>', 1)->paginate(10);
 
         return response()->json($query);
     }
@@ -105,22 +114,31 @@ class RequestsController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
         }
-        $requests = Requests::where('id', $id)->get();
-        if ($requests->isEmpty()) {
+        $request = Requests::find($id);
+        if (!$request) {
             return response()->json(['message' => 'No existe la solicitud', 'code' => 202]);
         }
         DB::beginTransaction();
-        $child = $this->getBankAccount($id);
+        $bankAccount = $this->getBankAccount($request->aplicant_id);
         $documents = $this->getDocument($id);
+        $competition = $this->getCompetition($id);
         DB::commit();
-        return response()->json(['child' => $child, 'documents' => $documents]);
+        return response()->json(['bankAccount' => $bankAccount, 'documents' => $documents, 'competition' => $competition]);
     }
 
     protected function getBankAccount($id)
     {
+        return  BankAccount::whereHas('aplicant', function ($query) use ($id) {
+            $query->where('id', $id);
+        })->first();
     }
 
     protected function getDocument($id)
+    {
+        return DocumentsRequest::where('request_id', $id)->with('document_procedure:id,name')->get();
+        // return DocumentProcedure::with('document_procedure:id,name')->get();
+    }
+    public function getCompetition($id)
     {
     }
 
@@ -140,7 +158,7 @@ class RequestsController extends Controller
 
         $aplicant = Aplicant::find($user->id);
 
-        if (!$aplicant->phone_number || !$aplicant->rfc  || !$aplicant->birtdate || !$aplicant->name) {
+        if (!$aplicant->phone_number || !$aplicant->birtdate || !$aplicant->name) {
             $response['message'] = "No tiene su perfil completo.";
             $response['code'] = 201;
             return response()->json($response);
@@ -281,7 +299,7 @@ class RequestsController extends Controller
 
     public function updateStatus(Request $request)
     {
-        $query = Requests::with('user')->where('id', $request->id)->first();
+        $query = Requests::where('id', $request->id)->first();
 
         $statusAnterior = $query->status_request->name;
 
@@ -302,31 +320,31 @@ class RequestsController extends Controller
                 : "Actualización exitosa"
         ];
 
-        $email = $query->user->email;
+        // $email = $query->user->email;
 
         $newStatus = StatusRequest::find($request->status_request_id);
 
 
-        $label = 'Solicitud No.' . $query->id . ' ha sido actualizada, los administradores del centro "' . $query->center->name . '" han cambiado el estado de "' . $statusAnterior . '" a "' . $newStatus->name . '".';
+        $label = 'Solicitud No.' . $query->id . ' ha sido actualizada, los administradores del trámite han cambiado el estado de "' . $statusAnterior . '" a "' . $newStatus->name . '".';
 
-        Mail::send('emails.request-status-change', [
-            'name' => $query->user->name,
-            'request' => $query,
-            'label' => $label
-        ], function (Message $message) use ($email) {
-            $message->to($email)
-                ->subject('Estado De Solicitud Actualizado');
-        });
+        // Mail::send('emails.request-status-change', [
+        //     'name' => $query->user->name,
+        //     'request' => $query,
+        //     'label' => $label
+        // ], function (Message $message) use ($email) {
+        //     $message->to($email)
+        //         ->subject('Estado De Solicitud Actualizado');
+        // });
 
-        Log::create([
-            'user_id' => auth()->id(), // o null si el usuario no está autenticado
-            'receiver_id' => $query->user->id,
-            'request_id' => $query->id,
-            'action' => 'Solicitud actualizada',
-            'description' => 'Solicitud con folio No.' . $query->invoice . ' actualizada, nuevo estado de solicitud ' . $newStatus->name . '.',
-            'status' => 1,
-            'read' => 0
-        ]);
+        // Log::create([
+        //     'user_id' => auth()->id(), // o null si el usuario no está autenticado
+        //     'receiver_id' => $query->user->id,
+        //     'request_id' => $query->id,
+        //     'action' => 'Solicitud actualizada',
+        //     'description' => 'Solicitud con folio No.' . $query->invoice . ' actualizada, nuevo estado de solicitud ' . $newStatus->name . '.',
+        //     'status' => 1,
+        //     'read' => 0
+        // ]);
 
         return response()->json($response);
     }

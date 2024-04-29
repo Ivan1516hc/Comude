@@ -18,7 +18,7 @@ export class RequestsComponent {
   request: Requests;
   hayError: boolean = false;
   data: any = [];
-  headers = ['No.','Folio', 'Niño/a', 'Edad', 'Trabajador', 'Fecha', 'Estado'];
+  headers = ['No.','Folio', 'Solicitante', 'Disciplina','Tipo','Fechas', 'Enviada', 'Estado'];
 
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) { 
@@ -179,6 +179,7 @@ export class RequestsComponent {
               showConfirmButton: false,
               timer: 2000
             })
+            this.initTable()
             // this.citaCreada.emit();
           } else {
             Swal.fire("Error", "error")
@@ -261,6 +262,7 @@ export class RequestsComponent {
   selectData(id: number) {
     this.allService.getFormData(id).subscribe({
       next: (response) => {
+        
         this.dataShow = response;
         let dependencia = this.catalogo.dependencias.find(elemento => elemento.id == this.dataShow.parents[0].economic[0].lugar_trabajo);
         let escolaridad = this.catalogo.escolaridad.find(elemento => elemento.id == this.dataShow.parents[0].escolaridad);

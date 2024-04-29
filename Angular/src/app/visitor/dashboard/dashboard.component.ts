@@ -20,6 +20,12 @@ export class DashboardComponent implements OnInit {
   hasBankAccount: boolean = false;
   currentUrl = window.location.pathname;
 
+  isCompetitionOver(endingDate: any): boolean {
+    const competitionEndDate = new Date(endingDate);
+    const currentDate = new Date();
+    return competitionEndDate >= currentDate;
+  }
+
   ngOnInit(): void {
     this.visitorService.getDataDiscipline().subscribe({
       next: (response) => {

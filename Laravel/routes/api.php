@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Documents\DocumentController;
 use App\Http\Controllers\Documents\ImportantArchievementController;
+use App\Http\Controllers\Documents\RequestJustificationController;
 use App\Http\Controllers\Payments\BankAccountController;
 use App\Http\Controllers\SportProcedure\CompetitionController;
 use Illuminate\Http\Request;
@@ -76,6 +77,7 @@ Route::middleware('cors')->group(function () {
 
         Route::put('request/update', [RequestsController::class, 'updateStatus']);
         Route::get('request/show/{id}', [RequestsController::class, 'show']);
+        
         Route::get('request/formData/{id}', [RequestsController::class, 'showData']);
 
         Route::get('request/search/{value}', [RequestsController::class, 'search']);
@@ -137,6 +139,12 @@ Route::middleware('cors')->group(function () {
         Route::get('request/important-archivement/show', [ImportantArchievementController::class, 'show']);
         Route::post('request/important-archivement/store', [ImportantArchievementController::class, 'store']);
         Route::delete('request/important-archivement/delete/{id}', [ImportantArchievementController::class, 'delete']);
+
+        //Justification Routs
+        Route::get('request/justification/show/{id}', [RequestJustificationController::class, 'show']);
+        Route::post('request/justification/store', [RequestJustificationController::class, 'store']);
+        Route::get('request/justification/finish/{id}', [RequestJustificationController::class, 'finish']);
+        Route::delete('request/justification/delete/{id}', [RequestJustificationController::class, 'delete']);
 
         //Aplicant Profile Routs
         Route::get('request/aplicant/show', [AplicantController::class, 'show']);

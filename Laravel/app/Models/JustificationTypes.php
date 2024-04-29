@@ -9,7 +9,10 @@ class JustificationTypes extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name',
+        'description',
+        'file_name',
+        'justification_type_id',
+        'request_id'
     ];
 
     protected $casts = [

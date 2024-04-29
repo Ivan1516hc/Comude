@@ -6,6 +6,7 @@ import { FormDocumentsComponent } from './form-documents/form-documents.componen
 import { FormBankAccountComponent } from './form-bank-account/form-bank-account.component';
 import { FormImportanArchievementComponent } from './form-importan-archievement/form-importan-archievement.component';
 import { FormNoticePrivacyComponent } from './form-notice-privacy/form-notice-privacy.component';
+import { FormJustificationComponent } from './form-justification/form-justification.component';
 
 const routes: Routes = [{
   path: '',
@@ -15,6 +16,7 @@ const routes: Routes = [{
     { path: ':id/cuenta-bancaria', component: FormBankAccountComponent },
     { path: ':id/logros-importantes', component: FormImportanArchievementComponent },
     { path: ':id/reglamento', component: FormNoticePrivacyComponent },
+    { path: ':id/evidencias', component: FormJustificationComponent },
     //------------------------------------------------------------------------------------------------------
     { path: '**', redirectTo: 'home' },
   ]
