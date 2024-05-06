@@ -15,15 +15,18 @@ return new class extends Migration
             $table->bigIncrements('id'); //AI Unsigned Tinyint
 
             $table->string('name')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
             $table->string('phone_number')->nullable();
-            $table->string('curp');
+            $table->string('second_phone_number')->nullable();
+            $table->string('curp')->unique();
             $table->string('rfc')->nullable();
             $table->string('birtdate')->nullable();
             $table->string('verification_token')->nullable();
+
+            $table->boolean('read_regulations')->default(0);
 
             $table->unsignedBigInteger('bank_account_id')->nullable();
             $table->foreign('bank_account_id')->references('id')->on('bank_accounts');

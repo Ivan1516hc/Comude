@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { VisitorRoutingModule } from './visitor-routing.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './shared/header/header.component';
 import { VisitorComponent } from './visitor.component';
 import { FooterComponent } from './shared/footer/footer.component';
@@ -22,7 +22,9 @@ import { ImportantArchievementComponent } from './shared/important-archievement/
   imports: [
     CommonModule,
     VisitorRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,    
+    FormsModule,
+
   ],
   exports: [VisitorComponent, HeaderHomepageComponent, ImportantArchievementComponent]
 })

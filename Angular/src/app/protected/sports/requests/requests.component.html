@@ -82,7 +82,8 @@
                                  {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id == 3 ?
                                  'Aceptado' :
                                  (item.status_request_id == 4 ? 'Rechazado'
-                                 : (item.status_request_id == 8 ? 'En modificación' :(item.status_request_id == 7 ? 'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
+                                 : (item.status_request_id == 8 ? 'En modificación' :(item.status_request_id == 7 ?
+                                 'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
                            </td>
                            <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
                               <div class="alert-success">Cita Agendada</div>
@@ -121,7 +122,7 @@
                                           data-bs-target="#messageModal" (click)="getRequest(item)">Enviar
                                           mensaje</button>
                                     </li>
-                                    <li >
+                                    <li>
                                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#datosModal"
                                           (click)="selectData(item.id)">Ver información</button>
                                     </li>

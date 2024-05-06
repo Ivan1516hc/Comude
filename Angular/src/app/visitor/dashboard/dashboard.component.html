@@ -9,7 +9,12 @@
                         <div class="col-12 col-md-6 col-lg-4 mt-2">
                             <div class="card card-start">
                                 <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                    data-bs-whatever="@getbootstrap">
+                                    data-bs-whatever="@getbootstrap" *ngIf="readRegulation == true">
+                                    <span>Iniciar solicitud</span>
+                                </article>
+
+                                <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#privacyModal"
+                                    data-bs-whatever="@getbootstrap" *ngIf="readRegulation == false">
                                     <span>Iniciar solicitud</span>
                                 </article>
                             </div>
@@ -21,64 +26,54 @@
                                     <img src="assets/img/logo_comude.png" class="card-img-top" alt="Imagen"
                                         style="align-self: center">
                                     <div class="container text-card">
-                                        <h1 class="text-center"><strong>Solicitud No.BECA2024-000{{item.invoice ??
-                                                item.id}}</strong></h1>
+                                        <h1 class="text-center" *ngIf="!item.invoice;else folio"><strong>Solicitud
+                                                No.{{item.id}}</strong></h1>
+                                        <ng-template #folio>
+                                            <h1 class="text-center"><strong>Solicitud folio {{item.invoice}}</strong>
+                                            </h1>
+                                        </ng-template>
+
                                         <h2 class="text-center" *ngIf="item.finished"><strong>Fecha
                                                 {{item.finished}}</strong></h2>
-                                        <p *ngIf="item?.discipline"><strong>Disciplina:</strong> {{item.discipline.name}}
-                                        </p>
+                                        <p *ngIf="item?.discipline"><strong>Disciplina:</strong>
+                                            {{item.discipline.name}}</p>
                                         <p *ngIf="item?.competition"><strong>Competencia:</strong>
                                             {{item.competition.name}}</p>
                                         <p *ngIf="item?.competition?.country"><strong>Lugar:</strong>
-                                            {{item.competition?.state?.name ?
-                                            item.competition.state.name+',':''}} {{item.competition.country.common_spa}}
-                                        </p>
+                                            {{item.competition?.state?.name ? item.competition.state.name+',':''}}
+                                            {{item.competition.country.common_spa}}</p>
                                         <p *ngIf="item?.competition?.competition_type"><strong>Tipo de
-                                                competencia:</strong>
-                                            {{item.competition.competition_type.name}}</p>
-
+                                                competencia:</strong> {{item.competition.competition_type.name}}</p>
                                         <p *ngIf="item?.competition?.start_date"><strong>Fechas de competición:</strong>
-                                            {{item?.competition?.start_date}} a {{item?.competition?.ending_date}}
-                                        </p>
-
+                                            {{item?.competition?.start_date}} a {{item?.competition?.ending_date}}</p>
                                         <p *ngIf="item?.competition?.requested_budget"><strong>Presupuesto
                                                 solicitado:</strong> <span
                                                 class="badge bg-warning text-dark">${{item.competition.requested_budget}}</span>
                                         </p>
-
                                         <p *ngIf="item?.competition?.approved_budget"><strong>Presupuesto
                                                 aprovado:</strong> <span
                                                 class="badge bg-info  text-dark">${{item.competition.approved_budget}}</span>
                                         </p>
-
                                         <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 9 ? 'alert-primary': (item.status_request.id == 2 ? 'alert-warning' : (item.status_request.id == 4 ? 'alert-danger' : (item.status_request.id == 3 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-success' : '')))))"
                                             class="alert text-center mt-2" role="alert">Solicitud
-                                            {{item.status_request.name}}
-                                        </p>
-
+                                            {{item.status_request.name}}</p>
                                         <div class="d-grid gap-1">
                                             <ng-container
                                                 *ngIf="item.status_request_id === 1 || (!item.competition || !hasBankAccount || item.documents_count < 6)">
                                                 <button type="button" class="btn-lg btn btn-warning mt-2"
                                                     (click)="continuar(item)">Continuar</button>
                                             </ng-container>
-
-
                                             <ng-container
                                                 *ngIf="item.status_request_id != 1 && (item.competition && hasBankAccount && item.documents_count >= 6)">
                                                 <button type="button" class="btn-lg btn btn-info mt-2"
                                                     [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/competicion'">Ver</button>
                                             </ng-container>
-
                                             <ng-container
                                                 *ngIf="item.status_request_id == 3 && isCompetitionOver(item.competition.ending_date)">
                                                 <button type="button" class="btn-lg btn btn-primary mt-2"
-                                                    [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/evidencias'">
-                                                    Enviar evidencias
-                                                </button>
+                                                    [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/evidencias'">Enviar
+                                                    evidencias</button>
                                             </ng-container>
-
-
                                             <ng-container
                                                 *ngIf="item.status_request_id != 9 && item.status_request_id != 4 && item.status_request_id !=6 && item.status_request_id != 3 && item.status_request_id != 7">
                                                 <button type="button" class="btn-lg btn btn-danger mt-2"
@@ -97,31 +92,78 @@
 </app-visitor>
 
 
-<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog  modal-dialog-centered">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Selecciona la disciplina</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-0 text-justify-custom">
-                <!-- <h5 class="mt-2"><strong>Centros</strong></h5> -->
-                <div class="m-5">
-                    <label class="form-label">Disciplina:</label>
-                    <select class="form-select" [(ngModel)]="discipline">
-                        <option value="">-Seleccionar-</option>
-                        <option *ngFor="let item of catalog?.disciplines" [value]="item?.id">{{item?.name}}
-                        </option>
-                    </select>
+            <form [formGroup]="miFormulario" (ngSubmit)="storeRequest()">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Selecciona la disciplina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-            </div>
-            <div class="modal-footer flex-column border-top-0">
-                <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal"
-                    (click)="storeRequest()">Iniciar
-                    solicitud</button>
-                <button type="button" class="btn btn-lg btn-light w-100 mx-0" data-bs-dismiss="modal">Cerrar</button>
-            </div>
+
+                <div class="modal-body py-0 text-justify-custom">
+                    <div class="m-5">
+                        <label class="form-label">Modalidad:</label>
+                        <select class="form-select" formControlName="modality">
+                            <option value="">-Seleccionar-</option>
+                            <option value="CONVENCIONAL">CONVENCIONAL</option>
+                            <option value="PARAACLETA">PARAACLETA</option>
+                        </select>
+                    </div>
+                    <div class="m-5">
+                        <label class="form-label">Disciplina:</label>
+                        <select class="form-select" formControlName="discipline_id">
+                            <option value="">-Seleccionar-</option>
+                            <option *ngFor="let item of catalog?.disciplines" [value]="item?.id">{{item?.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer flex-column border-top-0">
+                    <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal"
+                        (click)="storeRequest()">Iniciar solicitud</button>
+                    <button type="button" class="btn btn-lg btn-light w-100 mx-0"
+                        data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <form class="row g-3" [formGroup]="miFormularioRegulations" (ngSubmit)="readRegulations()">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">Reglamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <ng-container *ngIf="readRegulation == false">
+                    <div class="modal-body py-0 text-justify-custom">
+                        <ngx-doc-viewer
+                            url="http://comudezapopan.gob.mx/transparencia/art8/comudezapopan-reglamento-general-becas.pdf"
+                            viewer="google" style="width:100%;height:50vh;"></ngx-doc-viewer>
+
+                        <div class="form-check mt-2">
+                            <input type="checkbox" id="checkbox_reglamento" class="form-check-input"
+                                formControlName="read_regulation">
+                            <label for="checkbox_reglamento" class="form-check-label checkbox-label">He leído el
+                                reglamento
+                                y estoy de acuerdo
+                                en todas las bases.</label>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <div class="modal-footer flex-column border-top-0">
+                    <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal">Iniciar
+                        solicitud</button>
+                    <button type="button" class="btn btn-lg btn-light w-100 mx-0"
+                        data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

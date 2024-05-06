@@ -311,4 +311,9 @@ export class AllVisitorService {
     const url = `${this.baseUrl}/request/aplicant/update`;
     return this.http.put<any>(url,data);
   }
+
+  readRegulations(){
+    const url = `${this.baseUrl}/request/aplicant/read-regulations`;
+    return this.http.get<any>(url);
+  }
 }

@@ -81,15 +81,15 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'curp' => 'required|string|size:18',
-            'email' => 'string|email|max:100|unique:aplicants',
+            'curp' => 'required|string|size:18|unique:aplicants',
+            'email' => 'string|email|max:100',
             'password' => 'required|string|confirmed|min:6',
         ]);
 
-        // Verificar si el correo electrónico ya existe en la base de datos
-        $existingUser = Aplicant::where('email', $request->email)->first();
+        // Verificar si la CURD ya existe en la base de datos
+        $existingUser = Aplicant::where('curp', $request->curp)->first();
         if ($existingUser) {
-            $response['message'] = "El correo electrónico ya está registrado.";
+            $response['message'] = "La CURP ya está registrada.";
             $response['code'] = 409;
             return response()->json($response);
         }
@@ -188,31 +188,31 @@ class AuthController extends Controller
     {
         try {
             JWTAuth::parseToken()->authenticate();
-            $type = Auth::user()->role_id;
+            // $type = Auth::user()->role_id;
             return response()->json([
                 'ok'    => true,
-                'type'  => $type,
+                // 'type'  => $type,
                 'status' => 'Token Correcto'
             ], 200);
         } catch (Exception $e) {
             if ($e instanceof TokenInvalidException) {
                 return response()->json([
                     'ok'    => false,
-                    'type'  => 0,
+                    // 'type'  => 0,
                     'status' => 'Token Invalido'
                 ], 401);
             }
             if ($e instanceof TokenExpiredException) {
                 return response()->json([
                     'ok'    => false,
-                    'type'  => 0,
+                    // 'type'  => 0,
                     'status' => 'Token Expirado'
                 ], 401);
             }
 
             return response()->json([
                 'ok'    => false,
-                'type'  => 0,
+                // 'type'  => 0,
                 'status' => 'Token no Encontrado'
             ], 401);
         }
@@ -237,16 +237,16 @@ class AuthController extends Controller
     public function validateUserAdmin()
     {
         JWTAuth::parseToken()->authenticate();
-        $type = Auth::user()->role_id;
-        if ($type != 1) {
-            return response()->json([
-                'ok'    => true
-            ], 200);
-        } else {
+        // $type = Auth::user()->role_id;
+        // if ($type != 1) {
+        //     return response()->json([
+        //         'ok'    => true
+        //     ], 200);
+        // } else {
             return response()->json([
                 'ok'    => false
             ], 401);
-        }
+        // }
     }
 
     public function getCurrentUser()

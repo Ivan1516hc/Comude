@@ -97,7 +97,8 @@
                                         </div>
 
                                         <div *ngIf="!edit && !onlySee; else existFile">
-                                            <label for="fileInput" class="form-label">Estado de cuenta:</label>
+                                            <label for="fileInput" class="form-label">Estado de cuenta <span class="text-danger"
+                                                *ngIf="newData || edit">(caratula de estado de cuenta donde se encuentre su numero de cuenta)</span>:</label>
                                             <div class="drop-zone" (dragover)="onDragOver($event)"
                                                 (drop)="onDrop($event)" (click)="fileInput.click()">
                                                 <input #fileInput type="file" class="visually-hidden"

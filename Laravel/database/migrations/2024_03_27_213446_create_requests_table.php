@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('invoice')->nullable();
             $table->date('finished')->nullable();
-            
+            $table->string('modality');
             $table->unsignedSmallInteger('discipline_id');
             $table->foreign('discipline_id')->references('id')->on('disciplines');
 

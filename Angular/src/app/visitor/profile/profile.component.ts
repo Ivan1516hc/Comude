@@ -9,7 +9,6 @@ import Swal from 'sweetalert2';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
-
   // Obtener el botón por su ID o cualquier otro selector
   @ViewChild('myButton') myButton: ElementRef;
 
@@ -23,8 +22,11 @@ export class ProfileComponent {
 
   miFormulario: FormGroup = this.fb.group({
     name: ['', [Validators.required]],
+    last_name: ['', [Validators.required]],
+    mother_last_name: ['', [Validators.required]],
     email: ['', [Validators.required]],
     phone_number: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(10), Validators.maxLength(10)]],
+    second_phone_number: ['', [Validators.pattern('^[0-9]+$'), Validators.minLength(10), Validators.maxLength(10)]],
     curp: [{ value: '', disabled: true }, [Validators.required]],
     rfc: ['', [Validators.minLength(13), Validators.maxLength(13)]],
     birtdate: ['', [Validators.required]],
@@ -65,7 +67,7 @@ export class ProfileComponent {
   ngOnInit(): void {
     this.getDataUser();
 
-    const numberFields = ['phone_number'];
+    const numberFields = ['phone_number', 'second_phone_number'];
 
     numberFields.forEach(field => {
       this.subscribeToNumberFieldChanges(field);
@@ -81,17 +83,25 @@ export class ProfileComponent {
   }
 
   populateForm(response: any): void {
+    const nameParts = response.name.split(' ');
+    const motherLastName = nameParts.pop();
+    const lastName = nameParts.pop();
+    const name = nameParts.join(' ');
+
     this.miFormulario.patchValue({
-      name: response.name,
+      name: name,
+      last_name: lastName,
+      mother_last_name: motherLastName,
       email: response.email,
       password: response.password,
       phone_number: response.phone_number,
       curp: response.curp,
       rfc: response.rfc,
-      birtdate: response.birtdate
+      birtdate: response.birtdate,
+      second_phone_number: response.second_phone_number
     });
 
-    if (!response.name || !response.phone_number || !response.rfc || !response.birtdate) {
+    if (!response.name || !response.phone_number || !response.birtdate) {
       this.myButton.nativeElement.click();
     }
   }
@@ -100,14 +110,15 @@ export class ProfileComponent {
 
   }
 
-
-
   onSubmit() {
     if (this.miFormulario.invalid) {
       return this.miFormulario.markAllAsTouched();
     }
-    const data = this.miFormulario.getRawValue();
+    this.miFormulario.patchValue({
+      'name': this.miFormulario.get('name').value + ' ' + this.miFormulario.get('last_name').value + ' ' + this.miFormulario.get('mother_last_name').value,
+    });
 
+    const data = this.miFormulario.getRawValue();
 
     Swal.fire({
       position: 'center',

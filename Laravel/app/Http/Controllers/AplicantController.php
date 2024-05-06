@@ -78,7 +78,7 @@ class AplicantController extends Controller
             $aplicant->update(
                 $request->all()
             );
-            
+
             DB::commit();
             $response['message'] = "Información actualizada.";
             $response['code'] = 200;
@@ -96,28 +96,28 @@ class AplicantController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Necesitas iniciar sesión', 'code' => 404]);
         }
-    
+
         // Validar los datos del formulario
         $validator = Validator::make($request->all(), [
             'password' => ['required', 'string'],
             'new_password' => ['required', 'string', 'min:6'],
             'new_password_repeat' => ['required', 'string', 'same:new_password'],
         ]);
-    
+
         // Si la validación falla, devolver los errores
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()->first(), 'code' => 400]);
         }
-    
+
         // Verificar si la contraseña actual es correcta
         if (!Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'La contraseña actual es incorrecta.', 'code' => 400]);
         }
-    
+
         // Actualizar la contraseña del usuario
         $user->password = $request->new_password;
         $user->save();
-    
+
         return response()->json(['message' => 'Contraseña actualizada correctamente.', 'code' => 200]);
     }
 
@@ -127,5 +127,18 @@ class AplicantController extends Controller
     public function destroy(Aplicant $aplicant)
     {
         //
+    }
+
+    public function readRegulations()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Necesitas iniciar sesión', 'code' => 404]);
+        }
+
+        $user->read_regulations = true;
+        $user->save();
+
+        return response()->json(['message' => 'Reglamento leído.', 'code' => 200]);
     }
 }

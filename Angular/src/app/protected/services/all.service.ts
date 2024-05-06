@@ -18,15 +18,15 @@ export class AllService {
     return this.http.get<Requests>(url);
   }
 
-  createRequest(data:any){
-    const url =`${this.baseUrl}/request/create`;
-    const body=JSON.stringify(data);
-     return this.http.post<any>(url,body)
+  createRequest(data: any) {
+    const url = `${this.baseUrl}/request/create`;
+    const body = JSON.stringify(data);
+    return this.http.post<any>(url, body)
   }
 
-  updateRequest(data:any){
-    const url=`${this.baseUrl}/request/update`
-    return this.http.put<any>(url,data);
+  updateRequest(data: any) {
+    const url = `${this.baseUrl}/request/update`
+    return this.http.put<any>(url, data);
   }
 
   indexQuote(): Observable<any> {
@@ -34,15 +34,15 @@ export class AllService {
     return this.http.get<any>(url);
   }
 
-  updateQuote(data:any){
-    const url=`${this.baseUrl}/quote/update`
-    return this.http.put<any>(url,data);
+  updateQuote(data: any) {
+    const url = `${this.baseUrl}/quote/update`
+    return this.http.put<any>(url, data);
   }
 
-  createQuote(data:any){
-    const url =`${this.baseUrl}/quote/create`;
+  createQuote(data: any) {
+    const url = `${this.baseUrl}/quote/create`;
     // const body=JSON.stringify(data);
-     return this.http.post<any>(url,data)
+    return this.http.post<any>(url, data)
   }
 
   indexBeneficiary(): Observable<any> {
@@ -60,8 +60,8 @@ export class AllService {
     return this.http.get<any>(url);
   }
 
-  getFormData(id:number): Observable<any> {
-    const url = this.baseUrl + '/request/formData/'+id;
+  getFormData(id: number): Observable<any> {
+    const url = this.baseUrl + '/request/formData/' + id;
     return this.http.get<any>(url);
   }
 
@@ -70,27 +70,35 @@ export class AllService {
     return this.http.get<any>(url);
   }
 
-  addBeneficiaryService(data:any){
-    const url =`${this.baseUrl}/service/beneficiary/create`;
-    const body=JSON.stringify(data);
-     return this.http.post<any>(url,data)
+  addBeneficiaryService(data: any) {
+    const url = `${this.baseUrl}/service/beneficiary/create`;
+    const body = JSON.stringify(data);
+    return this.http.post<any>(url, data)
   }
 
-  addBeneficiaryOfService(data:any){
-    const url =`${this.baseUrl}/service/beneficiary/createofservice`;
+  addBeneficiaryOfService(data: any) {
+    const url = `${this.baseUrl}/service/beneficiary/createofservice`;
     // const body=JSON.stringify(data);
-     return this.http.post<any>(url,data)
+    return this.http.post<any>(url, data)
   }
 
-  historyMessage(id:any){
-    const url =`${this.baseUrl}/request/message/${id}/history`;
-     return this.http.get<any>(url)
+  historyMessage(id: any) {
+    const url = `${this.baseUrl}/request/message/${id}/history`;
+    return this.http.get<any>(url)
   }
 
-  sendMessageToRequest(data){
-    const url =`${this.baseUrl}/request/message/create`;
-     return this.http.post<any>(url,data)
+  sendMessageToRequest(data) {
+    const url = `${this.baseUrl}/request/message/create`;
+    return this.http.post<any>(url, data)
   }
 
+  showAppraisal() {
+    const url = `${this.baseUrl}/request/appraisal/index`;
+    return this.http.get<any>(url)
+  }
 
+  exportComite(data) {
+    const url = `${this.baseUrl}/export/excel-comite`;
+    return this.http.post(url, data, { responseType: 'arraybuffer' });
+  }
 }

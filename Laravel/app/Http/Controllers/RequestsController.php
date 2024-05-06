@@ -5,18 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\Aplicant;
 use App\Models\BankAccount;
-use App\Models\DocumentProcedure;
 use App\Models\DocumentsRequest;
-use App\Models\Log;
-use App\Models\Procedure;
 use App\Models\Requests;
 use App\Models\StatusRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
@@ -34,14 +29,33 @@ class RequestsController extends Controller
         }
         $model = Requests::query();
 
-        // Las solicitudes deben de tener beneficiarios y se ordenan por edad los beneficiarios
         $query = $model->with(
             [
                 'competition' => function ($query) {
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                 }, 'discipline', 'announcement', 'aplicant'
             ]
-        )->where('status_request_id', '<>', 1)->paginate(10);
+        )->whereNotIn('status_request_id', [1])->whereIn('status_request_id', [9, 4])->paginate(10);
+
+        return response()->json($query);
+    }
+
+    public function showAppraisal()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
+        }
+        $model = Requests::query();
+
+        $query = $model->with(
+            [
+                'competition' => function ($query) {
+                    $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+                }, 'discipline', 'announcement', 'aplicant'
+            ]
+        )->whereNotIn('status_request_id', [1, 9, 4])
+            ->paginate(10);
 
         return response()->json($query);
     }
@@ -86,7 +100,7 @@ class RequestsController extends Controller
                 return response()->json(['message' => 'No se encontraron solicitudes para este usuario.', 'code' => 404]);
             }
 
-            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'hasBankAccount' => $hasBankAccount]);
+            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'hasBankAccount' => $hasBankAccount, 'readRegulations' => $user->read_regulations]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'No se encontró el usuario.', 'code' => 404]);
         } catch (ValidationException $e) {
@@ -104,8 +118,6 @@ class RequestsController extends Controller
     {
         //
     }
-
-
 
 
     public function showData($id)
@@ -141,8 +153,6 @@ class RequestsController extends Controller
     public function getCompetition($id)
     {
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -205,55 +215,45 @@ class RequestsController extends Controller
         }
         return response()->json($response);
     }
-
-
     public function changeStatus(Request $request)
     {
         $query = Requests::find($request->request_id);
+        $year = Carbon::now()->format('Y');
         if ($request->status_request_id == 9) {
+            if (!$query->invoice) {
+                $number = Requests::select('invoice')->where('invoice', 'like', 'BECA' . $year . '%')->whereYear('created_at', $year)->orderBy('invoice', 'desc')->get()->count();
+
+                if ($number > 0) {
+                    $folio = 'BECA' . $year . '-' . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+                } else {
+                    $folio = 'BECA' . $year . '-0001';
+                }
+
+                $query->update([
+                    'invoice' => $folio
+                ]);
+            }
             $query->update([
                 'status_request_id' => $request->status_request_id
             ]);
-            $query->update([
-                'finished' => Carbon::now()
-            ]);
-
-            // // Enviar el correo electrónico utilizando la vista personalizada
-            // $email = $query->user->email;
-            // Mail::send('emails.send-request', [
-            //     'name' => $query->user->name,
-            //     'request' => $query
-            // ], function (Message $message) use ($email) {
-            //     $message->to($email)
-            //         ->subject('Solicitud Enviada');
-            // });
-
-            //LOG PENDIENTE
-
             $response['code'] = 200;
-            $response['message'] = "Solicitud terminada, sera revisada por los encargados de cada tramite, las actualizaciones importantes del estado de la solicituda llegaran al correo registrado.";
-            return response()->json($response);
+            $response['message'] = "La solicitud se ha enviado correctamente.";
         } else if ($request->status_request_id == 6) {
             if ($query->status_request_id == 3) {
                 $response['code'] = 200;
                 $response['message'] = "La solicitud no se puede cancelar cuando ya fue aceptada.";
-            }
-            $query->update([
-                'status_request_id' => $request->status_request_id
-            ]);
-            if ($query->status_request_id != 1) {
+            } else {
                 $query->update([
-                    'finished' => null
+                    'status_request_id' => $request->status_request_id
                 ]);
+                if ($query->status_request_id != 1) {
+                    $query->update([
+                        'finished' => null
+                    ]);
+                }
+                $response['code'] = 200;
+                $response['message'] = "Solicitud cancelada, los encargados del trámite no podrán ver tu solicitud.";
             }
-
-            //LOG PENDIENTE
-
-            // Enviar el correo electrónico utilizando la vista personalizada
-            $email = $query->user->email;
-            $label = 'Solicitud No.' . $query->invoice . ' ha sido cancelada, los administradores del centro ' . $query->center_id . ' no podran ver mas tu solicitud.';
-            $response['code'] = 200;
-            $response['message'] = "Solicitud cancelada, los encargados del tramite no podran ver tu solicitud.";
         } else {
             $query->update([
                 'status_request_id' => $request->status_request_id
@@ -261,31 +261,10 @@ class RequestsController extends Controller
             $query->update([
                 'finished' => null
             ]);
-            // Enviar el correo electrónico utilizando la vista personalizada
-            // $email = $query->user->email;
-            $label = 'Solicitud No.' . $query->id . ' ha sido actualizada, los administradores del centro ' . $query->center_id . ' han cambiado el estado a ' . $query->status_request_id . '.';
+
             $response['code'] = 200;
-            $response['message'] = "Actualizacion exitosa";
+            $response['message'] = "Actualización exitosa";
         }
-
-        // Mail::send('emails.request-status-change', [
-        //     'name' => $query->user->name,
-        //     'request' => $query,
-        //     'label' => $label
-        // ], function (Message $message) use ($email) {
-        //     $message->to($email)
-        //         ->subject('Estado De Solicitud Actualizado');
-        // });
-
-        // Log::create([
-        //     'user_id' => auth()->id(), // o null si el usuario no está autenticado
-        //     'request_id' => $query->id,
-        //     'action' => 'Solicitud actualizada',
-        //     'description' => $label,
-        //     'status' => 0,
-        //     'read' => 0
-        // ]);
-
         return response()->json($response);
     }
 

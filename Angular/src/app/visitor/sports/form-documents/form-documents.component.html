@@ -25,7 +25,8 @@
                         <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Anterior
                     </a>
 
-                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/reglamento'">
+                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/reglamento'"
+                        *ngIf="total_documents == 6">
                         Siguiente <i class="bi bi-arrow-right"></i><span
                             class="glyphicon glyphicon-chevron-right"></span>
                     </a>
@@ -65,6 +66,15 @@
                                         <ng-container
                                             *ngIf="activeDocument?.documents_request?.length == 0; else existFile">
                                             <form [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
+                                                <div *ngIf="activeDocument.id == 2">
+                                                    <label for="type_person_id" class="form-label">Tipo de
+                                                        identificación:</label>
+                                                    <select class="form-control" formControlName="type_person_id">
+                                                        <option value="">-Seleccionar-</option>
+                                                        <option value="1">INE</option>
+                                                        <option value="2">Pasaporte</option>
+                                                    </select>
+                                                </div>
                                                 <div>
                                                     <label for="fileInput" class="form-label">Subir
                                                         {{activeDocument?.name}}:</label>

@@ -29,12 +29,10 @@ export class FormConpetitionComponent {
     private fb: FormBuilder,
     private route: ActivatedRoute, private allService: AllVisitorService
   ) {
-
     this.miFormulario.get('competition_type_id')?.valueChanges.subscribe((id) => {
       if (this.newData || this.edit) {
         this.select(id);
       }
-
     });
 
   }
@@ -45,7 +43,7 @@ export class FormConpetitionComponent {
   // Función para calcular la fecha mínima permitida (día siguiente a la fecha actual)
   minDate() {
     const tomorrow = new Date();
-    tomorrow.setDate(new Date().getDate() + 1); // Obtener el día siguiente
+    tomorrow.setDate(new Date().getDate()); // Obtener el día siguiente
     return tomorrow.toISOString().split('T')[0];
   }
 
@@ -79,9 +77,7 @@ export class FormConpetitionComponent {
         this.showConpetition(id);
       }
     });
-
     const numberFields = ['requested_budget'];
-
     numberFields.forEach(field => {
       this.subscribeToNumberFieldChanges(field);
     });
@@ -101,11 +97,8 @@ export class FormConpetitionComponent {
     });
   };
 
-
-
   select(id) {
     if (id == 1) {
-
       this.miFormulario.patchValue({
         'country_id': 120,
         'countries_state_id': 15
@@ -115,7 +108,6 @@ export class FormConpetitionComponent {
         maximum_budget: 2500
       }
       this.getDataCountryStates();
-
       this.validatorTypeCompetition(id);
     }
     else if (id == 2) {
@@ -123,14 +115,11 @@ export class FormConpetitionComponent {
         'country_id': 120,
         'countries_state_id': null
       })
-
       this.debget = {
         minimum_budget: 5000,
         maximum_budget: 10000
       }
-
       this.getDataCountryStates();
-
       this.validatorTypeCompetition(id);
     } else {
       this.debget = {
@@ -141,11 +130,18 @@ export class FormConpetitionComponent {
         'country_id': null,
         'countries_state_id': null
       })
-
       this.validatorTypeCompetition(id);
     }
   }
 
+  toggleAlert() {
+    var alert = document.getElementById("alert");
+    if (alert.style.display === "none") {
+      alert.style.display = "block";
+    } else {
+      alert.style.display = "none";
+    }
+  }
 
   validatorTypeCompetition(id) {
     if (id == 1) {
@@ -181,7 +177,6 @@ export class FormConpetitionComponent {
     })
   }
 
-
   miFormulario: FormGroup = this.fb.group({
     request_id: ['', [Validators.required]],
     name: ['', [Validators.required]],
@@ -189,14 +184,11 @@ export class FormConpetitionComponent {
     countries_state_id: [null, [Validators.required]],
     start_date: ['', [Validators.required]],
     ending_date: ['', [Validators.required]],
-    classify: ['', [Validators.required]],
+    classify: ['', [Validators.nullValidator]],
     justification: ['', [Validators.required]],
     requested_budget: ['', [Validators.required]],
     competition_type_id: ['', [Validators.required]],
   });
-
-
-
 
   showConpetition(id: any): void {
     this.allService.getCompetition(id).subscribe({
@@ -207,7 +199,6 @@ export class FormConpetitionComponent {
           this.populateForm(response);
           this.handleForm(response);
         } else {
-
         }
       }
     });
@@ -228,7 +219,6 @@ export class FormConpetitionComponent {
     this.getDataCountryStates();
     this.miFormulario.disable();
   }
-
 
   handleForm(response: any): void {
 

@@ -23,6 +23,7 @@
     "bootstrap": "^5.3.1",
     "date-fns": "^3.3.1",
     "jquery": "^3.7.1",
+    "ngx-doc-viewer": "^15.0.1",
     "ngx-extended-pdf-viewer": "^18.0.0-beta.1",
     "ngx-sweetalert2": "^0.2.7",
     "rxjs": "~7.8.0",

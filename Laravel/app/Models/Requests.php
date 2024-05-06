@@ -12,6 +12,7 @@ class Requests extends Model
     
     protected $fillable = [
         'invoice',
+        'modality',
         'finished',
         'discipline_id',
         'announcement_id',

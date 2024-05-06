@@ -18,6 +18,7 @@ export class FormDocumentsComponent {
   selectedFilePreview: string | null = null;
   documents: any[] = []; // Inicializamos documents como un arreglo vacío
   primerDocumentoDisponibleIndex: number = 0;
+  total_documents: number = 0;
   activeDocument: any;
   indexMayor: number = 0;
   baseUrl = environment.dowload;
@@ -31,7 +32,8 @@ export class FormDocumentsComponent {
     request_id: ['', Validators.required], // Ejemplo de campo requerido
     file: [null, Validators.required], // Campo de archivo requerido
     type_file: [null, Validators.required],
-    name_file: [null, Validators.required]
+    name_file: [null, Validators.required],
+    type_person_id: [null, Validators.nullValidator]
   });
 
   ngOnInit(): void {
@@ -84,10 +86,10 @@ export class FormDocumentsComponent {
     });
     this.allService.getDocuments(id).subscribe({
       next: (response) => {
-        this.documents = response;
+        this.documents = response.documents;
+        this.total_documents = response.total_documents;
         // Encontrar el índice del primer documento con documents_request de longitud 0
         this.primerDocumentoDisponibleIndex = this.documents.findIndex(item => item.documents_request.length === 0);
-        console.log(this.primerDocumentoDisponibleIndex)
 
         if (this.primerDocumentoDisponibleIndex < 0 || this.primerDocumentoDisponibleIndex >= this.documents.length) {
           this.primerDocumentoDisponibleIndex = this.documents.length - 1;
@@ -99,7 +101,6 @@ export class FormDocumentsComponent {
 
   mostrar(data: any, index) {
     this.indexMayor = index > this.indexMayor ? index : this.indexMayor;
-    console.log(this.indexMayor);
     this.activeDocument = data;
     this.miFormulario.patchValue({
       'file': data.documents_request ?? '',

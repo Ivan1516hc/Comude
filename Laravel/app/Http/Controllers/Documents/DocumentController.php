@@ -73,7 +73,14 @@ class DocumentController extends Controller
             }
             $maxFileSize = 1024  * 1024; // 1MB
             if ($file->getSize() > $maxFileSize) {
-                throw new \Exception('El tamaño del archivo es demasiado grande.');
+                if($fileExtension == 'pdf'){
+                    throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace "https://www.ilovepdf.com/es/comprimir_pdf".');
+                }
+                else if ($fileExtension == 'jpg' || $fileExtension == 'jpeg' || $fileExtension == 'png'){
+                    throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace "https://www.iloveimg.com/es/comprimir-imagen".');
+                }else{
+                    throw new \Exception('El tamaño del archivo es demasiado grande.');
+                }
             }
             $customFileName = 'solicitud_' . $request->request_id . '_' . strtolower(str_replace(' ', '_', $request->name_file)) . '.' . $fileExtension;
             $filePath = Storage::disk('sports')->put($customFileName, file_get_contents($file));
@@ -114,8 +121,10 @@ class DocumentController extends Controller
             }])
             ->get();
 
+        $total_documents = DocumentsRequest::where('request_id', $id)->get()->count();
 
-        return response()->json($documents);
+
+        return response()->json(['documents' => $documents, 'total_documents' => $total_documents]);
     }
 
 

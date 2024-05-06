@@ -22,10 +22,12 @@ class Aplicant extends Authenticatable implements JWTSubject
         'email',
         'password',
         'phone_number',
+        'second_phone_number',
         'curp',
         'rfc',
         'birtdate',
-        'bank_account_id'
+        'bank_account_id',
+        'read_regulations'
     ];
     /**
      * The attributes that should be hidden for arrays.

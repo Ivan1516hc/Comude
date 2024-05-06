@@ -262,7 +262,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DocumentProcedure::create([
-            'name' => 'Curriculum Vitae',
+            'name' => 'Curriculum Deportivo',
             'descripcion' => 'Test',
             'force' => 1,
             'procedure_id' => 1,

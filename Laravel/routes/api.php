@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Documents\DocumentController;
 use App\Http\Controllers\Documents\ImportantArchievementController;
 use App\Http\Controllers\Documents\RequestJustificationController;
+use App\Http\Controllers\Exports\ComiteController;
 use App\Http\Controllers\Payments\BankAccountController;
 use App\Http\Controllers\SportProcedure\CompetitionController;
 use Illuminate\Http\Request;
@@ -77,7 +78,7 @@ Route::middleware('cors')->group(function () {
 
         Route::put('request/update', [RequestsController::class, 'updateStatus']);
         Route::get('request/show/{id}', [RequestsController::class, 'show']);
-        
+
         Route::get('request/formData/{id}', [RequestsController::class, 'showData']);
 
         Route::get('request/search/{value}', [RequestsController::class, 'search']);
@@ -150,6 +151,10 @@ Route::middleware('cors')->group(function () {
         Route::get('request/aplicant/show', [AplicantController::class, 'show']);
         Route::put('request/aplicant/update', [AplicantController::class, 'update']);
         Route::patch('request/aplicant/update/password', [AplicantController::class, 'updatePassword']);
+        Route::get('request/aplicant/read-regulations', [AplicantController::class, 'readRegulations']);
+
+        //Appraisal Routs
+        Route::get('request/appraisal/index', [RequestsController::class, 'showAppraisal']);
 
         Route::get('request/message/form', [MessageRequestController::class, 'typeForm']);
         Route::get('request/message/history', [MessageRequestController::class, 'index']);
@@ -159,6 +164,9 @@ Route::middleware('cors')->group(function () {
         Route::get('catalog/discipline', [CatalogController::class, 'getDataDiscipline']);
         Route::get('catalog/competition', [CatalogController::class, 'getDataCompetition']);
         Route::get('catalog/country-state/{id}', [CatalogController::class, 'getDataCountryStates']);
+
+        //Export excel files
+        Route::post('/export/excel-comite', [ComiteController::class, 'comiteExport']);
     });
 });
 

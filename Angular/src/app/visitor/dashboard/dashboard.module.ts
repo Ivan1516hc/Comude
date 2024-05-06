@@ -2,9 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { FormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { DashboardComponent } from './dashboard.component';
 import { VisitorModule } from '../visitor.module';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
 
 
 @NgModule({
@@ -14,8 +15,10 @@ import { VisitorModule } from '../visitor.module';
   imports: [
     CommonModule,
     DashboardRoutingModule,
+    ReactiveFormsModule,
     FormsModule,
-    VisitorModule
+    VisitorModule,
+    NgxDocViewerModule
   ]
 })
 export class DashboardModule { }

@@ -42,6 +42,8 @@
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Nombre completo</div>
                                                 <div class="col-lg-9 col-md-8">{{miFormulario.controls['name'].value}}
+                                                    {{miFormulario.controls['last_name'].value}}
+                                                    {{miFormulario.controls['mother_last_name'].value}}
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -68,24 +70,60 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-lg-3 col-md-4 label">Telefono</div>
+                                                <div class="col-lg-3 col-md-4 label">Telefono celular</div>
                                                 <div class="col-lg-9 col-md-8">
                                                     {{miFormulario.controls['phone_number'].value}}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label">Telefono</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {{miFormulario.controls['second_phone_number'].value}}</div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade  profile-edit pt-3" id="profile-edit">
                                             <form [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
                                                 <div class="row mb-3">
                                                     <label for="name"
-                                                        class="col-md-4 col-lg-3 col-form-label required">Nombre
-                                                        completo</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="name" type="text"
-                                                            formControlName="name" class="form-control" id="name"></div>
+                                                        class="col-md-4 col-lg-3 col-form-label required">Nombre</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="name" type="text" formControlName="name"
+                                                            class="form-control" id="name">
+                                                    </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['name'].errors && miFormulario.controls['name'].touched">
                                                         Nombre requerido.
                                                     </span>
                                                 </div>
+
+                                                <div class="row mb-3">
+                                                    <label for="last_name"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Apellido
+                                                        paterno</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="last_name" type="text" formControlName="last_name"
+                                                            class="form-control" id="last_name">
+                                                    </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['last_name'].errors && miFormulario.controls['last_name'].touched">
+                                                        Apellido paterno requerido.
+                                                    </span>
+                                                </div>
+
+                                                <div class="row mb-3">
+                                                    <label for="mother_last_name"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Apellido
+                                                        materno</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="mother_last_name" type="text"
+                                                            formControlName="mother_last_name" class="form-control"
+                                                            id="mother_last_name">
+                                                    </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['mother_last_name'].errors && miFormulario.controls['mother_last_name'].touched">
+                                                        Apellido materno requerido.
+                                                    </span>
+                                                </div>
+
                                                 <div class="row mb-3">
                                                     <label for="curp"
                                                         class="col-md-4 col-lg-3 col-form-label required">CURP</label>
@@ -94,40 +132,64 @@
                                                             formControlName="curp">
                                                     </div>
                                                 </div>
+
                                                 <div class="row mb-3">
                                                     <label for="rfc"
                                                         class="col-md-4 col-lg-3 col-form-label">RFC</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="rfc" type="text"
-                                                            class="form-control" id="rfc" formControlName="rfc">
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="rfc" type="text" class="form-control" id="rfc"
+                                                            formControlName="rfc">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['rfc'].errors && miFormulario.controls['rfc'].touched">
                                                         El RFC debe de tener 13 caracteres de longitud.
                                                     </span>
                                                 </div>
+
                                                 <div class="row mb-3">
                                                     <label for="birtdate"
-                                                        class="col-md-4 col-lg-3 col-form-label required">Fecha
-                                                        de nacimiento</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="birtdate" type="date"
-                                                            class="form-control" id="birtdate"
-                                                            formControlName="birtdate"></div>
+                                                        class="col-md-4 col-lg-3 col-form-label required">Fecha de
+                                                        nacimiento</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="birtdate" type="date" class="form-control"
+                                                            id="birtdate" formControlName="birtdate">
+                                                    </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['birtdate'].errors && miFormulario.controls['birtdate'].touched">
                                                         Fecha de nacimiento requerida.
                                                     </span>
                                                 </div>
+
                                                 <div class="row mb-3">
                                                     <label for="phone_number"
-                                                        class="col-md-4 col-lg-3 col-form-label required">Telefono</label>
-                                                    <div class="col-md-8 col-lg-9"> <input name="phone_number"
-                                                            type="text" class="form-control" id="phone_number"
-                                                            maxlength="10" minlength="10"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Teléfono
+                                                        celular</label>
+                                                    <label for="phone_number"
+                                                        class="col-md-4 col-lg-3 col-form-label required">Número de
+                                                        teléfono celular</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="phone_number" type="text" class="form-control"
+                                                            id="phone_number" maxlength="10" minlength="10"
                                                             formControlName="phone_number">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['phone_number'].errors && miFormulario.controls['phone_number'].touched">
-                                                        Número de telefonico requerido con logitud de 10 números.
+                                                        Número celular requerido con logitud de 10 números.
+                                                    </span>
+                                                </div>
+
+                                                <div class="row mb-3">
+                                                    <label for="second_phone_number"
+                                                        class="col-md-4 col-lg-3 col-form-label">Número de
+                                                        teléfono</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <input name="second_phone_number" type="text"
+                                                            class="form-control" id="second_phone_number" maxlength="10"
+                                                            minlength="10" formControlName="second_phone_number">
+                                                    </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['second_phone_number'].errors && miFormulario.controls['second_phone_number'].touched">
+                                                        Número de telefonico con logitud de 10 números.
                                                     </span>
                                                 </div>
 

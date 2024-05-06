@@ -6,6 +6,7 @@
             align-items: center;
         }
     </style>
+
     <main id="mainVisitor" class="main">
         <div class="row">
             <div class="col-10 offset-1 content-center">
@@ -122,10 +123,18 @@
                                             </span>
                                         </div>
 
-
-
                                         <div class="col-12 col-md-6 col-lg-4">
-                                            <label class="form-label">Clasifica a</label>
+                                            <label class="form-label">
+                                                Clasifica a
+                                                <button type="button" class="btn btn-secondary btn-sm"
+                                                    (click)="toggleAlert()">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </button>
+                                                <span id="alert" role="alert" class="alert-info m-1"
+                                                    style="display: none;">
+                                                    This is an alert message.
+                                                </span>
+                                            </label>
                                             <input type="text" class="form-control" formControlName="classify">
                                         </div>
 
@@ -135,7 +144,8 @@
                                             <div class="input-group mb-2">
                                                 <span class="input-group-text">$</span>
                                                 <input type="text" class="form-control"
-                                                    formControlName="requested_budget" maxlength="6">
+                                                    formControlName="requested_budget" maxlength="6"
+                                                    [max]="debget?.maximum_budget">
                                             </div>
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['requested_budget'].errors && miFormulario.controls['requested_budget'].touched">

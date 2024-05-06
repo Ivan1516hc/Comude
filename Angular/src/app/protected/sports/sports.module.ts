@@ -8,6 +8,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SportsComponent } from './sports.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AppraisalComponent } from './appraisal/appraisal.component';
+import { ValidationComponent } from './validation/validation.component';
 
 
 @NgModule({
@@ -15,7 +17,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RequestsComponent,
     BeneficiariesComponent,
     DashboardComponent,
-    SportsComponent
+    SportsComponent,
+    AppraisalComponent,
+    ValidationComponent
   ],
   imports: [
     CommonModule,

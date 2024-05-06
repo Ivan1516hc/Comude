@@ -8,10 +8,10 @@ import { Component } from '@angular/core';
 export class SportsComponent {
 
   opciones = [
-    { icon: 'bi bi-grid', title: 'Dashboard', route: '/admin/dashboard' },
-    { icon: 'bi bi-file-earmark-zip', title: 'Solicitudes', route: '/admin/solicitudes' },
-    { icon: 'bi bi-person-fill', title: 'Beneficiarios', route: '/admin/beneficiarios' },
+    { icon: 'bi bi-speedometer', title: 'Dashboard', route: '/admin/dashboard' },
+    { icon: 'bi bi-file-break-fill', title: 'Validaciones', route: '/admin/validaciones' },
+    { icon: 'bi bi-file-check-fill', title: 'Evaluaciones Comite', route: '/admin/evaluaciones-comite' },
+    { icon: 'bi bi-people-fill', title: 'Beneficiarios', route: '/admin/beneficiarios' },
   ];
   urlLogo = '/admin/dashboard';
-
 }

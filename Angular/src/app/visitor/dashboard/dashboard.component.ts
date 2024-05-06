@@ -3,6 +3,7 @@ import { AllVisitorService } from '../services/all-visitor.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { DataRequest, Datum } from '../interfaces/request-aplicant';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,14 +12,23 @@ import { DataRequest, Datum } from '../interfaces/request-aplicant';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private router: Router, private visitorService: AllVisitorService) {
+  constructor(private router: Router, private fb: FormBuilder, private visitorService: AllVisitorService) {
   }
   catalog: any;
   requests: DataRequest;
+  readRegulation: boolean = false;
   competition: number;
-  discipline: number;
   hasBankAccount: boolean = false;
   currentUrl = window.location.pathname;
+
+  miFormulario: FormGroup = this.fb.group({
+    modality: ['', [Validators.required]],
+    discipline_id: ['', [Validators.required]]
+  });
+
+  miFormularioRegulations: FormGroup = this.fb.group({
+    read_regulation: ['', [Validators.required, Validators.requiredTrue]]
+  });
 
   isCompetitionOver(endingDate: any): boolean {
     const competitionEndDate = new Date(endingDate);
@@ -38,6 +48,7 @@ export class DashboardComponent implements OnInit {
         if (response.code == 200 || response.code == 404) {
           this.requests = response.data ?? null;
           this.hasBankAccount = response.hasBankAccount ?? null;
+          this.readRegulation = response.reedRegulations ?? false;
         } else {
           Swal.fire({
             position: 'center',
@@ -53,7 +64,7 @@ export class DashboardComponent implements OnInit {
   }
 
   storeRequest() {
-    const data = { 'discipline_id': this.discipline }
+    const data = this.miFormulario.value;
     this.visitorService.storeRequest(data).subscribe({
       next: (response) => {
         if (response.code == 201) {
@@ -99,6 +110,40 @@ export class DashboardComponent implements OnInit {
         }
       }, error: (err) => {
 
+      }
+    })
+  }
+
+  readRegulations() {
+    if (this.miFormularioRegulations.invalid) {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes aceptar el reglamento para continuar.',
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
+    this.visitorService.readRegulations().subscribe({
+      next: (response) => {
+        if (response.code == 200) {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000
+          })
+          this.readRegulation = true;
+        } else {
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000
+          })
+        }
       }
     })
   }

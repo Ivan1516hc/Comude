@@ -1,0 +1,158 @@
+<p>validation works!</p>
+<app-sports>
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>Evalución de Comite</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Evaluaciones Comite</li>
+                </ol>
+            </nav>
+        </div>
+        <section class="section dashboard">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tabla de solicitudes</h5>
+                    <ng-container *ngIf="data?.data?.length > 0; else sinResult">
+                        <div class="search-container">
+                            <ul class="nav nav-tabs w-100" id="myTabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
+                                        (click)="search(1)">Todas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#search">Buscador</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                        (click)="search('status:3')">Aceptadas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                        (click)="search('status:2')">Pendientes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                        (click)="search('status:4')">Rechazadas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                        (click)="search('status:8')">En
+                                        modificación</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="personalizada" role="tabpanel">
+                                    <!-- Aquí puedes mostrar la tabla completa -->
+                                </div>
+                                <div class="tab-pane fade" id="search" role="tabpanel">
+                                    <div class="content-section">
+                                        <div class="card xu-card">
+                                            <div class="card-body">
+                                                <input type="text" class="form-control mt-2" placeholder="Buscar..."
+                                                    [(ngModel)]="searchTerm" (input)="onSearchTermChange(searchTerm)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Aquí puedes agregar más pestañas con su contenido según sea necesario -->
+                            </div>
+                        </div>
+    
+                        <div class="table-container" >
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" *ngFor="let header of headers">{{header}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of data.data; index as i">
+                                        <th scope="row">{{i+1}}</th>
+                                        <th>{{item.invoice}}</th>
+                                        <td>{{item.aplicant?.name}}</td>
+                                        <td>{{item.discipline?.name}}</td>
+                                        <td>{{item.competition?.competition_type?.name}}</td>
+                                        <td>{{item.competition?.start_date}} a {{item.competition?.ending_date}}</td>
+                                        <!-- <td>{{calculateAge(item.beneficiaries[0].fechanacimiento) }}</td> -->
+                                        <!-- <td>{{formatDate(item.finished) ?? null}}</td> -->
+                                        <td>
+                                            <div class="text-center"
+                                                [ngClass]="item.status_request_id === 4 ? 'alert-danger' : item.status_request_id === 2 ? 'alert-warning' : item.status_request_id === 8 ? 'alert-warning' :'alert-success'">
+                                                {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id == 3
+                                                ?
+                                                'Aceptado' :
+                                                (item.status_request_id == 4 ? 'Rechazado'
+                                                : (item.status_request_id == 8 ? 'En modificación' :(item.status_request_id
+                                                == 7 ?
+                                                'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
+                                        </td>
+                                        <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
+                                       <div class="alert-success">Cita Agendada</div>
+                                    </td> -->
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                                    id="optionsDropdown_{{item.id}}" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    Opciones
+                                                </button>
+                                                <!-- Aplica la clase "striped" de manera condicional a cada elemento de menú -->
+                                                <ul class="dropdown-menu"
+                                                    [attr.aria-labelledby]="'optionsDropdown_' + item.id">
+    
+                                                    <li *ngIf="item.status_request_id == 9">
+                                                        <button class="dropdown-item"
+                                                            (click)="changeStatus({ id: item.id, status_request_id: 3 })">Aceptar</button>
+                                                    </li>
+    
+                                                    <li *ngIf="item.status_request_id == 2">
+                                                        <button class="dropdown-item"
+                                                            (click)="changeStatus({ id: item.id, status_request_id: 4 })">Rechazar</button>
+                                                    </li>
+    
+                                                    <li *ngIf="item.status_request_id == 4">
+                                                        <button class="dropdown-item"
+                                                            (click)="changeStatus({ id: item.id, status_request_id: 2 })">Reactivar</button>
+                                                    </li>
+    
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
+                            <ul class="pagination">
+                                <li class="page-item" *ngFor="let item of data.links; let i = index">
+                                    <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                                        (click)="onPageChange(item.url)" *ngIf="item.url != null">
+                                        <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
+                                        <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
+                                        <ng-container
+                                            *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
+                                            {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' :
+                                            item.label
+                                            }}
+                                        </ng-container>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </ng-container>
+
+                    <!-- Aquí puedes mostrar un mensaje de error si no se encontraron resultados -->
+                    <ng-template #sinResult>
+                        <div class="alert alert-danger mt-5" role="alert">
+                            No se encontraron resultados
+                        </div>
+                    </ng-template>
+                    
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+</app-sports>
