@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AllService } from '../../services/all.service';
 
+import * as XLSX from 'xlsx';
+
 @Component({
   selector: 'app-appraisal',
   templateUrl: './appraisal.component.html',
@@ -289,5 +291,35 @@ export class AppraisalComponent {
     }
 
     return `${hour}:${minutesStr} ${zone}`;
+  }
+
+
+
+  /*** FUNCION PARA LEER EXCEL */
+  ExcelData:any;
+  ReadExcel(event: any){
+    let file = event.target.files[0];
+
+    let fileReader = new FileReader();
+    fileReader.readAsBinaryString(file);
+    fileReader.onload = (e)=>{
+      var workBook = XLSX.read(fileReader.result, {type:'binary'});
+      var sheetNames = workBook.SheetNames;
+      this.ExcelData = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
+      ///iterar para agregar campo comnfirmed
+      for(let item of this.ExcelData){
+        item.confirmed = false;
+      }
+    }
+  }
+
+  getColumns(): string[] {
+    // Obtener todas las claves únicas de los objetos en el JSON
+    const allColumn = this.ExcelData.reduce((columns, item) => {
+      return columns.concat(Object.keys(item));
+    }, [])
+    .filter((column, index, self) => self.indexOf(column) === index);
+
+    return allColumn;
   }
 }
