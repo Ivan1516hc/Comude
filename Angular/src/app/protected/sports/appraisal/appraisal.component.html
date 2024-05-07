@@ -14,6 +14,8 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Tabla de solicitudes</h5>
+                    <input type="file" (change)="ReadExcel($event);">
+
                     <ng-container *ngIf="data?.data?.length > 0; else sinResult">
                         <div class="search-container">
                             <ul class="nav nav-tabs w-100" id="myTabs">
@@ -150,7 +152,24 @@
                         </div>
                     </ng-template>
                     
-                    
+                    <table *ngIf="ExcelData" class="table">
+                        <thead>
+                          <tr>
+                            <ng-container *ngFor="let column of getColumns()">
+                                <th  *ngIf="column != 'confirmed'">{{ column }}</th>
+                            </ng-container>
+                            <th>Confirmar</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of ExcelData">
+                            <ng-container *ngFor="let column of getColumns()">
+                                <td  *ngIf="column != 'confirmed'">{{ item[column] }}</td>
+                            </ng-container>
+                            <td>{{item.confirmed}} <input type="checkbox" [value]="item.confirmed" (change)="item.confirmed = !item.confirmed"></td>
+                          </tr>
+                        </tbody>
+                      </table>
                 </div>
             </div>
         </section>
