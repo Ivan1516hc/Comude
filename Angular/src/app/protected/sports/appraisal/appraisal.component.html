@@ -14,6 +14,8 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Tabla de solicitudes</h5>
+                    <input type="file" (change)="ReadExcel($event);">
+
                     <div class="text-end" *ngIf="data?.data?.length > 0">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportComiteModal"><i
                                 class="fa fa-download"></i>Comite</button>
@@ -156,6 +158,25 @@
                             No se encontraron resultados
                         </div>
                     </ng-template>
+                    
+                    <table *ngIf="ExcelData" class="table">
+                        <thead>
+                          <tr>
+                            <ng-container *ngFor="let column of getColumns()">
+                                <th  *ngIf="column != 'confirmed'">{{ column }}</th>
+                            </ng-container>
+                            <th>Confirmar</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of ExcelData">
+                            <ng-container *ngFor="let column of getColumns()">
+                                <td  *ngIf="column != 'confirmed'">{{ item[column] }}</td>
+                            </ng-container>
+                            <td>{{item.confirmed}} <input type="checkbox" [value]="item.confirmed" (change)="item.confirmed = !item.confirmed"></td>
+                          </tr>
+                        </tbody>
+                      </table>
 
 
                 </div>
