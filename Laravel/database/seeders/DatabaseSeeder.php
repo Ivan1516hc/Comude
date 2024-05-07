@@ -149,35 +149,29 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-
         //Status de solicitud
         StatusRequest::create([
             'name'  => 'SIN TERMINAR'
         ]);
         StatusRequest::create([
+            'name'  => 'ENVIADA'
+        ]);
+        StatusRequest::create([
             'name'  => 'EN REVISIÓN'
-        ]);
-        StatusRequest::create([
-            'name'  => 'ACEPTADO'
-        ]);
-        StatusRequest::create([
-            'name'  => 'RECHAZADO'
-        ]);
-        StatusRequest::create([
-            'name'  => 'EN ESPERA'
-        ]);
-        StatusRequest::create([
-            'name'  => 'CANCELADA'
-        ]);
-        StatusRequest::create([
-            'name'  => 'COMPLETADA'
         ]);
         StatusRequest::create([
             'name'  => 'MODIFICANDO'
         ]);
         StatusRequest::create([
-            'name'  => 'ENVIADA'
+            'name'  => 'ACEPTADA'
         ]);
+        StatusRequest::create([
+            'name'  => 'CANCELADA'
+        ]);
+        StatusRequest::create([
+            'name'  => 'RECHAZADA'
+        ]);
+
 
         //Roles de usuario
         Role::create([

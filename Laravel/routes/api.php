@@ -167,6 +167,7 @@ Route::middleware('cors')->group(function () {
 
         //Export excel files
         Route::post('/export/excel-comite', [ComiteController::class, 'comiteExport']);
+        Route::post('/export/excel-bank-account', [App\Http\Controllers\Exports\BankAccountController::class, 'bankAccountExport']);
     });
 });
 

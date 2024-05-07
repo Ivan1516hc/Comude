@@ -17,10 +17,10 @@ export class AppraisalComponent {
   request: Requests;
   hayError: boolean = false;
   data: any = [];
-  headers = ['No.','Folio', 'Solicitante', 'Disciplina','Tipo','Fechas', 'Enviada', 'Estado'];
+  headers = ['No.', 'Folio', 'Solicitante', 'Disciplina', 'Tipo', 'Fechas', 'Enviada', 'Estado'];
 
 
-  constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) { 
+  constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) {
     this.searchTermChanged.pipe(
       debounceTime(1000) // Cambia este valor según el tiempo que desees esperar después de escribir
     ).subscribe(() => {
@@ -123,11 +123,14 @@ export class AppraisalComponent {
     date: ['', [Validators.required]],
     hour: ['', [Validators.required]]
   });
+  miFormularioExport: FormGroup = this.fb.group({
+    begin: ['', [Validators.required]],
+    finish: ['', [Validators.required]]
+  });
 
   toggleHistory(): void {
     this.showHistory = !this.showHistory;
   }
-
 
   showPdf(id: any) {
     this.router.navigateByUrl('/guarderia/solicitudes/' + id);
@@ -289,5 +292,37 @@ export class AppraisalComponent {
     }
 
     return `${hour}:${minutesStr} ${zone}`;
+  }
+
+  exportComite() {
+    if (this.miFormularioExport.invalid) {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de seleccionar un rango de fechas para poder exportar el reporte.',
+        showConfirmButton: false,
+        timer: 2000
+      })
+      return;
+    }
+
+    this.allService.exportComite(this.miFormularioExport.value).subscribe({
+      next: (response) => {
+        this.downLoadFile(response, "application/ms-excel", "reporte-comite.xlsx");
+      }, error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+
+  downLoadFile(data: any, type: string, fileName: string) {
+    let blob = new Blob([data], { type: type },);
+    const objectUrl: string = URL.createObjectURL(blob);
+    const a: HTMLAnchorElement = document.createElement('a') as HTMLAnchorElement;
+
+    a.href = objectUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
   }
 }

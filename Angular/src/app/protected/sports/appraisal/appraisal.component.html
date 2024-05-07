@@ -14,6 +14,10 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Tabla de solicitudes</h5>
+                    <div class="text-end" *ngIf="data?.data?.length > 0">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportComiteModal"><i
+                                class="fa fa-download"></i>Comite</button>
+                    </div>
                     <ng-container *ngIf="data?.data?.length > 0; else sinResult">
                         <div class="search-container">
                             <ul class="nav nav-tabs w-100" id="myTabs">
@@ -59,8 +63,8 @@
                                 <!-- Aquí puedes agregar más pestañas con su contenido según sea necesario -->
                             </div>
                         </div>
-    
-                        <div class="table-container" >
+
+                        <div class="table-container">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -80,11 +84,13 @@
                                         <td>
                                             <div class="text-center"
                                                 [ngClass]="item.status_request_id === 4 ? 'alert-danger' : item.status_request_id === 2 ? 'alert-warning' : item.status_request_id === 8 ? 'alert-warning' :'alert-success'">
-                                                {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id == 3
+                                                {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id
+                                                == 3
                                                 ?
                                                 'Aceptado' :
                                                 (item.status_request_id == 4 ? 'Rechazado'
-                                                : (item.status_request_id == 8 ? 'En modificación' :(item.status_request_id
+                                                : (item.status_request_id == 8 ? 'En modificación'
+                                                :(item.status_request_id
                                                 == 7 ?
                                                 'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
                                         </td>
@@ -101,22 +107,22 @@
                                                 <!-- Aplica la clase "striped" de manera condicional a cada elemento de menú -->
                                                 <ul class="dropdown-menu"
                                                     [attr.aria-labelledby]="'optionsDropdown_' + item.id">
-    
+
                                                     <li *ngIf="item.status_request_id == 9">
                                                         <button class="dropdown-item"
                                                             (click)="changeStatus({ id: item.id, status_request_id: 3 })">Aceptar</button>
                                                     </li>
-    
+
                                                     <li *ngIf="item.status_request_id == 2">
                                                         <button class="dropdown-item"
                                                             (click)="changeStatus({ id: item.id, status_request_id: 4 })">Rechazar</button>
                                                     </li>
-    
+
                                                     <li *ngIf="item.status_request_id == 4">
                                                         <button class="dropdown-item"
                                                             (click)="changeStatus({ id: item.id, status_request_id: 2 })">Reactivar</button>
                                                     </li>
-    
+
                                                 </ul>
                                             </div>
                                         </td>
@@ -133,7 +139,8 @@
                                         <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
                                         <ng-container
                                             *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
-                                            {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' :
+                                            {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»'
+                                            :
                                             item.label
                                             }}
                                         </ng-container>
@@ -149,10 +156,48 @@
                             No se encontraron resultados
                         </div>
                     </ng-template>
-                    
-                    
+
+
                 </div>
             </div>
         </section>
     </main>
+
+    <div class="modal fade" id="exportComiteModal" tabindex="-1" aria-labelledby="exportComiteModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="exportComiteModalLabel">Exportar excel Comite</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                     <form class="form" [formGroup]="miFormularioExport">
+                        <div class="mb-3">
+                           <label for="dateInput" class="form-label">Fecha inicio</label>
+                           <input type="date" class="form-control" placeholder="Ingrese la fecha de inicio"
+                              formControlName="begin">
+                           <span class="form-text text-danger form"
+                              *ngIf="miFormularioExport.controls['begin'].errors && miFormularioExport.controls['begin'].touched">
+                              Fecha de inicio requerida.
+                           </span>
+                        </div>
+                        <div class="mb-3">
+                           <label for="dateInput" class="form-label">Fecha fin</label>
+                           <input type="date" class="form-control" placeholder="Ingrese la fecha de fin"
+                              formControlName="finish">
+                           <span class="form-text text-danger form"
+                              *ngIf="miFormularioExport.controls['finish'].errors && miFormularioExport.controls['finish'].touched">
+                              Fecha de fin requerida.
+                           </span>
+                        </div>
+                     </form>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                     <button type="button" class="btn btn-success" (click)="exportComite()">Exportar</button>
+                  </div>
+               </div>
+            </div>
+         </div>
 </app-sports>

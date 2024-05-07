@@ -11,15 +11,12 @@
          </nav>
       </div>
       <section class="section dashboard">
-
-
          <div class="card">
             <div class="card-body">
-               <button class="btn btn-primary" (click)="exportComite()"><i class="fa fa-download"></i>Comite</button>
                <h5 class="card-title">Tabla de solicitudes</h5>
 
                <ng-container *ngIf="data?.data?.length > 0; else sinResult">
-                  <div class="search-container">
+                  <div class="search-container mt-2">
                      <ul class="nav nav-tabs w-100" id="myTabs">
                         <li class="nav-item">
                            <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
@@ -120,7 +117,7 @@
                                        </li>
                                        <li>
                                           <button class="dropdown-item" data-bs-toggle="modal"
-                                             data-bs-target="#datosModal" (click)="selectData(item.id)">Ver
+                                             data-bs-target="#dataModal" (click)="selectData(item.id)">Ver
                                              información</button>
                                        </li>
                                     </ul>
@@ -156,37 +153,6 @@
                      No se encontraron resultados
                   </div>
                </ng-template>
-            </div>
-         </div>
-
-         <div class="modal fade" id="quoteModal" tabindex="-1" aria-labelledby="quoteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <h5 class="modal-title" id="quoteModalLabel">Agendar Cita para {{id?.beneficiaries[0]?.nombre ??
-                        null}}
-                        {{id?.beneficiaries[0]?.apaterno ?? null}}</h5>
-                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                     <form class="form" [formGroup]="miFormulario">
-                        <div class="mb-3">
-                           <label for="dateInput" class="form-label">Fecha</label>
-                           <input type="date" class="form-control" id="dateInput" placeholder="Ingrese la fecha"
-                              formControlName="date" min="{{ minDate() }}">
-                        </div>
-                        <div class="mb-3">
-                           <label for="timeInput" class="form-label">Hora</label>
-                           <input type="time" class="form-control" id="timeInput" placeholder="Ingrese la hora"
-                              formControlName="hour">
-                        </div>
-                     </form>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                     <button type="button" class="btn btn-success" (click)="schedule()">Agendar</button>
-                  </div>
-               </div>
             </div>
          </div>
 
@@ -259,177 +225,78 @@
             </div>
          </div>
 
-         <div class="modal fade  py-5" id="locationModal" tabindex="-1" role="dialog"
-            aria-labelledby="locationModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-               <div class="modal-content  rounded-4 shadow">
-                  <div class="modal-header border-bottom-0">
-                     <h5 class="modal-title" id="serviceModalLabel">Disponibilidad</h5>
-                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body py-0 text-justify-custom">
-                     <!-- <h5 class="mt-2"><strong>Centros</strong></h5> -->
-                     <div>
-                        <label class="form-label">Centros con Guarderia:</label>
-                        <select class="form-control" [(ngModel)]="selectLocation" (change)="getCreches()">
-                           <option value="">-Seleccionar-</option>
-                           <option *ngFor="let item of locations" [value]="item?.id">{{item?.name}}
-                           </option>
-                        </select>
-                     </div>
-                     <div *ngIf="selectLocation != null && creches.length >= 1">
-                        <label class="form-label">Cupos por Grado:</label>
-                        <select class="form-control" [(ngModel)]="selectCreche">
-                           <option value="">-Seleccionar-</option>
-                           <option *ngFor="let item of creches" [value]="item?.id">{{item?.name}} - CUPO:
-                              {{item?.total_capacity - item?.total_sum}}
-                           </option>
-                        </select>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
 
-         <div class="modal fade py-5" id="datosModal" tabindex="-1" role="dialog" aria-labelledby="datosModalLabel"
+
+         <div class="modal fade py-5" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                <div class="modal-content rounded-4 shadow">
+
                   <div class="modal-header border-bottom-0">
                      <ul class="nav nav-tabs w-100" id="myTabs">
                         <li class="nav-item">
-                           <a class="nav-link active" id="tab-nino" data-bs-toggle="tab" href="#tabNino">Niño</a>
+                           <a class="nav-link active" id="tab-general" data-bs-toggle="tab"
+                              href="#tabGeneral">General</a>
                         </li>
+
                         <li class="nav-item">
-                           <a class="nav-link" id="tab-padres" data-bs-toggle="tab" href="#tabPadres">Trabajador</a>
+                           <a class="nav-link" id="tab-aplicant" data-bs-toggle="tab"
+                              href="#tabAplicant">Solicitante</a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link" id="tab-vivienda" data-bs-toggle="tab" href="#tabVivienda">Vivienda</a>
-                         </li> -->
+
                         <li class="nav-item">
-                           <a class="nav-link" id="tab-referencias" data-bs-toggle="tab"
-                              href="#tabReferencias">Referencias</a>
+                           <a class="nav-link" id="tab-competition" data-bs-toggle="tab"
+                              href="#tabCompetition">Competición</a>
                         </li>
+
                         <li class="nav-item">
-                           <a class="nav-link" id="tab-documentos" data-bs-toggle="tab"
-                              href="#tabDocumentos">Documentos</a>
+                           <a class="nav-link" id="tab-bank-account" data-bs-toggle="tab" href="#tabBankAccount">Cuenta
+                              bancaria</a>
+                        </li>
+
+                        <li class="nav-item">
+                           <a class="nav-link" id="tab-important-archievents" data-bs-toggle="tab"
+                              href="#tabImportantArchievents">Logros importantes</a>
+                        </li>
+
+                        <li class="nav-item">
+                           <a class="nav-link" id="tab-documents" data-bs-toggle="tab"
+                              href="#tabDocuments">Documentos</a>
                         </li>
                      </ul>
                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
+
+
                   <div class="modal-body py-0 text-justify-custom">
                      <div class="tab-content">
-                        <!-- Pestaña de Niño -->
-                        <div class="tab-pane fade show active" id="tabNino" *ngIf="dataShow && dataShow.child ">
+                        <!-- Pestaña info General -->
+                        <div class="tab-pane fade show active" id="tabGeneral">
                            <div class="content-section">
                               <div class="card xu-card">
                                  <div class="card-body">
-                                    <h6 class="card-title">{{ dataShow.child?.nombre }} {{ dataShow.child?.apaterno }}
-                                       {{
-                                       dataShow.child?.amaterno }}</h6>
-                                    <p class="card-text"><b>CURP:</b> {{ dataShow.child?.curp }}</p>
-                                    <p class="card-text"><b>Fecha de Nacimiento:</b> {{ dataShow.child?.fechanacimiento
-                                       }}</p>
-                                    <p class="card-text"><b>Edad:</b> {{ calculateAge(dataShow.child?.fechanacimiento)
-                                       }}</p>
-                                    <p class="card-text"><b>Sexo:</b> {{ dataShow.child?.sexo == 2? 'MUJER' : 'HOMBRE'
-                                       }}</p>
-                                    <p class="card-text"><b>Tipo de sangre:</b> {{ dataShow.child?.tipo_sangre }}</p>
-                                    <!-- Agrega más información según tus necesidades con las clases xu-style y xu-card -->
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-
-                        <!-- Pestaña de Padres -->
-                        <div class="tab-pane fade" id="tabPadres"
-                           *ngIf="dataShow && dataShow.parents && dataShow.parents.length > 0">
-                           <div class="content-section">
-                              <div *ngFor="let padre of dataShow.parents" class="card xu-card">
-                                 <div class="card-body">
-                                    <h6 class="card-title">{{ padre?.nombre }} {{ padre?.apaterno }} {{ padre?.amaterno
-                                       }}
-                                    </h6>
-                                    <div class="row">
-                                       <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>CURP:</b> {{ padre?.curp }}</p>
-                                          <p class="card-text"><b>Fecha de nacimiento:</b> {{ padre?.fechanacimiento }}
-                                          </p>
-                                          <p class="card-text"><b>Tipo de sangre:</b> {{ padre?.tipo_sangre }}</p>
-                                          <p class="card-text"><b>Lugar de nacimiento:</b> {{
-                                             padre?.economic[0].lugar_nacimiento
-                                             }}</p>
+                                    <!-- Add content for General tab here -->
+                                    <div class="row mt-2">
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="invoice" class="form-label">Folio</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.invoice" disabled>
+                                          </div>
                                        </div>
-                                       <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>Parentesco:</b> {{ showCatalogo?.parentesco }}</p>
-                                          <p class="card-text"><b>Estado civil:</b> {{ showCatalogo?.estado_civil }}</p>
-                                          <p class="card-text"><b>Escolaridad:</b> {{ showCatalogo?.escolaridad }}</p>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="status" class="form-label">Estatus</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.status_request.name" disabled>
+                                          </div>
                                        </div>
-
-                                       <hr class="mt-2">
-                                       <p class="card-text tex" style="color: #002d6f;"><b>INFORMACIÓN DE DIRECCIÓN</b>
-                                       </p>
-                                       <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>Calle:</b> {{ padre?.address[0]?.calle }}</p>
-                                          <p class="card-text"><b>Numero exterior:</b> {{ padre?.address[0]?.numext }}
-                                          </p>
-                                          <p class="card-text"><b>Numero interior:</b> {{ padre?.address[0]?.numint }}
-                                          </p>
-                                          <p class="card-text"><b>Primer cruce:</b> {{ padre?.address[0]?.primercruce }}
-                                          </p>
-                                          <p class="card-text"><b>Segundo cruce:</b> {{ padre?.address[0]?.segundocruce
-                                             }}</p>
-                                       </div>
-                                       <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>Colonia:</b> {{ padre?.address[0]?.colonia_name }}</p>
-                                          <p class="card-text"><b>Municipio:</b> {{ padre?.address[0]?.municipio }}</p>
-                                          <p class="card-text"><b>Estado:</b> {{ padre?.address[0]?.estado }}</p>
-                                          <p class="card-text"><b>Celular:</b> {{ padre?.address[0]?.celular }}</p>
-                                       </div>
-
-                                       <hr class="mt-2">
-                                       <p class="card-text tex" style="color: #002d6f;"><b>INFORMACIÓN DE TRABAJO</b>
-                                       </p>
-                                       <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>Dependencia:</b> {{ showCatalogo?.dependencia }}</p>
-                                          <p class="card-text"><b>Puesto:</b> {{ padre?.economic[0].puesto }}</p>
-                                          <p class="card-text"><b>Antiguedad:</b> {{ padre?.economic[0].antiguedad }}
-                                          </p>
-                                          <p class="card-text"><b>Jefe inmediato:</b> {{
-                                             padre?.economic[0].jefe_inmediato }}</p>
-                                          <p class="card-text"><b>Telefono:</b> {{ padre?.economic[0].telefono_trabajo
-                                             }}</p>
-                                          <p class="card-text"><b>Extención:</b> {{
-                                             padre?.economic[0].telefono_ext_trabajo }}
-                                          </p>
-                                          <p class="card-text"><b>Calle:</b> {{ padre?.economic[0].calle_trabajo }}</p>
-                                          <p class="card-text"><b>Número exterior:</b> {{
-                                             padre?.economic[0].numext_trabajo }}
-                                          </p>
-                                          <p class="card-text"><b>Número interior:</b> {{
-                                             padre?.economic[0].numint_trabajo }}
-                                          </p>
-
-                                       </div>
-                                       <div class="col-12 col-lg-6">
-                                          <p class="card-text"><b>Primer cruce:</b> {{
-                                             padre?.economic[0].primer_cruce_trabajo }}
-                                          </p>
-                                          <p class="card-text"><b>Segundo cruce:</b> {{
-                                             padre?.economic[0].segundo_cruce_trabajo
-                                             }}</p>
-                                          <p class="card-text"><b>Colonia:</b> {{
-                                             padre?.economic[0].colonia_name_trabajo }}</p>
-                                          <p class="card-text"><b>Municipio:</b> {{ padre?.economic[0].municipio_trabajo
-                                             }}</p>
-                                          <p class="card-text"><b>Estado:</b> {{ padre?.economic[0].estado_trabajo }}
-                                          </p>
-                                          <p class="card-text"><b>Horario de entrada:</b> {{
-                                             padre?.economic[0].entrada_trabajo
-                                             }}</p>
-                                          <p class="card-text"><b>Horario de salida:</b> {{
-                                             padre?.economic[0].salida_trabajo }}
-                                          </p>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="finished" class="form-label">Fecha de envio</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.finished" disabled>
+                                          </div>
                                        </div>
                                     </div>
                                  </div>
@@ -437,71 +304,190 @@
                            </div>
                         </div>
 
-                        <!-- Pestaña de Vivienda -->
-                        <div class="tab-pane fade" id="tabVivienda" *ngIf="dataShow && dataShow.housing">
+                        <!-- Pestaña info aplicant -->
+                        <div class="tab-pane fade" id="tabAplicant">
                            <div class="content-section">
                               <div class="card xu-card">
                                  <div class="card-body">
-                                    <h6 class="card-title">Información de la Vivienda</h6>
-                                    <p class="card-text">Tipo de Vivienda: {{ dataShow.housing?.tipo_vivienda }}</p>
-                                    <p class="card-text">Calle: {{ dataShow.housing?.address[0]?.calle }}, Número
-                                       Exterior: {{
-                                       dataShow.housing?.address[0]?.numext }}, Número Interior: {{
-                                       dataShow.housing?.address[0]?.numint }}</p>
-                                    <p class="card-text">Municipio: {{ dataShow.housing?.address[0]?.municipio }},
-                                       Código Postal:
-                                       {{
-                                       dataShow.housing?.address[0]?.codigopostal }}</p>
-                                    <!-- Agrega más información según tus necesidades con las clases xu-style y xu-card -->
+                                    <!-- Add content for Competition tab here -->
+                                    <div class="row mt-2">
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="name" class="form-label">Nombre</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.aplicant?.name" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="email" class="form-label">Correo</label>
+                                             <input type="email" class="form-control"
+                                                [value]="dataShow?.general?.aplicant?.email" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="curp" class="form-label">CURP</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.aplicant?.curp" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="phone_number" class="form-label">Numero celular</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.aplicant?.phone_number" disabled>
+                                          </div>
+                                       </div>
+                                    </div>
                                  </div>
                               </div>
                            </div>
                         </div>
 
-                        <!-- Pestaña de Referencias Personales -->
-                        <div class="tab-pane fade" id="tabReferencias"
-                           *ngIf="dataShow && dataShow.references && dataShow.references.length > 0">
+                        <!-- Pestaña info competition -->
+                        <div class="tab-pane fade" id="tabCompetition">
                            <div class="content-section">
-                              <div *ngFor="let referencia of dataShow.references" class="card xu-card">
+                              <div class="card xu-card">
                                  <div class="card-body">
-                                    <h6 class="card-title">{{ referencia?.nombre }} {{referencia?.apaterno}}
-                                       {{referencia?.amaterno}}</h6>
-                                    <p class="card-text"><b>Domicilio:</b> calle {{ referencia?.calle }}, número
-                                       exterior: {{
-                                       referencia?.numext }} {{referencia?.numint != null ? ', número interior: ': ''}}
-                                       {{
-                                       referencia?.numint }} </p>
-                                    <p class="card-text"><b>Colonia:</b> {{ referencia?.colonia_name }}</p>
-                                    <p class="card-text"><b>Municipio:</b> {{ referencia?.municipio }}</p>
-                                    <p class="card-text"><b>Teléfono:</b> {{ referencia?.telefono }}</p>
-                                    <p class="card-text"><b>Celular:</b> {{ referencia?.celular }}</p>
-                                    <p class="card-text"><b>Horario para contactar:</b> {{
-                                       referencia?.horario_contacto_1 }} a {{
-                                       referencia?.horario_contacto_2 }}</p>
-                                    <!-- Agrega más información según tus necesidades con las clases xu-style y xu-card -->
+                                    <!-- Add content for Competition tab here -->
+                                    <div class="row mt-2">
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="name" class="form-label">Nombre</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.competition?.name" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="competition_type" class="form-label">Tipo de
+                                                competición</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.competition?.competition_type.name" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="discipline" class="form-label">Disciplina</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.general?.discipline.name" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6" *ngIf="dataShow?.competition?.competition_type_id != 1">
+                                          <div class="mb-3">
+                                             <label for="country" class="form-label">País</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.competition?.country.name" disabled>
+                                          </div>
+                                       </div>
+
+                                       <div class="col-md-6" *ngIf="dataShow?.competition?.competition_type_id != 3">
+                                          <div class="mb-3">
+                                             <label for="state" class="form-label">Estado</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.competition?.state.name" disabled>
+                                          </div>
+                                       </div>
+
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="start_date" class="form-label">Fecha de inicio</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.competition?.start_date" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="ending_date" class="form-label">Fecha de fin</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.competition?.ending_date" disabled>
+                                          </div>
+                                       </div>
+                                    </div>
                                  </div>
                               </div>
                            </div>
                         </div>
 
-                        <!-- Pestaña de Vivienda -->
-                        <div class="tab-pane fade" id="tabDocumentos" *ngIf="dataShow ">
+                        <!-- Pestaña info bank account -->
+                        <div class="tab-pane fade" id="tabBankAccount">
                            <div class="content-section">
                               <div class="card xu-card">
                                  <div class="card-body">
-                                    <h6 class="card-title">Documentación de trabajador</h6>
+                                    <!-- Add content for Bank Account tab here -->
+                                    <div class="row mt-2">
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="bank" class="form-label">Banco</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.bankAccount?.bank" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="account_number" class="form-label">Número de cuenta</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.bankAccount?.account" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="clabe" class="form-label">CLABE</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.bankAccount?.key_account" disabled>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                          <div class="mb-3">
+                                             <label for="beneficiary" class="form-label">Beneficiario</label>
+                                             <input type="text" class="form-control"
+                                                [value]="dataShow?.bankAccount?.titular_persona_name" disabled>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <hr>
+                                    <div class="text-center">
+                                       <a class="mt-3"
+                                          href="{{ baseUrl+'sports/'+dataShow?.bankAccount?.account_status_url }}"
+                                          download>
+                                          <p>
+                                             Descargar estado de cuenta
+                                          </p>
+                                          <span><i class="bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                       </a>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                        <!-- Pestaña info important archievents-->
+                        <div class="tab-pane fade" id="tabImportantArchievents">
+                           <div class="content-section">
+                              <div class="card xu-card">
+                                 <div class="card-body">
+                                    <!-- Add content for Important Archievents tab here -->
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                        <!-- Pestaña documents -->
+                        <div class="tab-pane fade" id="tabDocuments">
+                           <div class="content-section">
+                              <div class="card xu-card">
+                                 <div class="card-body">
+                                    <!-- Add content for Documents tab here -->
+                                    <h6 class="card-title">Documentación</h6>
                                     <div class="row">
                                        <div class="card col-12 col-md-6 col-lg-6 text-center"
-                                          *ngFor="let item of dataShow.documents">
-                                          <a class="mt-3" href="{{ baseUrl+'cisz/'+item.url }}" download>
+                                          *ngFor="let item of dataShow?.documents">
+                                          <a class="mt-3" href="{{ baseUrl+'sports/'+item.file_name }}" download>
                                              <p>
-                                                {{item.required_document_id == 2 ? "Descargar 'Carta intención
-                                                NIDOCISZ'" :
-                                                "Descargar identificación de trabajador"}}
+                                                Descargar '{{item?.document_procedure?.name}}'
                                              </p>
-                                             <span><i
-                                                   [ngClass]="{'bi': true, 'bi-file-earmark-arrow-down-fill': item.required_document_id == 2, 'bi-person-badge-fill': item.required_document_id != 2}"></i></span>
-
+                                             <span><i class="'bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
                                           </a>
                                        </div>
                                     </div>
@@ -514,6 +500,8 @@
                </div>
             </div>
          </div>
+
+
       </section>
    </main>
 </app-sports>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\Aplicant;
 use App\Models\BankAccount;
+use App\Models\Competition;
 use App\Models\DocumentsRequest;
 use App\Models\Requests;
 use App\Models\StatusRequest;
@@ -134,8 +135,9 @@ class RequestsController extends Controller
         $bankAccount = $this->getBankAccount($request->aplicant_id);
         $documents = $this->getDocument($id);
         $competition = $this->getCompetition($id);
+        $general = $this->getGeneral($id);
         DB::commit();
-        return response()->json(['bankAccount' => $bankAccount, 'documents' => $documents, 'competition' => $competition]);
+        return response()->json(['bankAccount' => $bankAccount, 'documents' => $documents, 'competition' => $competition, 'general' => $general]);
     }
 
     protected function getBankAccount($id)
@@ -152,6 +154,14 @@ class RequestsController extends Controller
     }
     public function getCompetition($id)
     {
+        return Competition::whereHas('request', function ($query) use ($id) {
+            $query->where('id', $id);
+        })->with('competition_type:id,name', 'state:id,name', 'country:id,common_spa')->first();
+    }
+
+    public function getGeneral($id)
+    {
+        return Requests::where('id', $id)->with('discipline','aplicant:id,name,phone_number,email,birtdate,curp','status_request:id,name')->first();
     }
 
     /**

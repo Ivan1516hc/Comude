@@ -145,15 +145,10 @@ export class ValidationComponent {
     date: ['', [Validators.required]],
     hour: ['', [Validators.required]]
   });
-  miFormularioExport: FormGroup = this.fb.group({
-    begin: ['2024-01-01', [Validators.required]],
-    finish: ['2024-05-01', [Validators.required]]
-  });
 
   toggleHistory(): void {
     this.showHistory = !this.showHistory;
   }
-
 
   showPdf(id: any) {
     this.router.navigateByUrl('/guarderia/solicitudes/' + id);
@@ -167,7 +162,7 @@ export class ValidationComponent {
     Swal.fire({
       position: 'center',
       icon: 'question',
-      title: '¿Está seguro de que desea ' + (data.status_request_id == 3 ? 'aceptar' : (data.status_request_id == 4 ? 'rechazar' : (data.status_request_id == 2 ? 'reactivar' : ''))) + ' esta solicitud?',
+      title: '¿Está seguro de que desea ' + (data.status_request_id == 3 ? 'validar' : (data.status_request_id == 4 ? 'rechazar' : (data.status_request_id == 9 ? 'reactivar' : ''))) + ' esta solicitud?',
       showConfirmButton: true,
       showCancelButton: true,
       confirmButtonText: 'Si',
@@ -186,51 +181,6 @@ export class ValidationComponent {
             this.initTable()
             // this.citaCreada.emit();
           } else {
-            Swal.fire("Error", "error")
-          }
-        })
-      } else if (result.isDenied) {
-        return;
-      }
-    })
-  }
-
-  schedule(): any {
-    if (this.miFormulario.value.date == '' || this.miFormulario.value.date == '') {
-      return Swal.fire({
-        position: 'center',
-        icon: 'warning',
-        title: 'Debes de ingresar fecha y hora para la cita.',
-        showConfirmButton: false,
-        timer: 3000
-      })
-    }
-    const data = this.miFormulario.value;
-
-    Swal.fire({
-      position: 'center',
-      icon: 'question',
-      title: '¿Está seguro de que desea agendar cita el día ' + this.formatDate(data.date) + ' en horario de ' + this.formatTime(data.hour) + ' para esta solicitud?',
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Si',
-      cancelButtonText: `No`
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.allService.createQuote(data).subscribe({
-          next: (response) => {
-            if (response.code == 200) {
-              Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: response.message,
-                showConfirmButton: false,
-                timer: 2000
-              })
-              // this.citaCreada.emit();
-              this.cerrarModal();
-            }
-          }, error: (error) => {
             Swal.fire("Error", "error")
           }
         })
@@ -266,18 +216,7 @@ export class ValidationComponent {
   selectData(id: number) {
     this.allService.getFormData(id).subscribe({
       next: (response) => {
-
         this.dataShow = response;
-        let dependencia = this.catalogo.dependencias.find(elemento => elemento.id == this.dataShow.parents[0].economic[0].lugar_trabajo);
-        let escolaridad = this.catalogo.escolaridad.find(elemento => elemento.id == this.dataShow.parents[0].escolaridad);
-        let parentesco = this.catalogo.parentesco.find(elemento => elemento.id == this.dataShow.parents[0].economic[0].parentesco);
-        let estado_civil = this.dataShow.parents[0].economic[0].estado_civil == 1 ? 'CASADO/A' : 'SOLTERO/A';
-        this.showCatalogo = {
-          'dependencia': dependencia.dependencia,
-          'escolaridad': escolaridad.escolaridad,
-          'parentesco': parentesco.parentesco,
-          'estado_civil': estado_civil
-        }
       }
     });
   }
@@ -375,46 +314,5 @@ export class ValidationComponent {
     const month = dateObject.getMonth() + 1;
     const year = dateObject.getFullYear();
     return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
-  }
-
-  // Método para formatear la hora en formato 12 horas
-  formatTime(date: string): string {
-    const [hourStr, minutesStr] = date.split(':'); // Dividir la cadena en horas y minutos
-    let hour = parseInt(hourStr);
-    let zone = 'AM';
-
-    // Determinar si es AM o PM
-    if (hour >= 12) {
-      zone = 'PM';
-      hour = hour === 12 ? hour : hour - 12; // Convertir horas de 24 a 12 horas
-    }
-
-    // Ajustar la hora si es medianoche (hora 0)
-    if (hour === 0) {
-      hour = 12;
-    }
-
-    return `${hour}:${minutesStr} ${zone}`;
-  }
-
-  exportComite() {
-    this.allService.exportComite(this.miFormularioExport.value).subscribe({
-      next: (response) => {
-        this.downLoadFile(response, "application/ms-excel", "Empleados.xlsx");
-      }, error: (err) => {
-        console.log(err);
-      }
-    })
-  }
-
-  downLoadFile(data: any, type: string, fileName: string) {
-    let blob = new Blob([data], { type: type },);
-    const objectUrl: string = URL.createObjectURL(blob);
-    const a: HTMLAnchorElement = document.createElement('a') as HTMLAnchorElement;
-
-    a.href = objectUrl;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
   }
 }
