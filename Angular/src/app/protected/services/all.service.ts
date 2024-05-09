@@ -97,8 +97,18 @@ export class AllService {
     return this.http.get<any>(url)
   }
 
+  assignmentComite(data) {
+    const url = `${this.baseUrl}/request/appraisal/approved-budget`;
+    return this.http.post<any>(url,data)
+  }
+
   exportComite(data) {
     const url = `${this.baseUrl}/export/excel-comite`;
     return this.http.post(url, data, { responseType: 'arraybuffer' });
+  }
+
+  importComite(data) {
+    const url = `${this.baseUrl}/import/excel-comite`;
+    return this.http.post<any>(url, data);
   }
 }

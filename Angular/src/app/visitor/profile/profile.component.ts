@@ -55,12 +55,15 @@ export class ProfileComponent {
 
   private subscribeToNumberFieldChanges(fieldName: string): void {
     this.miFormulario.get(fieldName).valueChanges.subscribe(value => {
+      if (value === null) {
+        return; // Ignore null values
+      }
       if (!isNaN(parseFloat(value)) && isFinite(value)) {
-        // El valor es un número, mantener el valor actual
+        // The value is a number, keep the current value
         return;
       }
-      const newValue = value.replace(/\D/g, ''); // Remueve todos los caracteres que no sean dígitos
-      this.miFormulario.get(fieldName).setValue(newValue, { emitEvent: false }); // Actualiza el valor en el formulario
+      const newValue = value.replace(/\D/g, ''); // Remove all non-digit characters
+      this.miFormulario.get(fieldName).setValue(newValue, { emitEvent: false }); // Update the value in the form
     });
   };
 
@@ -83,15 +86,20 @@ export class ProfileComponent {
   }
 
   populateForm(response: any): void {
-    const nameParts = response.name.split(' ');
-    const motherLastName = nameParts.pop();
-    const lastName = nameParts.pop();
-    const name = nameParts.join(' ');
+    if (response.name) {
+      const nameParts = response.name.split(' ');
+      const motherLastName = nameParts.pop();
+      const lastName = nameParts.pop();
+      const name = nameParts.join(' ');
+
+      this.miFormulario.patchValue({
+        name: name,
+        last_name: lastName,
+        mother_last_name: motherLastName,
+      });
+    }
 
     this.miFormulario.patchValue({
-      name: name,
-      last_name: lastName,
-      mother_last_name: motherLastName,
       email: response.email,
       password: response.password,
       phone_number: response.phone_number,

@@ -18,7 +18,10 @@ export class FormConpetitionComponent {
 
   urlPrincipal: string;
   catalog: any
-  debget: budget;
+  debget: budget={
+    minimum_budget: 0,
+    maximum_budget: 0
+  };
   newData: boolean = true;
   onlySee: boolean = false;
   edit: boolean = false;
@@ -132,6 +135,8 @@ export class FormConpetitionComponent {
       })
       this.validatorTypeCompetition(id);
     }
+    this.miFormulario.get('requested_budget').setValidators([Validators.required, Validators.max(this.debget?.maximum_budget)]);
+    this.miFormulario.get('requested_budget').updateValueAndValidity();
   }
 
   toggleAlert() {
@@ -186,10 +191,9 @@ export class FormConpetitionComponent {
     ending_date: ['', [Validators.required]],
     classify: ['', [Validators.nullValidator]],
     justification: ['', [Validators.required]],
-    requested_budget: ['', [Validators.required]],
+    requested_budget: ['', [Validators.required, Validators.max(this.debget?.maximum_budget)]],
     competition_type_id: ['', [Validators.required]],
   });
-
   showConpetition(id: any): void {
     this.allService.getCompetition(id).subscribe({
       next: (response) => {
@@ -236,6 +240,7 @@ export class FormConpetitionComponent {
     if (this.miFormulario.invalid) {
       return this.miFormulario.markAllAsTouched();
     }
+    
     const data = this.miFormulario.getRawValue();
     this.allService.storeCompetition(data).subscribe({
       next: (response) => {

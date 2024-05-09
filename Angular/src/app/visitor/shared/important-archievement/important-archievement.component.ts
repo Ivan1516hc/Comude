@@ -107,7 +107,7 @@ export class ImportantArchievementComponent {
             showConfirmButton: false,
             timer: 2000
           });
-          this.miFormulario.patchValue({ file: null });
+          this.miFormulario.patchValue({ file: null, description: '' });
           this.selectedFileName = null;
           this.selectedFilePreview = null;
           this.showImportantArchivements();

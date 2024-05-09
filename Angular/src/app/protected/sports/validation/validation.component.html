@@ -76,20 +76,13 @@
                               <td>{{item.discipline?.name}}</td>
                               <td>{{item.competition?.competition_type?.name}}</td>
                               <td>{{item.competition?.start_date}} a {{item.competition?.ending_date}}</td>
-                              <!-- <td>{{calculateAge(item.beneficiaries[0].fechanacimiento) }}</td> -->
                               <td>{{formatDate(item.finished) ?? null}}</td>
                               <td>
                                  <div class="text-center"
-                                    [ngClass]="item.status_request_id === 4 ? 'alert-danger' : item.status_request_id === 2 ? 'alert-warning' : item.status_request_id === 8 ? 'alert-warning' :'alert-success'">
-                                    {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id == 3 ?
-                                    'Aceptado' :
-                                    (item.status_request_id == 4 ? 'Rechazado'
-                                    : (item.status_request_id == 8 ? 'En modificación' :(item.status_request_id == 7 ?
-                                    'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
+                                    [ngClass]="item.status_request_id === 7 ? 'alert-danger' : item.status_request_id === 2 ? 'alert-primary' :'alert-warning'">
+                                    {{item.status_request_id == 2 ? 'Pendiente' : (item.status_request_id == 7 ?
+                                    'Rechazada' : (item.status_request_id == 4 ? 'En modificación' : ''))}}</div>
                               </td>
-                              <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
-                                  <div class="alert-success">Cita Agendada</div>
-                               </td> -->
                               <td>
                                  <div class="dropdown">
                                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
@@ -98,17 +91,17 @@
                                     </button>
                                     <!-- Aplica la clase "striped" de manera condicional a cada elemento de menú -->
                                     <ul class="dropdown-menu" [attr.aria-labelledby]="'optionsDropdown_' + item.id">
-                                       <li *ngIf="item.status_request_id == 9">
+                                       <li *ngIf="item.status_request_id == 2">
                                           <button class="dropdown-item"
                                              (click)="changeStatus({ id: item.id, status_request_id: 3 })">Validar</button>
                                        </li>
-                                       <li *ngIf="item.status_request_id == 9">
+                                       <li *ngIf="item.status_request_id == 2">
                                           <button class="dropdown-item"
-                                             (click)="changeStatus({ id: item.id, status_request_id: 4 })">Rechazar</button>
+                                             (click)="changeStatus({ id: item.id, status_request_id: 7 })">Rechazar</button>
                                        </li>
-                                       <li *ngIf="item.status_request_id == 4">
+                                       <li *ngIf="item.status_request_id == 7">
                                           <button class="dropdown-item"
-                                             (click)="changeStatus({ id: item.id, status_request_id: 9 })">Reactivar</button>
+                                             (click)="changeStatus({ id: item.id, status_request_id: 2 })">Reactivar</button>
                                        </li>
                                        <li>
                                           <button class="dropdown-item" data-bs-toggle="modal"
@@ -224,8 +217,6 @@
                </div>
             </div>
          </div>
-
-
 
          <div class="modal fade py-5" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel"
             aria-hidden="true">
@@ -500,7 +491,6 @@
                </div>
             </div>
          </div>
-
 
       </section>
    </main>

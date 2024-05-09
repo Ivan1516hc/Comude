@@ -9,12 +9,18 @@
                         <div class="col-12 col-md-6 col-lg-4 mt-2">
                             <div class="card card-start">
                                 <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                    data-bs-whatever="@getbootstrap" *ngIf="readRegulation == true">
+                                    data-bs-whatever="@getbootstrap"
+                                    *ngIf="readRegulation == true && hasImportantArchievements == true">
                                     <span>Iniciar solicitud</span>
                                 </article>
 
                                 <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#privacyModal"
                                     data-bs-whatever="@getbootstrap" *ngIf="readRegulation == false">
+                                    <span>Iniciar solicitud</span>
+                                </article>
+
+                                <article class="drop-zone" (click)="needImportantArchievement()"
+                                    *ngIf="hasImportantArchievements == false && readRegulation">
                                     <span>Iniciar solicitud</span>
                                 </article>
                             </div>
@@ -54,7 +60,7 @@
                                                 aprovado:</strong> <span
                                                 class="badge bg-info  text-dark">${{item.competition.approved_budget}}</span>
                                         </p>
-                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 9 ? 'alert-primary': (item.status_request.id == 2 ? 'alert-warning' : (item.status_request.id == 4 ? 'alert-danger' : (item.status_request.id == 3 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-success' : '')))))"
+                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 2 ? 'alert-primary': (item.status_request.id == 3 ? 'alert-warning' : (item.status_request.id == 6 ? 'alert-danger' : (item.status_request.id == 5 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-danger' : '')))))"
                                             class="alert text-center mt-2" role="alert">Solicitud
                                             {{item.status_request.name}}</p>
                                         <div class="d-grid gap-1">
@@ -69,13 +75,12 @@
                                                     [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/competicion'">Ver</button>
                                             </ng-container>
                                             <ng-container
-                                                *ngIf="item.status_request_id == 3 && isCompetitionOver(item.competition.ending_date)">
+                                                *ngIf="item.status_request_id == 5 && isCompetitionOver(item.competition.ending_date)">
                                                 <button type="button" class="btn-lg btn btn-primary mt-2"
                                                     [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/evidencias'">Enviar
                                                     evidencias</button>
                                             </ng-container>
-                                            <ng-container
-                                                *ngIf="item.status_request_id != 9 && item.status_request_id != 4 && item.status_request_id !=6 && item.status_request_id != 3 && item.status_request_id != 7">
+                                            <ng-container *ngIf="item.status_request_id == 1">
                                                 <button type="button" class="btn-lg btn btn-danger mt-2"
                                                     (click)="updateStatus(item,6)">Cancelar</button>
                                             </ng-container>
@@ -100,8 +105,6 @@
                     <h5 class="modal-title" id="exampleModalLabel">Selecciona la disciplina</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-
                 <div class="modal-body py-0 text-justify-custom">
                     <div class="m-5">
                         <label class="form-label">Modalidad:</label>
@@ -139,7 +142,6 @@
                     <h5 class="modal-title" id="privacyModalLabel">Reglamento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <ng-container *ngIf="readRegulation == false">
                     <div class="modal-body py-0 text-justify-custom">
                         <ngx-doc-viewer
@@ -156,7 +158,6 @@
                         </div>
                     </div>
                 </ng-container>
-
                 <div class="modal-footer flex-column border-top-0">
                     <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal">Iniciar
                         solicitud</button>

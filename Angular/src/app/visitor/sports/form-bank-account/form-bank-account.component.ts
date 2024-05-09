@@ -161,8 +161,7 @@ export class FormBankAccountComponent {
       position: 'center',
       icon: 'error',
       title: response.message,
-      showConfirmButton: false,
-      timer: 2000
+      showConfirmButton: true
     });
   }
 

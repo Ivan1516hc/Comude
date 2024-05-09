@@ -1,9 +1,6 @@
 <div class="card-body">
     <div class="d-sm-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-2 mb-sm-0">Logros importantes</h5>
-        <button class="btn btn-warning" *ngIf="request_id"
-            [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/documentacion'">Continuar sin registrar
-            logros</button>
+        <h5 class="card-title mb-2 mb-sm-0">Logros deportivos importantes</h5>
     </div>
 
     <div class="row">
@@ -29,7 +26,7 @@
                         <a href="javascript:void(0);" *ngIf="isLongText(item.description)" (click)="toggleText(item)">
                             {{ item.mostrarTextoCompleto ? 'Ver menos' : 'Leer más' }}
                         </a>
-                        <button type="button" class="btn-lg btn btn-warning mt-2"
+                        <button type="button" class="btn-lg btn btn-warning mt-2" *ngIf="documents.length > 1"
                             (click)="delete(item?.id)">Eliminar</button>
                     </div>
                 </div>
@@ -41,13 +38,13 @@
         <div class="modal-dialog  modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Registrar logro</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Registrar logro deportivo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-0 text-justify-custom">
                     <form class="row g-3 mt-2" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
                         <div>
-                            <label for="fileInput" class="form-label">Subir evidencia:</label>
+                            <label for="fileInput" class="form-label">Subir evidencia del logro:</label>
                             <div class="drop-zone-new" (dragover)="onDragOver($event)" (drop)="onDrop($event)"
                                 (click)="fileInput.click()">
                                 <input #fileInput type="file" class="visually-hidden" accept=".pdf, .jpg, .jpeg, .png"
@@ -60,9 +57,11 @@
                                     <span>Arrastra o selecciona un archivo</span>
                                 </div>
                             </div>
-                            <small class="form-text text-muted">Formatos permitidos: pdf, jpg, jpeg,
-                                png</small><br>
-                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB.</small>
+                            <small class="form-text text-muted">Formatos permitidos: jpg, jpeg,
+                                png.</small><br>
+                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB. </small>
+                            <small class="form-text text-center"><a href="https://www.iloveimg.com/es/comprimir-imagen"
+                                    target="_blank">¿Donde reducir el tamaño de una imagen?</a></small>
                         </div>
                         <div>
                             <label for="description" class="col-form-label">Descripción breve:</label>

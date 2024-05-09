@@ -73,12 +73,11 @@ class DocumentController extends Controller
             }
             $maxFileSize = 1024  * 1024; // 1MB
             if ($file->getSize() > $maxFileSize) {
-                if($fileExtension == 'pdf'){
-                    throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace "https://www.ilovepdf.com/es/comprimir_pdf".');
-                }
-                else if ($fileExtension == 'jpg' || $fileExtension == 'jpeg' || $fileExtension == 'png'){
-                    throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace "https://www.iloveimg.com/es/comprimir-imagen".');
-                }else{
+                if ($fileExtension == 'pdf') {
+                    throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace https://www.ilovepdf.com/es/comprimir_pdf.');
+                } else if ($fileExtension == 'jpg' || $fileExtension == 'jpeg' || $fileExtension == 'png') {
+                    throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace https://www.iloveimg.com/es/comprimir-imagen.');
+                } else {
                     throw new \Exception('El tamaño del archivo es demasiado grande.');
                 }
             }

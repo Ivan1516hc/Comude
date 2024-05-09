@@ -3,7 +3,8 @@ export interface RequestsResponse {
     code: number;
     data: DataRequest;
     hasBankAccount: boolean;
-    reedRegulations: boolean;
+    readRegulations: boolean;
+    hasImportantArchievements: boolean;
 }
 
 export interface DataRequest {

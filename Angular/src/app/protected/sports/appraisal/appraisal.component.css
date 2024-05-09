@@ -59,3 +59,7 @@ ul.dropdown-menu li:nth-child(even) {
     font-size: 4em;
     /* Puedes ajustar el tamaño aquí */
 }
+
+.my-icon {
+    font-size: 50px;
+}

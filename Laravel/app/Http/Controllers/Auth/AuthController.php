@@ -27,7 +27,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register','validateUserVisitor']]);
     }
 
     /**
@@ -59,7 +59,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Correo electrónico no verificado o la verificación expiró'], 400);
         }
 
-        if (!$token = auth()->attempt($credentials)) {
+        if (!$token = auth()->guard('aplicant')->attempt($credentials)) {
             return response()->json(['message' => 'Nombre de usuario y contraseña no coinciden'], 401);
         }
 
@@ -146,7 +146,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        auth()->guard('aplicant')->logout();
         return response()->json(['message' => 'User successfully signed out']);
     }
     /**
@@ -221,7 +221,7 @@ class AuthController extends Controller
     public function validateUserVisitor()
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            $user = Auth::guard('aplicant')->user();
         } catch (\Exception $e) {
             return response()->json(['error' => 'Token inválido'], 401);
         }

@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AllService } from '../../services/all.service';
 
+
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -19,7 +20,8 @@ export class AppraisalComponent {
   request: Requests;
   hayError: boolean = false;
   data: any = [];
-  headers = ['No.', 'Folio', 'Solicitante', 'Disciplina', 'Tipo', 'Fechas', 'Enviada', 'Estado'];
+  headers = ['No.', 'Folio', 'Solicitante', 'Disciplina', 'Tipo', 'Fecha', 'Monto', 'Status', 'Acciones'];
+  updatedData: any = [];
 
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) {
@@ -128,6 +130,12 @@ export class AppraisalComponent {
   miFormularioExport: FormGroup = this.fb.group({
     begin: ['', [Validators.required]],
     finish: ['', [Validators.required]]
+  });
+
+  miFormulariAssignment: FormGroup = this.fb.group({
+    request_id: ['', [Validators.required]],
+    invoice: ['', [Validators.required]],
+    approved_budget: ['', [Validators.required]]
   });
 
   toggleHistory(): void {
@@ -245,6 +253,7 @@ export class AppraisalComponent {
           })
           this.newMessage = null;
           this.motivoMessage = null;
+          this.cerrarModal();
         } else {
           Swal.fire({
             position: 'center',
@@ -299,33 +308,40 @@ export class AppraisalComponent {
 
 
   /*** FUNCION PARA LEER EXCEL */
-  ExcelData:any;
-  ReadExcel(event: any){
+  ExcelData: any;
+  ReadExcel(event: any) {
     let file = event.target.files[0];
-
     let fileReader = new FileReader();
-    fileReader.readAsBinaryString(file);
-    fileReader.onload = (e)=>{
-      var workBook = XLSX.read(fileReader.result, {type:'binary'});
+    fileReader.readAsArrayBuffer(file);
+    fileReader.onload = () => {
+      var workBook = XLSX.read(fileReader.result, { type: 'binary' });
       var sheetNames = workBook.SheetNames;
       this.ExcelData = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
       ///iterar para agregar campo comnfirmed
-      for(let item of this.ExcelData){
+      for (let item of this.ExcelData) {
         item.confirmed = false;
       }
+      // Modificar los nombres de las variables
+      this.ExcelData = this.ExcelData.map((item: any) => {
+        const newItem: any = {};
+        for (const key in item) {
+          const newKey = key.replace(/ /g, '_').toLowerCase();
+          newItem[newKey] = item[key];
+        }
+        return newItem;
+      });
     }
   }
 
   getColumns(): string[] {
     // Obtener todas las claves únicas de los objetos en el JSON
-    const allColumn = this.ExcelData.reduce((columns, item) => {
+    const allColumn = this.ExcelData.reduce((columns: string[], item: any) => {
       return columns.concat(Object.keys(item));
     }, [])
-    .filter((column, index, self) => self.indexOf(column) === index);
-
+      .filter((column: string, index: number, self: string[]) => self.indexOf(column) === index);
     return allColumn;
   }
-}
+
   exportComite() {
     if (this.miFormularioExport.invalid) {
       Swal.fire({
@@ -340,6 +356,7 @@ export class AppraisalComponent {
 
     this.allService.exportComite(this.miFormularioExport.value).subscribe({
       next: (response) => {
+        this.cerrarModal();
         this.downLoadFile(response, "application/ms-excel", "reporte-comite.xlsx");
       }, error: (err) => {
         console.log(err);
@@ -357,4 +374,160 @@ export class AppraisalComponent {
     document.body.appendChild(a);
     a.click();
   }
+
+  getTotalAprobado(): number {
+    let total = 0;
+    for (const item of this.ExcelData) {
+      if (item.confirmed) {
+        total += item.monto_aprobado;
+      }
+    }
+    return total;
+  }
+  selectData(id: number) {
+    this.allService.getFormData(id).subscribe({
+      next: (response) => {
+        this.dataShow = response;
+      }
+    });
+  }
+
+  clearDataExport() {
+    this.ExcelData = null;
+  }
+
+  updateConfirmedValue(item: any, event: Event) {
+    const target = event.target as HTMLInputElement;
+    item.confirmed = target.checked;
+  }
+
+
+  updateInputValue(item: any) {
+    // Aquí actualizas el valor del input según la lógica que necesites
+    const inputValue = ''; // Aquí debes definir la lógica para obtener el valor adecuado
+    // Puedes asignar el valor directamente a una propiedad del objeto item si es necesario
+    item.inputValue = inputValue;
+  }
+  selectAll() {
+    for (const item of this.ExcelData) {
+      item.confirmed = true;
+    }
+  }
+
+  deselectAll() {
+    for (const item of this.ExcelData) {
+      item.confirmed = false;
+    }
+  }
+
+  importComite() {
+    const total = this.getTotalAprobado();
+    if (total == 0) {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de confirmar al menos un registro para poder importar los datos.',
+        showConfirmButton: false,
+        timer: 3000
+      });
+      return;
+    }
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea importar los datos?',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.allService.importComite(this.ExcelData).subscribe({
+          next: (response) => {
+            console.log(response);
+            this.updatedData = response?.datos_actualizados ?? [];
+            if (response.code == 200) {
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: `${response?.message}`,
+                showConfirmButton: true
+              });
+              this.ExcelData = response.valores;
+              this.initTable();
+              this.cerrarModal();
+            } else {
+              let html = `<p style="font-weight: bold; color: red;">${response.message}</p>`;
+              Swal.fire({
+                position: 'center',
+                icon: 'info',
+                title: 'Error al importar los datos',
+                html: html,
+                showConfirmButton: true
+              });
+              this.ExcelData = response.valores;
+              this.initTable();
+            }
+          },
+          error: (err) => {
+            console.log(err);
+            this.initTable();
+          }
+        });
+      } else if (result.isDenied) {
+        return;
+      }
+    });
+  }
+
+  getInvoice(item: any) {
+    this.miFormulariAssignment.patchValue({
+      invoice: item.invoice,
+      request_id: item.id
+    });
+  }
+
+
+  assignmentComite() {
+    if (this.miFormulariAssignment.invalid) {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de ingresar un presupuesto para poder asignarlo a la solicitud.',
+        showConfirmButton: true
+      })
+      return;
+    }
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea asignar el presupuesto del comité a esta solicitud?',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.allService.assignmentComite(this.miFormulariAssignment.value).subscribe(response => {
+          if (response.code == 200) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            })
+            this.initTable();
+            this.cerrarModal();
+            // this.citaCreada.emit();
+          } else {
+            Swal.fire("Error", "error")
+          }
+        })
+      } else if (result.isDenied) {
+        return;
+      }
+    })
+  }
+
 }

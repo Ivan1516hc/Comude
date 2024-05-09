@@ -51,13 +51,13 @@ class BankAccountController extends Controller
             if ($request->hasFile('account_status_url')) {
                 $file = $request->file('account_status_url');
                 $fileExtension = $file->getClientOriginalExtension();
-                $allowedExtensions = ['pdf', 'docx', 'doc'];
+                $allowedExtensions = ['pdf'];
                 if (!in_array($fileExtension, $allowedExtensions)) {
                     return response()->json(['message' => 'La extensión del archivo no es válida.', 'code' => 201]);
                 }
                 $maxFileSize = 700 * 1024; // 700kB
                 if ($file->getSize() > $maxFileSize) {
-                    return response()->json(['message' => 'El tamaño del archivo "Estado de cuenta" es demasiado grande.', 'code' => 201]);
+                    return response()->json(['message' => 'El tamaño del archivo "Estado de cuenta" es demasiado grande, puedes reducir el tamaño en el siguiente enlace https://www.ilovepdf.com/es/comprimir_pdf.', 'code' => 201]);
                 }
                 $customFileName = 'solicitud_' . $request->request_id . '_cuenta_bancaria.' . $fileExtension;
                 $filePath = Storage::disk('sports')->put($customFileName, file_get_contents($file));

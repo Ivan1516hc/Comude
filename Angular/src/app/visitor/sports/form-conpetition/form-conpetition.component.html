@@ -149,7 +149,9 @@
                                             </div>
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['requested_budget'].errors && miFormulario.controls['requested_budget'].touched">
-                                                Presupuesto a solicitar requerido.
+                                                {{ miFormulario.controls['requested_budget'].value >
+                                                debget?.maximum_budget ? 'El presupuesto solicitado no puede ser mayor a ' +
+                                                debget?.maximum_budget +'.' : 'Presupuesto solicitado requerido.' }}
                                             </span>
                                         </div>
 

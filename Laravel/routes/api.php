@@ -5,7 +5,6 @@ use App\Http\Controllers\Catalogs\CatalogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\MessageRequestController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -14,6 +13,7 @@ use App\Http\Controllers\Documents\DocumentController;
 use App\Http\Controllers\Documents\ImportantArchievementController;
 use App\Http\Controllers\Documents\RequestJustificationController;
 use App\Http\Controllers\Exports\ComiteController;
+use App\Http\Controllers\Mails\MessageRequestController;
 use App\Http\Controllers\Payments\BankAccountController;
 use App\Http\Controllers\SportProcedure\CompetitionController;
 use Illuminate\Http\Request;
@@ -155,6 +155,7 @@ Route::middleware('cors')->group(function () {
 
         //Appraisal Routs
         Route::get('request/appraisal/index', [RequestsController::class, 'showAppraisal']);
+        Route::post('request/appraisal/approved-budget', [ComiteController::class, 'assignmentComite']);
 
         Route::get('request/message/form', [MessageRequestController::class, 'typeForm']);
         Route::get('request/message/history', [MessageRequestController::class, 'index']);
@@ -166,8 +167,11 @@ Route::middleware('cors')->group(function () {
         Route::get('catalog/country-state/{id}', [CatalogController::class, 'getDataCountryStates']);
 
         //Export excel files
-        Route::post('/export/excel-comite', [ComiteController::class, 'comiteExport']);
-        Route::post('/export/excel-bank-account', [App\Http\Controllers\Exports\BankAccountController::class, 'bankAccountExport']);
+        Route::post('export/excel-comite', [ComiteController::class, 'comiteExport']);
+        Route::post('export/excel-bank-account', [App\Http\Controllers\Exports\BankAccountController::class, 'bankAccountExport']);
+
+        //Import excel files
+        Route::post('import/excel-comite', [ComiteController::class, 'comiteImport']);
     });
 });
 

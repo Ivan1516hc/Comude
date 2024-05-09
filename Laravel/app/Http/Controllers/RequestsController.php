@@ -36,7 +36,7 @@ class RequestsController extends Controller
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                 }, 'discipline', 'announcement', 'aplicant'
             ]
-        )->whereNotIn('status_request_id', [1])->whereIn('status_request_id', [9, 4])->paginate(10);
+        )->whereIn('status_request_id', [4, 2, 7])->paginate(10);
 
         return response()->json($query);
     }
@@ -55,7 +55,7 @@ class RequestsController extends Controller
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                 }, 'discipline', 'announcement', 'aplicant'
             ]
-        )->whereNotIn('status_request_id', [1, 9, 4])
+        )->whereIn('status_request_id', [3, 5])
             ->paginate(10);
 
         return response()->json($query);
@@ -72,7 +72,7 @@ class RequestsController extends Controller
     public function showVisitorRequest()
     {
         try {
-            $user = Auth::user();
+            $user = Auth::guard('aplicant')->user();
             if (!$user) {
                 return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
             }
@@ -95,13 +95,13 @@ class RequestsController extends Controller
 
             // Verificar si el usuario tiene un registro en la tabla bank_accounts relacionada
             $hasBankAccount = !is_null($user->bank_account);
-
+            $hasImportantArchievements = !$user->important_archievements->isEmpty();
 
             if ($requests->isEmpty()) {
-                return response()->json(['message' => 'No se encontraron solicitudes para este usuario.', 'code' => 404]);
+                return response()->json(['message' => 'No se encontraron solicitudes para este usuario.', 'code' => 404, 'readRegulations' => $user->read_regulations, 'hasImportantArchievements' => $hasImportantArchievements]);
             }
 
-            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'hasBankAccount' => $hasBankAccount, 'readRegulations' => $user->read_regulations]);
+            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'hasBankAccount' => $hasBankAccount, 'readRegulations' => $user->read_regulations, 'hasImportantArchievements' => $hasImportantArchievements]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'No se encontró el usuario.', 'code' => 404]);
         } catch (ValidationException $e) {
@@ -119,7 +119,6 @@ class RequestsController extends Controller
     {
         //
     }
-
 
     public function showData($id)
     {
@@ -161,7 +160,7 @@ class RequestsController extends Controller
 
     public function getGeneral($id)
     {
-        return Requests::where('id', $id)->with('discipline','aplicant:id,name,phone_number,email,birtdate,curp','status_request:id,name')->first();
+        return Requests::where('id', $id)->with('discipline', 'aplicant:id,name,phone_number,email,birtdate,curp', 'status_request:id,name')->first();
     }
 
     /**
@@ -176,17 +175,10 @@ class RequestsController extends Controller
             return response()->json($response);
         }
 
-        $aplicant = Aplicant::find($user->id);
-
-        if (!$aplicant->phone_number || !$aplicant->birtdate || !$aplicant->name) {
+        $aplicant = Aplicant::with('important_archievements')->find($user->id);
+        if (!$aplicant->phone_number || !$aplicant->birtdate || !$aplicant->name || $aplicant->important_archievements->isEmpty()) {
             $response['message'] = "No tiene su perfil completo.";
             $response['code'] = 201;
-            return response()->json($response);
-        }
-        $announcement = Announcement::where('status', 1)->first();
-        if (!$announcement) {
-            $response['message'] = "No hay convocatorias abiertas actualmente.";
-            $response['code'] = 202;
             return response()->json($response);
         }
 
@@ -204,12 +196,12 @@ class RequestsController extends Controller
             return response()->json($response);
         }
 
-
         DB::beginTransaction();
         try {
             $newRequestId = Requests::create([
                 'announcement_id' => $announcement->id,
                 'aplicant_id' => $user->id,
+                'modality' => $request->modality,
                 'status_request_id' => 1,
                 'discipline_id' => $request->discipline_id,
             ])->id;
@@ -225,11 +217,12 @@ class RequestsController extends Controller
         }
         return response()->json($response);
     }
+
     public function changeStatus(Request $request)
     {
         $query = Requests::find($request->request_id);
         $year = Carbon::now()->format('Y');
-        if ($request->status_request_id == 9) {
+        if ($request->status_request_id == 2) {
             if (!$query->invoice) {
                 $number = Requests::select('invoice')->where('invoice', 'like', 'BECA' . $year . '%')->whereYear('created_at', $year)->orderBy('invoice', 'desc')->get()->count();
 
@@ -240,7 +233,8 @@ class RequestsController extends Controller
                 }
 
                 $query->update([
-                    'invoice' => $folio
+                    'invoice' => $folio,
+                    'finished' => Carbon::now()
                 ]);
             }
             $query->update([
@@ -249,9 +243,9 @@ class RequestsController extends Controller
             $response['code'] = 200;
             $response['message'] = "La solicitud se ha enviado correctamente.";
         } else if ($request->status_request_id == 6) {
-            if ($query->status_request_id == 3) {
+            if ($query->status_request_id != 1) {
                 $response['code'] = 200;
-                $response['message'] = "La solicitud no se puede cancelar cuando ya fue aceptada.";
+                $response['message'] = "La solicitud no se puede cancelar cuando ya fue enviada.";
             } else {
                 $query->update([
                     'status_request_id' => $request->status_request_id
@@ -297,9 +291,9 @@ class RequestsController extends Controller
         ]);
 
         $statusMessages = [
-            2 => "Solicitud en Proceso.",
-            3 => "Solicitud Aceptada",
-            4 => "Solicitud Rechazada",
+            3 => "Solicitud en Proceso.",
+            5 => "Solicitud Aceptada",
+            7 => "Solicitud Rechazada",
         ];
 
         $response = [

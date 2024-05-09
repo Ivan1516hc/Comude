@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit {
   readRegulation: boolean = false;
   competition: number;
   hasBankAccount: boolean = false;
+  hasImportantArchievements: boolean = false;
   currentUrl = window.location.pathname;
 
   miFormulario: FormGroup = this.fb.group({
@@ -48,7 +49,8 @@ export class DashboardComponent implements OnInit {
         if (response.code == 200 || response.code == 404) {
           this.requests = response.data ?? null;
           this.hasBankAccount = response.hasBankAccount ?? null;
-          this.readRegulation = response.reedRegulations ?? false;
+          this.readRegulation = response.readRegulations ?? false;
+          this.hasImportantArchievements = response.hasImportantArchievements ?? false;
         } else {
           Swal.fire({
             position: 'center',
@@ -61,6 +63,27 @@ export class DashboardComponent implements OnInit {
       }
     })
     this.currentUrl = window.location.pathname;
+  }
+
+  needImportantArchievement(){
+    Swal.fire({
+      position: 'center',
+      icon: 'info',
+      title: 'Necesitas registrar al menos un logro deportivo importante ¿desea registrar un logro?',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Continuar',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Obtener la ruta relativa deseada ('../perfil')
+        const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/perfil';
+        // Navegar a la ruta relativa
+        this.router.navigateByUrl(relativeUrl);
+      } else if (result.isDenied) {
+        return
+      }
+    })
   }
 
   storeRequest() {

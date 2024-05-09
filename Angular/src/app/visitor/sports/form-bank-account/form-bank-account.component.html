@@ -24,7 +24,8 @@
                         <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Anterior
                     </a>
 
-                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/logros-importantes'" *ngIf="onlySee">
+                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/logros-importantes'"
+                        *ngIf="onlySee">
                         Siguiente <i class="bi bi-arrow-right"></i><span
                             class="glyphicon glyphicon-chevron-right"></span>
                     </a>
@@ -97,8 +98,9 @@
                                         </div>
 
                                         <div *ngIf="!edit && !onlySee; else existFile">
-                                            <label for="fileInput" class="form-label">Estado de cuenta <span class="text-danger"
-                                                *ngIf="newData || edit">(caratula de estado de cuenta donde se encuentre su numero de cuenta)</span>:</label>
+                                            <label for="fileInput" class="form-label">Estado de cuenta <span
+                                                    class="text-danger" *ngIf="newData || edit">(caratula de estado de
+                                                    cuenta donde se encuentre su numero de cuenta)</span>:</label>
                                             <div class="drop-zone" (dragover)="onDragOver($event)"
                                                 (drop)="onDrop($event)" (click)="fileInput.click()">
                                                 <input #fileInput type="file" class="visually-hidden"
@@ -113,15 +115,19 @@
                                                     <p>Arrastra o selecciona un archivo</p>
                                                 </div>
                                             </div>
-                                            <small class="form-text text-muted">Formatos permitidos: pdf, doc, docx.</small><br>
-                                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB.</small>
+                                            <small class="form-text text-muted">Formatos permitidos: pdf.</small><br>
+                                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB.
+                                            </small>
+                                            <small class="form-text text-center"><a
+                                                    href="https://www.ilovepdf.com/es/comprimir_pdf"
+                                                    target="_blank">¿Donde reducir el tamaño de un PDF?</a></small>
                                         </div>
 
                                         <ng-template #existFile>
                                             <div class="text-center">
                                                 <a class="mt-3"
                                                     href="{{ baseUrl+'sports/'+miFormulario.controls['account_status_url'].value }}"
-                                                    download  target="_blank" rel="noopener noreferrer">
+                                                    download target="_blank" rel="noopener noreferrer">
                                                     <i class="bi bi-file-earmark-arrow-down-fill my-icon"></i>
                                                     <h2>Descargar estado de cuenta</h2>
                                                 </a>

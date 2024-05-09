@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Mails;
 
+use App\Http\Controllers\Controller;
 use App\Models\Form;
 use App\Models\HistoryMessage;
 use App\Models\Log;
@@ -51,9 +52,7 @@ class MessageRequestController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role_id == 1) {
-            return;
-        }
+
         try {
             DB::beginTransaction();
 
@@ -61,44 +60,44 @@ class MessageRequestController extends Controller
 
             $request = Requests::find($body['request_id']);
             $motivo = MessageMotive::find($body['message_motive_id']);
-            $email = $request->user->email;
+            $email = $request->aplicant->email;
 
             Mail::send('emails.message-request', [
-                'name' => $request->user->name,
+                'name' => $request->aplicant->name,
                 'request' => $request,
                 'text' => $body['message'],
                 'motivo' => $motivo
             ], function (Message $message) use ($email) {
                 $message->to($email)
-                    ->subject('Tramites DIF Zapopan');
+                    ->subject('COMUDE Zapopan');
             });
 
-            $history = HistoryMessage::create([
-                'text' => $body['message'],
-                'message_motive_id' => $body['message_motive_id'],
-                'user_id' => $user->id,
-                'request_id' => $body['request_id'],
-            ]);
+            // $history = HistoryMessage::create([
+            //     'text' => $body['message'],
+            //     'message_motive_id' => $body['message_motive_id'],
+            //     'user_id' => $user->id,
+            //     'request_id' => $body['request_id'],
+            // ]);
 
-            Log::create([
-                'user_id' => auth()->id(), // o null si el usuario no está autenticado
-                'receiver_id' => $request->user->id,
-                'request_id' => $request->id,
-                'action' => 'Mensaje enviado',
-                'description' => 'Mensaje enviado a la solicitud con folio No.' . $request->invoice . ' por motivo de ' . $motivo->name . '.',
-                'status' => 1,
-                'read' => 0,
-            ]);
+            // Log::create([
+            //     'user_id' => auth()->id(), // o null si el usuario no está autenticado
+            //     'receiver_id' => $request->user->id,
+            //     'request_id' => $request->id,
+            //     'action' => 'Mensaje enviado',
+            //     'description' => 'Mensaje enviado a la solicitud con folio No.' . $request->invoice . ' por motivo de ' . $motivo->name . '.',
+            //     'status' => 1,
+            //     'read' => 0,
+            // ]);
 
             if ($body['message_motive_id'] == 4) {
-                ModifyForm::create([
-                    'request_id' => $request->id,
-                    'form_id' => $body['form_id'],
-                    'history_message_id' => $history->id,
-                ]);
+                // ModifyForm::create([
+                //     'request_id' => $request->id,
+                //     'form_id' => $body['form_id'],
+                //     'history_message_id' => $history->id,
+                // ]);
 
                 $request->update([
-                    'status_request_id' => 8
+                    'status_request_id' => 4
                 ]);
             }
 
@@ -124,21 +123,12 @@ class MessageRequestController extends Controller
         $user = Auth::user();
         $message_motive = MessageMotive::all();
 
-        if ($user->role_id == 1) {
-            return response()->json(['message' => 'No tienes permiso para acceder a esta información'], 403);
-        }
 
         $model = HistoryMessage::query();
 
-        if ($user->role_id == 2) {
-            $model->whereHas('request', function ($query) use ($user, $id) {
-                $query->where(['procedure_id' => $user->department_id, 'center_id' => $user->center_id, 'id' => $id]);
-            });
-        } else {
-            $model->whereHas('request', function ($query) use ($id) {
-                $query->where(['id' => $id]);
-            });
-        }
+        $model->whereHas('request', function ($query) use ($id) {
+            $query->where(['id' => $id]);
+        });
 
         $data = $model->with('request', 'user', 'message_motive')->get();
 

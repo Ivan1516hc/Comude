@@ -1,4 +1,3 @@
-<p>validation works!</p>
 <app-sports>
     <main id="main" class="main">
         <div class="pagetitle">
@@ -14,11 +13,14 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Tabla de solicitudes</h5>
-                    <input type="file" (change)="ReadExcel($event);">
 
                     <div class="text-end" *ngIf="data?.data?.length > 0">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportComiteModal"><i
-                                class="fa fa-download"></i>Comite</button>
+                                class="fa fa-download"></i> Comité</button>
+
+                        <button class="btn btn-primary m-2" data-bs-toggle="modal"
+                            data-bs-target="#importComiteModal"><i class="fa bi-file-earmark-arrow-up-fill"></i> Cargar
+                            resultados</button>
                     </div>
                     <ng-container *ngIf="data?.data?.length > 0; else sinResult">
                         <div class="search-container">
@@ -80,21 +82,15 @@
                                         <td>{{item.aplicant?.name}}</td>
                                         <td>{{item.discipline?.name}}</td>
                                         <td>{{item.competition?.competition_type?.name}}</td>
-                                        <td>{{item.competition?.start_date}} a {{item.competition?.ending_date}}</td>
+                                        <td>{{item.finished}}</td>
+                                        <td>${{item.competition?.approved_budget | mexicanCurrency}}</td>
                                         <!-- <td>{{calculateAge(item.beneficiaries[0].fechanacimiento) }}</td> -->
                                         <!-- <td>{{formatDate(item.finished) ?? null}}</td> -->
                                         <td>
                                             <div class="text-center"
-                                                [ngClass]="item.status_request_id === 4 ? 'alert-danger' : item.status_request_id === 2 ? 'alert-warning' : item.status_request_id === 8 ? 'alert-warning' :'alert-success'">
-                                                {{item.status_request_id == 2 ? 'En proceso' : (item.status_request_id
-                                                == 3
-                                                ?
-                                                'Aceptado' :
-                                                (item.status_request_id == 4 ? 'Rechazado'
-                                                : (item.status_request_id == 8 ? 'En modificación'
-                                                :(item.status_request_id
-                                                == 7 ?
-                                                'Terminada' :(item.status_request_id == 9 ? 'Enviada' :null)))))}}</div>
+                                                [ngClass]=" item.status_request_id === 3 ? 'alert-warning' : item.status_request_id === 5 ? 'alert-success' :''">
+                                                {{item.status_request_id == 3 ? 'En proceso' : (item.status_request_id
+                                                == 5 ? 'Aceptado' : '')}}</div>
                                         </td>
                                         <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
                                        <div class="alert-success">Cita Agendada</div>
@@ -110,21 +106,19 @@
                                                 <ul class="dropdown-menu"
                                                     [attr.aria-labelledby]="'optionsDropdown_' + item.id">
 
-                                                    <li *ngIf="item.status_request_id == 9">
-                                                        <button class="dropdown-item"
-                                                            (click)="changeStatus({ id: item.id, status_request_id: 3 })">Aceptar</button>
+                                                    <li *ngIf="item.status_request_id == 3">
+                                                        <button class="dropdown-item" data-bs-toggle="modal"
+                                                            data-bs-target="#assignmentComiteModal"
+                                                            (click)="getInvoice(item)">Asignar
+                                                            presupuesto</button>
                                                     </li>
 
-                                                    <li *ngIf="item.status_request_id == 2">
-                                                        <button class="dropdown-item"
-                                                            (click)="changeStatus({ id: item.id, status_request_id: 4 })">Rechazar</button>
+                                                    <li>
+                                                        <button class="dropdown-item" data-bs-toggle="modal"
+                                                            data-bs-target="#dataModal"
+                                                            (click)="selectData(item.id)">Ver
+                                                            información</button>
                                                     </li>
-
-                                                    <li *ngIf="item.status_request_id == 4">
-                                                        <button class="dropdown-item"
-                                                            (click)="changeStatus({ id: item.id, status_request_id: 2 })">Reactivar</button>
-                                                    </li>
-
                                                 </ul>
                                             </div>
                                         </td>
@@ -158,26 +152,6 @@
                             No se encontraron resultados
                         </div>
                     </ng-template>
-                    
-                    <table *ngIf="ExcelData" class="table">
-                        <thead>
-                          <tr>
-                            <ng-container *ngFor="let column of getColumns()">
-                                <th  *ngIf="column != 'confirmed'">{{ column }}</th>
-                            </ng-container>
-                            <th>Confirmar</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let item of ExcelData">
-                            <ng-container *ngFor="let column of getColumns()">
-                                <td  *ngIf="column != 'confirmed'">{{ item[column] }}</td>
-                            </ng-container>
-                            <td>{{item.confirmed}} <input type="checkbox" [value]="item.confirmed" (change)="item.confirmed = !item.confirmed"></td>
-                          </tr>
-                        </tbody>
-                      </table>
-
 
                 </div>
             </div>
@@ -185,40 +159,431 @@
     </main>
 
     <div class="modal fade" id="exportComiteModal" tabindex="-1" aria-labelledby="exportComiteModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <h5 class="modal-title" id="exportComiteModalLabel">Exportar excel Comite</h5>
-                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                     <form class="form" [formGroup]="miFormularioExport">
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportComiteModalLabel">Exportar excel Comite</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form" [formGroup]="miFormularioExport">
                         <div class="mb-3">
-                           <label for="dateInput" class="form-label">Fecha inicio</label>
-                           <input type="date" class="form-control" placeholder="Ingrese la fecha de inicio"
-                              formControlName="begin">
-                           <span class="form-text text-danger form"
-                              *ngIf="miFormularioExport.controls['begin'].errors && miFormularioExport.controls['begin'].touched">
-                              Fecha de inicio requerida.
-                           </span>
+                            <label for="dateInput" class="form-label">Fecha inicio</label>
+                            <input type="date" class="form-control" placeholder="Ingrese la fecha de inicio"
+                                formControlName="begin">
+                            <span class="form-text text-danger form"
+                                *ngIf="miFormularioExport.controls['begin'].errors && miFormularioExport.controls['begin'].touched">
+                                Fecha de inicio requerida.
+                            </span>
                         </div>
                         <div class="mb-3">
-                           <label for="dateInput" class="form-label">Fecha fin</label>
-                           <input type="date" class="form-control" placeholder="Ingrese la fecha de fin"
-                              formControlName="finish">
-                           <span class="form-text text-danger form"
-                              *ngIf="miFormularioExport.controls['finish'].errors && miFormularioExport.controls['finish'].touched">
-                              Fecha de fin requerida.
-                           </span>
+                            <label for="dateInput" class="form-label">Fecha fin</label>
+                            <input type="date" class="form-control" placeholder="Ingrese la fecha de fin"
+                                formControlName="finish">
+                            <span class="form-text text-danger form"
+                                *ngIf="miFormularioExport.controls['finish'].errors && miFormularioExport.controls['finish'].touched">
+                                Fecha de fin requerida.
+                            </span>
                         </div>
-                     </form>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                     <button type="button" class="btn btn-success" (click)="exportComite()">Exportar</button>
-                  </div>
-               </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" (click)="exportComite()">Exportar</button>
+                </div>
             </div>
-         </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="assignmentComiteModal" tabindex="-1" aria-labelledby="assignmentComiteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportComiteModalLabel">Asignación de presupuesto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form" [formGroup]="miFormulariAssignment">
+                        <div class="text-center">
+                            <h5 class="form-label"><strong>Solicitud folio:
+                                    {{miFormulariAssignment.value.invoice}}</strong></h5>
+                        </div>
+                        <div class="mb-3 mt-3">
+                            <label for="dateInput" class="form-label">Presupuesto aprobado para esta solicitud:</label>
+                            <input type="text" class="form-control" placeholder="Ingrese el presupuesto aprobado"
+                                formControlName="approved_budget">
+
+                            <span class="form-text text-danger form"
+                                *ngIf="miFormulariAssignment.controls['approved_budget'].errors && miFormulariAssignment.controls['approved_budget'].touched">
+                                Presupuesto requerido.
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" (click)="assignmentComite()">Asignar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Remove this code block -->
+
+    <div class="modal fade py-5" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content rounded-4 shadow">
+
+                <div class="modal-header border-bottom-0">
+                    <ul class="nav nav-tabs w-100" id="myTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab-general" data-bs-toggle="tab"
+                                href="#tabGeneral">General</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-aplicant" data-bs-toggle="tab"
+                                href="#tabAplicant">Solicitante</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-competition" data-bs-toggle="tab"
+                                href="#tabCompetition">Competición</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-bank-account" data-bs-toggle="tab" href="#tabBankAccount">Cuenta
+                                bancaria</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-important-archievents" data-bs-toggle="tab"
+                                href="#tabImportantArchievents">Logros importantes</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-documents" data-bs-toggle="tab"
+                                href="#tabDocuments">Documentos</a>
+                        </li>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+
+                <div class="modal-body py-0 text-justify-custom">
+                    <div class="tab-content">
+                        <!-- Pestaña info General -->
+                        <div class="tab-pane fade show active" id="tabGeneral">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for General tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="invoice" class="form-label">Folio</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.invoice" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="status" class="form-label">Estatus</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.status_request.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Fecha de envio</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.finished" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info aplicant -->
+                        <div class="tab-pane fade" id="tabAplicant">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Competition tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Nombre</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Correo</label>
+                                                    <input type="email" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.email" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="curp" class="form-label">CURP</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.curp" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="phone_number" class="form-label">Numero celular</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.phone_number" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info competition -->
+                        <div class="tab-pane fade" id="tabCompetition">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Competition tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Nombre</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="competition_type" class="form-label">Tipo de
+                                                        competición</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.competition_type.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="discipline" class="form-label">Disciplina</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.discipline.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6"
+                                                *ngIf="dataShow?.competition?.competition_type_id != 1">
+                                                <div class="mb-3">
+                                                    <label for="country" class="form-label">País</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.country.common_spa" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6"
+                                                *ngIf="dataShow?.competition?.competition_type_id != 3">
+                                                <div class="mb-3">
+                                                    <label for="state" class="form-label">Estado</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.state.name" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="start_date" class="form-label">Fecha de inicio</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.start_date" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="ending_date" class="form-label">Fecha de fin</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.ending_date" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info bank account -->
+                        <div class="tab-pane fade" id="tabBankAccount">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Bank Account tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="bank" class="form-label">Banco</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.bank" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="account_number" class="form-label">Número de
+                                                        cuenta</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.account" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="clabe" class="form-label">CLABE</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.key_account" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="beneficiary" class="form-label">Beneficiario</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.titular_persona_name" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="text-center">
+                                            <a class="mt-3"
+                                                href="{{ baseUrl+'sports/'+dataShow?.bankAccount?.account_status_url }}"
+                                                download>
+                                                <p>
+                                                    Descargar estado de cuenta
+                                                </p>
+                                                <span><i class="bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info important archievents-->
+                        <div class="tab-pane fade" id="tabImportantArchievents">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Important Archievents tab here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña documents -->
+                        <div class="tab-pane fade" id="tabDocuments">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Documents tab here -->
+                                        <h6 class="card-title">Documentación</h6>
+                                        <div class="row">
+                                            <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                                *ngFor="let item of dataShow?.documents">
+                                                <a class="mt-3" href="{{ baseUrl+'sports/'+item.file_name }}" download>
+                                                    <p>
+                                                        Descargar '{{item?.document_procedure?.name}}'
+                                                    </p>
+                                                    <span><i
+                                                            class="'bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="importComiteModal" tabindex="-1" aria-labelledby="exportComiteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportComiteModalLabel">Importar excel Comité</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="file" (change)="ReadExcel($event);" *ngIf="ExcelData?.length <= 0 ; else importData"
+                        class="form-control">
+                    <ng-template #importData>
+                        <div class="alert alert-success" role="alert" *ngIf="updatedData.length >0">
+                            <p>Folios actualizados correctamente: </p>
+                            <div class="row">
+                                <div class="col">
+                                    <ul>
+                                        <li *ngFor="let item of updatedData.slice(0, updatedData.length/2)">
+                                            {{item.folio}} - ${{item.monto_aprobado | mexicanCurrency}}</li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <ul>
+                                        <li *ngFor="let item of updatedData.slice(updatedData.length/2)">{{item.folio}}
+                                            - ${{item.monto_aprobado | mexicanCurrency}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-primary" (click)="selectAll()">Seleccionar todos</button>
+                            <button class="btn btn-info m-2" (click)="deselectAll()">Deseleccionar todos</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Folio</th>
+                                        <th>Tipo competencia</th>
+                                        <th>Solicitado</th>
+                                        <th>Aprobado</th>
+                                        <th>Confirmar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr *ngFor="let item of ExcelData; let i=index">
+                                        <td>{{i+1}}</td>
+                                        <td>{{item.folio ?? ''}}</td>
+                                        <td>{{item.tipo_de_competencia ?? ''}}</td>
+                                        <td>$ {{item.monto_solicitado | mexicanCurrency}}</td>
+                                        <td>$ {{item.monto_aprobado | mexicanCurrency}}</td>
+                                        <td>
+                                            <input type="checkbox" [checked]="item.confirmed"
+                                                (change)="updateConfirmedValue(item, $event)">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                        <td>Total:</td>
+                                        <td colspan="2">$ {{ getTotalAprobado() | mexicanCurrency }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal"
+                                (click)="clearDataExport()">Cancelar</button>
+                            <button type="button" class="btn btn-warning m-2" (click)="importComite()">Importar</button>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
 </app-sports>

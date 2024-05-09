@@ -24,7 +24,6 @@
                     <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/logros-importantes'">
                         <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Anterior
                     </a>
-
                     <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/reglamento'"
                         *ngIf="total_documents == 6">
                         Siguiente <i class="bi bi-arrow-right"></i><span
@@ -93,9 +92,19 @@
                                                             <p>Arrastra o selecciona un archivo</p>
                                                         </div>
                                                     </div>
-                                                    <small class="form-text text-muted">Formatos permitidos: PDF, JPG,
-                                                        JPEG,
-                                                        PNG</small>
+                                                    <small class="form-text text-muted">Formatos permitidos:
+                                                        pdf, jpg, jpeg, png.</small><br>
+                                                    <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o
+                                                        1024 KB.
+                                                    </small><br>
+                                                    <small class="form-text text-muted"><a
+                                                            href="https://www.ilovepdf.com/es/comprimir_pdf"
+                                                            target="_blank">¿Donde reducir el tamaño de un
+                                                            PDF?</a></small><br>
+                                                    <small class="form-text text-muted"><a
+                                                            href="https://www.iloveimg.com/es/comprimir-imagen"
+                                                            target="_blank">¿Donde reducir el tamaño de una
+                                                            imagen?</a></small>
                                                 </div>
 
                                                 <div class="text-center">

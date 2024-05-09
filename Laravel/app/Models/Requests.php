@@ -19,6 +19,7 @@ class Requests extends Model
         'status_request_id',
         'competition_id',
         'aplicant_id'
+        
     ];
 
     protected $casts = [

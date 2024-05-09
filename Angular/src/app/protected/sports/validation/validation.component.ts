@@ -129,16 +129,6 @@ export class ValidationComponent {
   typeForms: any = [];
   showCatalogo: any = {};
 
-  // Obtener la fecha actual en formato ISO (por ejemplo, "2023-09-15")
-  currentDate = new Date().toISOString().split('T')[0];
-
-  // Función para calcular la fecha mínima permitida (día siguiente a la fecha actual)
-  minDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(new Date().getDate() + 1); // Obtener el día siguiente
-    return tomorrow.toISOString().split('T')[0];
-  }
-
   miFormulario: FormGroup = this.fb.group({
     request_id: [this.id, [Validators.required]],
     attended: [2, [Validators.nullValidator]],

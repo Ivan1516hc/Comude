@@ -36,14 +36,26 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+
+        // 'web' => [
+        //     'driver' => 'session',
+        //     'provider' => 'users',
+        // ],
+
         'api' => [
             'driver' => 'jwt',
+            'provider' => 'users'
+        ],
+
+        'user' => [
+            'driver' => 'jwt',
             'provider' => 'users',
-            // 'hash' => false,
+            'expire' => 1440, // Duración en minutos, ajusta según tus necesidades
+        ],
+
+        'aplicant' => [
+            'driver' => 'jwt',
+            'provider' => 'aplicants',
             'expire' => 1440, // Duración en minutos, ajusta según tus necesidades
         ],
     ],
@@ -68,13 +80,13 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Aplicant::class,
+            'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'aplicants' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Aplicant::class,
+        ],
     ],
 
     /*

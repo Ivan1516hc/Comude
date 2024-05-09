@@ -53,13 +53,12 @@ class ImportantArchievementController extends Controller
     {
         $user = Auth::user();
 
-
         $countDocuments = ImportantArchievement::where('aplicant_id', $user->id)->get()->count();
 
         if ($request->hasFile($fileFieldName)) {
             $file = $request->file($fileFieldName);
             $fileExtension = $file->getClientOriginalExtension();
-            $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
             if (!in_array($fileExtension, $allowedExtensions)) {
                 throw new \Exception('La extensión del archivo no es válida.');
@@ -68,7 +67,7 @@ class ImportantArchievementController extends Controller
             $maxFileSize = 1024  * 1024; // 1MB
 
             if ($file->getSize() > $maxFileSize) {
-                throw new \Exception('El tamaño del archivo es demasiado grande.');
+                throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace https://www.iloveimg.com/es/comprimir-imagen.');
             }
 
             $customFileName = 'solicitante_' . $user->id . '_logro_importante_' . ($countDocuments + 1) . '.' . $fileExtension;

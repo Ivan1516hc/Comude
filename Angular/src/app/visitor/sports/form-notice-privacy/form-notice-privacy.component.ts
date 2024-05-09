@@ -24,7 +24,7 @@ export class FormNoticePrivacyComponent {
     request_id: ['', Validators.required], // Ejemplo de campo requerido
     regulations: [null, [Validators.required, Validators.requiredTrue]], // Campo de archivo requerido
     privacy_notice: [null, [Validators.required, Validators.requiredTrue]],
-    status_request_id: [9]
+    status_request_id: [2]
   });
 
   ngOnInit(): void {
