@@ -40,7 +40,7 @@ class AplicantController extends Controller
      */
     public function show()
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             $response['message'] = "Necesitas loguearte";
             $response['code'] = 404;
@@ -65,7 +65,7 @@ class AplicantController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             $response['message'] = "Necesitas loguearte";
             $response['code'] = 404;
@@ -92,7 +92,7 @@ class AplicantController extends Controller
 
     public function updatePassword(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             return response()->json(['message' => 'Necesitas iniciar sesión', 'code' => 404]);
         }
@@ -131,7 +131,7 @@ class AplicantController extends Controller
 
     public function readRegulations()
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             return response()->json(['message' => 'Necesitas iniciar sesión', 'code' => 404]);
         }

@@ -24,7 +24,7 @@ class RequestsController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
         }
@@ -43,7 +43,7 @@ class RequestsController extends Controller
 
     public function showAppraisal()
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
         }
@@ -122,7 +122,7 @@ class RequestsController extends Controller
 
     public function showData($id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
         }
@@ -168,7 +168,8 @@ class RequestsController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
+        
         if (!$user) {
             $response['message'] = "Necesitas loguearte";
             $response['code'] = 404;
@@ -342,7 +343,7 @@ class RequestsController extends Controller
 
     public function search($value)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         $param = explode(":", $value);
 
@@ -393,7 +394,7 @@ class RequestsController extends Controller
 
     public function searchValue($value)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
         // Usuarios con rol 1 no pueden consultar
         if ($user->role_id == 1) {

@@ -1,9 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
+import { DocumentsService } from '../../services/documents.service';
 
 @Component({
   selector: 'app-form-documents',
@@ -24,7 +24,7 @@ export class FormDocumentsComponent {
   baseUrl = environment.dowload;
 
   constructor(private fb: FormBuilder,
-    private router: Router, private route: ActivatedRoute, private allService: AllVisitorService
+    private router: Router, private route: ActivatedRoute,private documentService: DocumentsService
   ) { }
 
   miFormulario: FormGroup = this.fb.group({
@@ -84,7 +84,7 @@ export class FormDocumentsComponent {
     this.miFormulario.patchValue({
       request_id: id
     });
-    this.allService.getDocuments(id).subscribe({
+    this.documentService.getDocuments(id).subscribe({
       next: (response) => {
         this.documents = response.documents;
         this.total_documents = response.total_documents;
@@ -120,7 +120,7 @@ export class FormDocumentsComponent {
     formData.append('file', this.miFormulario.get('file').value);
     formData.append('type_file', this.miFormulario.get('type_file').value);
     formData.append('name_file', this.miFormulario.get('name_file').value);
-    this.allService.storeDocument(formData).subscribe({
+    this.documentService.storeDocument(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.ngOnInit();

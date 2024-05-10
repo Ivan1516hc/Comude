@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
+import { CompetitionsService } from '../../services/competitions.service';
 
 interface budget {
   minimum_budget: number,
@@ -18,7 +18,7 @@ export class FormConpetitionComponent {
 
   urlPrincipal: string;
   catalog: any
-  debget: budget={
+  debget: budget = {
     minimum_budget: 0,
     maximum_budget: 0
   };
@@ -30,7 +30,7 @@ export class FormConpetitionComponent {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private route: ActivatedRoute, private allService: AllVisitorService
+    private route: ActivatedRoute, private competitionService: CompetitionsService
   ) {
     this.miFormulario.get('competition_type_id')?.valueChanges.subscribe((id) => {
       if (this.newData || this.edit) {
@@ -175,7 +175,7 @@ export class FormConpetitionComponent {
   }
 
   getDataCompetition() {
-    this.allService.getDataCompetition().subscribe({
+    this.competitionService.getDataCompetition().subscribe({
       next: (response) => {
         this.catalog = response;
       }
@@ -195,7 +195,7 @@ export class FormConpetitionComponent {
     competition_type_id: ['', [Validators.required]],
   });
   showConpetition(id: any): void {
-    this.allService.getCompetition(id).subscribe({
+    this.competitionService.show(id).subscribe({
       next: (response) => {
         if (response.id) {
           this.onlySee = true;
@@ -229,7 +229,7 @@ export class FormConpetitionComponent {
   }
 
   getDataCountryStates() {
-    this.allService.getDataCountryStates(this.miFormulario.controls['country_id'].value ?? 120).subscribe({
+    this.competitionService.getDataCountryStates(this.miFormulario.controls['country_id'].value ?? 120).subscribe({
       next: (response) => {
         this.catalog.countries_state = response;
       }
@@ -240,9 +240,9 @@ export class FormConpetitionComponent {
     if (this.miFormulario.invalid) {
       return this.miFormulario.markAllAsTouched();
     }
-    
+
     const data = this.miFormulario.getRawValue();
-    this.allService.storeCompetition(data).subscribe({
+    this.competitionService.store(data).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.handleSuccessResponse(response);

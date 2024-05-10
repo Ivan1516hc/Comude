@@ -32,7 +32,7 @@ class CompetitionController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             $response['message'] = "Necesitas loguearte";
             $response['code'] = 404;
@@ -70,7 +70,7 @@ class CompetitionController extends Controller
      */
     public function show($id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             $response['message'] = "Necesitas loguearte";
             $response['code'] = 404;

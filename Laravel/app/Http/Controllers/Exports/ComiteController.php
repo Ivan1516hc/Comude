@@ -15,7 +15,7 @@ class ComiteController extends Controller
 {
     public function comiteExport(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'No autorizado'], 401);
         }
@@ -48,7 +48,7 @@ class ComiteController extends Controller
 
     public function assignmentComite(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'No autorizado', 'code' => 401]);
         }
@@ -68,7 +68,7 @@ class ComiteController extends Controller
 
     public function comiteImport(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'No autorizado', 'code' => 401]);
         }

@@ -14,7 +14,7 @@ class BankAccountController extends Controller
 {
     public function bankAccountExport(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         if (!$user) {
             return response()->json(['message' => 'No autorizado'], 401);
         }

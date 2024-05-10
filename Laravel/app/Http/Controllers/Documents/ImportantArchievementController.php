@@ -24,7 +24,7 @@ class ImportantArchievementController extends Controller
     public function store(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = Auth::guard('aplicant')->user();
             if (!$user) {
                 return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
             }
@@ -51,7 +51,7 @@ class ImportantArchievementController extends Controller
 
     public function saveFile(Request $request, $fileFieldName)
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
 
         $countDocuments = ImportantArchievement::where('aplicant_id', $user->id)->get()->count();
 
@@ -83,7 +83,7 @@ class ImportantArchievementController extends Controller
 
     public function show()
     {
-        $user = Auth::user();
+        $user = Auth::guard('aplicant')->user();
         if (!$user) {
             return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
         }

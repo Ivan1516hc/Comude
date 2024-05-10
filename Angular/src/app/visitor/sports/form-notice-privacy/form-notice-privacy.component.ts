@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
+import { RequestsService } from '../../services/requests.service';
 
 @Component({
   selector: 'app-form-notice-privacy',
@@ -16,7 +16,7 @@ export class FormNoticePrivacyComponent {
 
 
   constructor(private fb: FormBuilder,
-    private router: Router, private route: ActivatedRoute, private allService: AllVisitorService
+    private router: Router, private route: ActivatedRoute, private requestService: RequestsService
   ) { }
 
   miFormulario: FormGroup = this.fb.group({
@@ -42,7 +42,7 @@ export class FormNoticePrivacyComponent {
   }
 
   showRequest() {
-    this.allService.showRequest(this.request_id).subscribe({
+    this.requestService.show(this.request_id).subscribe({
       next: (response) => {
         this.request = response;
       }
@@ -60,7 +60,7 @@ export class FormNoticePrivacyComponent {
       return this.miFormulario.markAllAsTouched();
     }
 
-    this.allService.changeStatusRequest(this.miFormulario.value).subscribe({
+    this.requestService.changeStatusRequest(this.miFormulario.value).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.ngOnInit();

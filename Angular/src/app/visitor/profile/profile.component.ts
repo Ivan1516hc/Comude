@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { AllVisitorService } from '../services/all-visitor.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ProfileService } from '../services/profile.service';
 
 @Component({
   selector: 'app-profile',
@@ -13,10 +13,8 @@ export class ProfileComponent {
   @ViewChild('myButton') myButton: ElementRef;
 
   constructor(
-    // private router: Router,
     private fb: FormBuilder,
-    // private route: ActivatedRoute, 
-    private allService: AllVisitorService
+    private profileService: ProfileService
   ) {
   }
 
@@ -78,7 +76,7 @@ export class ProfileComponent {
   }
 
   getDataUser() {
-    this.allService.getInfo().subscribe({
+    this.profileService.show().subscribe({
       next: (response) => {
         this.populateForm(response);
       }
@@ -138,7 +136,7 @@ export class ProfileComponent {
       cancelButtonText: `No`
     }).then((result) => {
       if (result.isConfirmed) {
-        this.allService.updateInfo(data).subscribe(response => {
+        this.profileService.update(data).subscribe(response => {
           if (response.code == 200) {
             Swal.fire({
               position: 'center',
@@ -174,7 +172,7 @@ export class ProfileComponent {
       cancelButtonText: `No`
     }).then((result) => {
       if (result.isConfirmed) {
-        this.allService.changePassword(data).subscribe({
+        this.profileService.changePassword(data).subscribe({
           next: (response) => {
             if (response.code == 200) {
               Swal.fire({

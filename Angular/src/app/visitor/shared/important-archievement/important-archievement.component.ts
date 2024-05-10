@@ -1,9 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { DocumentsService } from '../../services/documents.service';
 
 @Component({
   selector: 'app-important-archievement',
@@ -21,8 +21,7 @@ export class ImportantArchievementComponent {
 
   expandedItemIndex: number | null = null;
 
-  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder,
-    private allService: AllVisitorService) {
+  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private documentService : DocumentsService) {
   }
 
   miFormulario: FormGroup = this.fb.group({
@@ -39,7 +38,7 @@ export class ImportantArchievementComponent {
   }
 
   showImportantArchivements(): void {
-    this.allService.getImportantArchivement().subscribe({
+    this.documentService.getImportantArchivement().subscribe({
       next: (response) => {
         if (response.length > 0) {
           this.documents = response;
@@ -97,7 +96,7 @@ export class ImportantArchievementComponent {
     formData.append('file', this.miFormulario.get('file').value);
     formData.append('description', this.miFormulario.get('description').value);
 
-    this.allService.storeImportantArchivement(formData).subscribe({
+    this.documentService.storeImportantArchivement(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
           Swal.fire({
@@ -143,7 +142,7 @@ export class ImportantArchievementComponent {
     }).then((result) => {
       if (result.isConfirmed) {
 
-        this.allService.deleteImportantArchivement(id).subscribe({
+        this.documentService.deleteImportantArchivement(id).subscribe({
           next: (response) => {
             if (response.code == 200) {
               Swal.fire({

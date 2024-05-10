@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AllVisitorService } from '../services/all-visitor.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { DataRequest, Datum } from '../interfaces/request-aplicant';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RequestsService } from '../services/requests.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,7 +12,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private router: Router, private fb: FormBuilder, private visitorService: AllVisitorService) {
+  constructor(private router: Router, private fb: FormBuilder, private requestService: RequestsService) {
   }
   catalog: any;
   requests: DataRequest;
@@ -38,13 +38,13 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.visitorService.getDataDiscipline().subscribe({
+    this.requestService.getDataDiscipline().subscribe({
       next: (response) => {
         this.catalog = response;
       }
     })
 
-    this.visitorService.indexRequestVisitor().subscribe({
+    this.requestService.getAll().subscribe({
       next: (response) => {
         if (response.code == 200 || response.code == 404) {
           this.requests = response.data ?? null;
@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit {
     this.currentUrl = window.location.pathname;
   }
 
-  needImportantArchievement(){
+  needImportantArchievement() {
     Swal.fire({
       position: 'center',
       icon: 'info',
@@ -88,7 +88,7 @@ export class DashboardComponent implements OnInit {
 
   storeRequest() {
     const data = this.miFormulario.value;
-    this.visitorService.storeRequest(data).subscribe({
+    this.requestService.store(data).subscribe({
       next: (response) => {
         if (response.code == 201) {
           Swal.fire({
@@ -147,7 +147,7 @@ export class DashboardComponent implements OnInit {
         timer: 2000
       })
     }
-    this.visitorService.readRegulations().subscribe({
+    this.requestService.readRegulations().subscribe({
       next: (response) => {
         if (response.code == 200) {
           Swal.fire({

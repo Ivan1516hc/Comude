@@ -2,8 +2,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
+import { DocumentsService } from '../../services/documents.service';
 
 @Component({
   selector: 'app-form-justification',
@@ -19,12 +19,12 @@ export class FormJustificationComponent {
   request_id: number;
   documents: any[] = [];
   justificationType: any[] = [];
-  request:any;
+  request: any;
 
   expandedItemIndex: number | null = null;
 
   constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder,
-    private allService: AllVisitorService) {
+    private documentService: DocumentsService) {
   }
 
   miFormulario: FormGroup = this.fb.group({
@@ -47,7 +47,7 @@ export class FormJustificationComponent {
   }
 
   showJustification(id): void {
-    this.allService.getJustification(id).subscribe({
+    this.documentService.getJustification(id).subscribe({
       next: (response) => {
         if (response.data.length > 0) {
           this.documents = response.data;
@@ -71,7 +71,7 @@ export class FormJustificationComponent {
       cancelButtonText: `No`
     }).then((result) => {
       if (result.isConfirmed) {
-        this.allService.finishJustification(this.request_id).subscribe({
+        this.documentService.finishJustification(this.request_id).subscribe({
           next: (response) => {
             if (response.code == 200) {
               Swal.fire({
@@ -148,7 +148,7 @@ export class FormJustificationComponent {
     formData.append('justification_type_id', this.miFormulario.get('justification_type_id').value);
     formData.append('description', this.miFormulario.get('description').value);
 
-    this.allService.storeJustification(formData).subscribe({
+    this.documentService.storeJustification(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
           Swal.fire({
@@ -190,8 +190,7 @@ export class FormJustificationComponent {
       cancelButtonText: `No`
     }).then((result) => {
       if (result.isConfirmed) {
-
-        this.allService.deleteJustification(id).subscribe({
+        this.documentService.deleteJustification(id).subscribe({
           next: (response) => {
             if (response.code == 200) {
               Swal.fire({

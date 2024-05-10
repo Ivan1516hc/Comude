@@ -22,7 +22,7 @@ class MessageRequestController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         $message_motive = MessageMotive::all();
         if ($user->role_id == 1) {
             return;
@@ -50,7 +50,7 @@ class MessageRequestController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
 
 
         try {
@@ -120,7 +120,7 @@ class MessageRequestController extends Controller
      */
     public function show($id)
     {
-        $user = Auth::user();
+        $user = Auth::guard('user')->user();
         $message_motive = MessageMotive::all();
 
 

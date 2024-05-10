@@ -1,9 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AllVisitorService } from '../../services/all-visitor.service';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
+import { BankAccountsService } from '../../services/bank-accounts.service';
 
 @Component({
   selector: 'app-form-bank-account',
@@ -26,7 +26,8 @@ export class FormBankAccountComponent {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private route: ActivatedRoute, private allService: AllVisitorService
+    private route: ActivatedRoute,
+    private bankAccountService: BankAccountsService
   ) {
 
   }
@@ -74,7 +75,7 @@ export class FormBankAccountComponent {
     this.miFormulario.patchValue({
       request_id: id
     });
-    this.allService.getBankAccount(id).subscribe({
+    this.bankAccountService.getBankAccount(id).subscribe({
       next: (response) => {
         if (response.id) {
           this.onlySee = true;
@@ -115,7 +116,7 @@ export class FormBankAccountComponent {
     formData.append('bank', this.miFormulario.get('bank').value);
     formData.append('account_status_url', this.miFormulario.get('account_status_url').value);
 
-    this.allService.storeBankAccount(formData).subscribe({
+    this.bankAccountService.storeBankAccount(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.handleSuccessResponse(response);
