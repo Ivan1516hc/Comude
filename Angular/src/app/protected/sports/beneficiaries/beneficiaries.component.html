@@ -1,15 +1,15 @@
 <app-sports>
-    <main id="main" class="main">
-       <div class="pagetitle">
-          <h1>Beneficiarios</h1>
-          <nav>
-             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
-                <li class="breadcrumb-item active">Beneficiarios</li>
-             </ol>
-          </nav>
-       </div>
-       <section class="section dashboard">
+   <main id="main" class="main">
+      <div class="pagetitle">
+         <h1>Beneficiarios</h1>
+         <nav>
+            <ol class="breadcrumb">
+               <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
+               <li class="breadcrumb-item active">Beneficiarios</li>
+            </ol>
+         </nav>
+      </div>
+      <section class="section dashboard">
          <div class="card">
             <div class="card-body">
                <h5 class="card-title">Tabla de beneficiarios</h5>
@@ -18,13 +18,15 @@
                <div class="search-container">
                   <ul class="nav nav-tabs w-100" id="myTabs">
                      <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#personalizada" (click)="search(1)">Todos</a>
+                        <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
+                           (click)="search(1)">Todos</a>
                      </li>
                      <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#search">Buscador</a>
                      </li>
                      <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#personalizada" (click)="search('status:1')">Activos</a>
+                        <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                           (click)="search('status:1')">Activos</a>
                      </li>
                      <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
@@ -39,13 +41,13 @@
                         <div class="content-section">
                            <div class="card xu-card">
                               <div class="card-body">
-                                 <input type="text" class="form-control mt-2" placeholder="Buscar..." [(ngModel)]="searchTerm"
-                                    (input)="onSearchTermChange(searchTerm)">
+                                 <input type="text" class="form-control mt-2" placeholder="Buscar..."
+                                    [(ngModel)]="searchTerm" (input)="onSearchTermChange(searchTerm)">
                               </div>
                            </div>
                         </div>
                      </div>
-         
+
                   </div>
                </div>
                <div class="table-container" *ngIf="data?.data?.length > 0">
@@ -69,11 +71,9 @@
                            </td>
                            <td>{{item.beneficiary_creche[0].creche.degree.name ?? null}}</td>
                            <td>{{item.beneficiary_creche[0].creche.room.name ?? null}}</td>
-                           <td><button class=" btn btn-sm btn-info m-1" data-bs-toggle="modal"
-                                 data-bs-target="#showBeneficiaryCrecheModel" (click)="getLocations(1,item)">Ver Datos</button>
+                           <td>
                               <button *ngIf="item.beneficiary_creche[0].status == 0" class=" btn btn-sm btn-success m-1"
-                                 data-bs-toggle="modal" data-bs-target="#crecheModal"
-                                 >Dar
+                                 data-bs-toggle="modal" data-bs-target="#crecheModal">Dar
                                  De Alta</button>
                               <button *ngIf="item.beneficiary_creche[0].status == 1" class=" btn btn-sm btn-danger m-1"
                                  (click)="changeEstatus(item,0)">Dar De Baja</button>
@@ -87,12 +87,13 @@
                   <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
                      <ul class="pagination">
                         <li class="page-item" *ngFor="let item of data.links; let i = index">
-                           <button class="page-link" [ngClass]="{'activeLink': item.active}" (click)="onPageChange(item.url)"
-                              *ngIf="item.url != null">
+                           <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                              (click)="onPageChange(item.url)" *ngIf="item.url != null">
                               <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
                               <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
                               <ng-container *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
-                                 {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' : item.label }}
+                                 {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' :
+                                 item.label }}
                               </ng-container>
                            </button>
                         </li>
@@ -101,6 +102,6 @@
                </div>
             </div>
          </div>
-       </section>
-    </main>
- </app-sports>
+      </section>
+   </main>
+</app-sports>

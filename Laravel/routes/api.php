@@ -45,6 +45,7 @@ Route::middleware('cors')->group(function () {
         Route::post('/password/reset/{token}', [ResetPasswordController::class, 'reset'])->name('password.update');
 
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/admin-login', [AuthController::class, 'loginAdmin']);
         Route::post('/register', [AuthController::class, 'register']);
 
         //VALIDAR TOKEN
@@ -71,8 +72,10 @@ Route::middleware('cors')->group(function () {
     ], function ($router) {
         //Requests Routes
         Route::post('/request/create', [RequestsController::class, 'store']);
-        Route::put('/request/update', [RequestsController::class, 'updateStatus']);
+
         Route::get('/request', [RequestsController::class, 'showVisitorRequest']);
+        Route::get('request/show/{id}', [RequestsController::class, 'show']);
+        Route::post('request/update/status', [RequestsController::class, 'changeStatus']);
 
         //Competitions Routs
         Route::get('/request/competitions/show/{id}', [CompetitionController::class, 'show']);
@@ -114,8 +117,14 @@ Route::middleware('cors')->group(function () {
         'prefix' => 'admin'
     ], function ($router) {
         //Appraisal Routs
-        Route::get('/request/appraisal/index', [RequestsController::class, 'showAppraisal']);
-        Route::post('/request/appraisal/approved-budget', [ComiteController::class, 'assignmentComite']);
+        Route::get('/appraisal/index', [RequestsController::class, 'showAppraisal']);
+        Route::post('/appraisal/approved-budget', [ComiteController::class, 'assignmentComite']);
+
+        Route::get('/request/formData/{id}', [RequestsController::class, 'showData']);
+        Route::get('/request/search/{value}', [RequestsController::class, 'search']);
+        Route::get('/request/search-value/{value}', [RequestsController::class, 'searchValue']);
+
+        Route::put('/request/update', [RequestsController::class, 'updateStatus']);
 
         Route::get('/request/message/form', [MessageRequestController::class, 'typeForm']);
         Route::get('/request/message/history', [MessageRequestController::class, 'index']);
@@ -133,14 +142,6 @@ Route::middleware('cors')->group(function () {
     Route::middleware('jwt.verify')->group(function () {
         //Requests
         Route::get('request', [RequestsController::class, 'index']);
-        Route::get('request/show/{id}', [RequestsController::class, 'show']);
-        Route::get('request/formData/{id}', [RequestsController::class, 'showData']);
-
-        Route::get('request/search/{value}', [RequestsController::class, 'search']);
-        Route::get('request/search-value/{value}', [RequestsController::class, 'searchValue']);
-
-        Route::post('request/changecenter', [RequestsController::class, 'changeCenter']); //Pendiente
-        Route::post('request/update/status', [RequestsController::class, 'changeStatus']);
     });
 });
 

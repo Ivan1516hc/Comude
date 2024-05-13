@@ -21,9 +21,9 @@ export class BeneficiariesComponent {
   housing = [];
 
   beneficiaries: any;
-  data: any=[];
+  data: any = [];
 
-  constructor(private fb: FormBuilder,  private allService: AllService, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private allService: AllService, private http: HttpClient) {
     this.searchTermChanged.pipe(
       debounceTime(1000) // Cambia este valor según el tiempo que desees esperar después de escribir
     ).subscribe(() => {
@@ -60,17 +60,15 @@ export class BeneficiariesComponent {
   }
 
   private initTable() {
-    this.allService.indexBeneficiary().subscribe({
-      next: (beneficiaries) => {
-        this.beneficiaries = beneficiaries;
-        this.data = this.beneficiaries;
-      }, error: () => {
-        this.hayError = true;
-      }
-    });
+    // this.allService.indexBeneficiary().subscribe({
+    //   next: (beneficiaries) => {
+    //     this.beneficiaries = beneficiaries;
+    //     this.data = this.beneficiaries;
+    //   }, error: () => {
+    //     this.hayError = true;
+    //   }
+    // });
   }
-
-
 
   realizarBusqueda() {
     // this.crecheService.searchValueBeneficiary(this.searchTerm).subscribe({
@@ -100,236 +98,53 @@ export class BeneficiariesComponent {
     // })
   }
 
-  curp: boolean;
-
-  validatorCurp() {
-
-    // this.crecheService.fetchCurp(this.miFormularioService.value.curp).subscribe({
-    //   next: (response) => {
-    //     if (response.not) {
-
-    //       Swal.fire({
-    //         position: 'center',
-    //         icon: 'error',
-    //         title: 'No se encuentra la CURP',
-    //         showConfirmButton: true
-    //       })
-    //     }
-    //     if (response.id || response.nombre) {
-    //       this.curp = true;
-    //       this.miFormularioService.get('curp').setValue(response.curp);
-    //       this.miFormularioService.get('curp').disable();
-
-    //     }
-    //   }, error: (error) => {
-
-    //     console.log(error);
-    //     this.hayError = true;
-    //   }
-    // })
-  }
-
-  backCurp() {
-
-    this.curp = false;
-    this.miFormularioService.get('curp').setValue("");
-    this.miFormularioService.get('curp').enable();
-
-  }
-
   ngOnInit(): void {
-    this.allService.getCatalogs().subscribe({
-      next: (catalogs) => {
-        this.diseases = catalogs.enfermedad;
-        this.housing = catalogs.vivienda;
-      }, error: () => {
-        this.hayError = true;
-      }
-    });
-  }
 
-  getHousingObject() {
-    // Obtener el objeto correspondiente según el valor de beneficiary?.vivienda
-    const housingId = this.beneficiary?.vivienda;
-    return this.housing.find(housing => housing.id == housingId) || {};
   }
-
-  getDiseasObject() {
-    // Obtener el objeto correspondiente según el valor de beneficiary?.vivienda
-    const diseasesId = this.beneficiary?.enfermedad;
-    return this.diseases.find(diseases => diseases.id == diseasesId) || {};
-  }
-
 
   changeEstatus(data: any, status: any) {
-    Swal.fire({
-      position: 'center',
-      icon: 'question',
-      title: '¿Está seguro de que desea ' + (status == 0 ? 'dar de baja' : (status == 1 ? 'dar de alta' : '')) + ' a este usuario?',
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Si',
-      cancelButtonText: `No`
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.beneficiary = data;
-        this.changeCreche(status);
-      } else if (result.isDenied) {
-        return;
-      }
-    })
+
   }
 
-  changeCenter() {
-
-    let body = this.beneficiary;
-    body['newCenter'] = this.selectLocation;
-    body['newDegree'] = this.selectDegree;
-    // this.crecheService.changeBeneficiaryCenter(body).subscribe({
-    //   next: (response) => {
-
-    //   }, error: (error) => {
-
-    //   }
-    // });;
-  }
 
   addBeneficiaryService() {
 
     let data = {
       curp: this.miFormularioService.value.curp
     }
-    this.allService.addBeneficiaryOfService(data).subscribe({
-      next: (response) => {
-        if (response.code == 200) {
+    // this.allService.addBeneficiaryOfService(data).subscribe({
+    //   next: (response) => {
+    //     if (response.code == 200) {
 
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000
-          })
-          // this.changeBeneficiary.emit();
-        } else {
+    //       Swal.fire({
+    //         position: 'center',
+    //         icon: 'success',
+    //         title: response.message,
+    //         showConfirmButton: false,
+    //         timer: 2000
+    //       })
+    //       // this.changeBeneficiary.emit();
+    //     } else {
 
-          Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000
-          })
-        }
-      }, error: (error) => {
+    //       Swal.fire({
+    //         position: 'center',
+    //         icon: 'error',
+    //         title: response.message,
+    //         showConfirmButton: false,
+    //         timer: 2000
+    //       })
+    //     }
+    //   }, error: (error) => {
 
-        Swal.fire("Error", "error");
-      }
-    });
+    //     Swal.fire("Error", "error");
+    //   }
+    // });
   }
 
   id: any = null;
-  locations: any = null;
-  selectLocation: any = "";
-  selectDegree: any = "";
-  selectCreche: any = "";
-  degrees: any = [];
-  creches: any = [];
-  getLocations(id: number, data: any) {
-
-    this.beneficiary = data;
-    this.getPostCode(data.colonia);
-    // this.crecheService.getLocations(id).subscribe({
-    //   next: (response) => {
-    //     this.locations = response;
-    //   }
-    // })
-  }
-
-  getCreches() {
-    // this.crecheService.getCreches(this.selectLocation).subscribe({
-    //   next: (response) => {
-    //     this.degrees = response;
-    //   }
-    // })
-  }
 
   getBeneficiary(data: any) {
     this.beneficiary = data.beneficiary;
-  }
-
-  changeCreche(status: any) {
-
-    const data = {}
-    if (status == 1) {
-      const form = this.selectCreche;
-      const [id, capacity, name] = form.split(',');
-      if (form == 0) {
-        return;
-      }
-      var nameRoom = name;
-      data['creche_id'] = id;
-      data['quota'] = capacity;
-      data['beneficiary_id'] = this.beneficiary.id;
-    }
-
-    data['pivote_id'] = this.beneficiary.beneficiary_creche[0].id;
-
-    Swal.fire({
-      position: 'center',
-      icon: 'question',
-      title: '¿Está seguro de que desea ' + (status == 0 ? 'dar de baja' : (status == 1 ? 'dar de alta' : '')) + ' a este usuario en la sala ' + nameRoom + ' ?',
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Si',
-      cancelButtonText: `No`
-    }).then((result) => {
-      if (result.isConfirmed) {
-        data['status'] = status;
-        // this.crecheService.updateBeneficiaryCreche(data).subscribe({
-        //   next: (response) => {
-        //     if (response.code == 200) {
-        //       Swal.fire({
-        //         position: 'center',
-        //         icon: 'success',
-        //         title: response.message,
-        //         showConfirmButton: false,
-        //         timer: 2000
-        //       })
-        //       this.changeBeneficiary.emit();
-        //     } else {
-        //       Swal.fire({
-        //         position: 'center',
-        //         icon: 'error',
-        //         title: response.message,
-        //         showConfirmButton: false,
-        //         timer: 2000
-        //       })
-        //     }
-        //   }, error: (error) => {
-        //     Swal.fire("Error", "error");
-        //   }
-        // })
-      } else if (result.isDenied) {
-        return;
-      }
-    })
-  }
-
-  getPostCode(value: any) {
-
-    this.allService.getPostalCodeInfo(value).subscribe({
-      next: (response) => {
-
-        if (response[0]?.id) {
-          this.beneficiary.estado = response[0].estado;
-          this.beneficiary.colonia = response[0].colonia;
-        }
-      }, error: (error) => {
-
-        this.hayError = true;
-      }
-    })
   }
 
   calculateAge(dateOfBirth: string): string {

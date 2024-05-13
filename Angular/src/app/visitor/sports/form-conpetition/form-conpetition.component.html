@@ -49,6 +49,23 @@
                                     </div>
                                 </div>
 
+                                <div
+                                    *ngIf="!edit && onlySee && (request?.status_request_id == 1 || request?.status_request_id == 4)">
+                                    <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center "
+                                        role="alert">
+                                        <div>
+                                            <strong>¡Importante!</strong> ¿Quieres actualizar la información
+                                            de la competencia?
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary" style="margin-left: 5px;"
+                                            (click)="loadingUpdate()">
+                                            <i class="bi bi-pencil"></i> Actualizar
+                                        </button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Cerrar"></button>
+                                    </div>
+                                </div>
+
                                 <div class="card-body">
                                     <h5 class="card-title">Formulario de competición</h5>
                                     <form class="row g-3" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
@@ -150,7 +167,8 @@
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['requested_budget'].errors && miFormulario.controls['requested_budget'].touched">
                                                 {{ miFormulario.controls['requested_budget'].value >
-                                                debget?.maximum_budget ? 'El presupuesto solicitado no puede ser mayor a ' +
+                                                debget?.maximum_budget ? 'El presupuesto solicitado no puede ser mayor a
+                                                ' +
                                                 debget?.maximum_budget +'.' : 'Presupuesto solicitado requerido.' }}
                                             </span>
                                         </div>

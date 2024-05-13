@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('modify_forms', function (Blueprint $table) {
-            $table->smallIncrements('id');
+            $table->bigIncrements('id');
 
             $table->unsignedBigInteger('request_id')->nullable();
             $table->foreign('request_id')->references('id')->on('requests');

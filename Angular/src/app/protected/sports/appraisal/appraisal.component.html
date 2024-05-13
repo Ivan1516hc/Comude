@@ -302,6 +302,24 @@
                                                         [value]="dataShow?.general?.finished" disabled>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Presupuesto
+                                                        solicitado</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.requested_budget | mexicanCurrency"
+                                                        disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" *ngIf="dataShow?.competition?.approved_budget">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Presupuesto
+                                                        aprobado</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.approved_budget | mexicanCurrency"
+                                                        disabled>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

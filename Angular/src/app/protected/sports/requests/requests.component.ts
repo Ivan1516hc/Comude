@@ -37,13 +37,7 @@ export class RequestsComponent {
   recargarDatosTabla() {
     this.initTable();
 
-    this.allService.getCatalogs().subscribe({
-      next: (response) => {
-        this.catalogo = response;
-      }, error: (err) => {
-        console.log(err);
-      }
-    })
+
   }
 
   // Función para manejar el cambio de página
@@ -192,48 +186,48 @@ export class RequestsComponent {
   }
 
   schedule(): any {
-    if (this.miFormulario.value.date == '' || this.miFormulario.value.date == '') {
-      return Swal.fire({
-        position: 'center',
-        icon: 'warning',
-        title: 'Debes de ingresar fecha y hora para la cita.',
-        showConfirmButton: false,
-        timer: 3000
-      })
-    }
-    const data = this.miFormulario.value;
+    // if (this.miFormulario.value.date == '' || this.miFormulario.value.date == '') {
+    //   return Swal.fire({
+    //     position: 'center',
+    //     icon: 'warning',
+    //     title: 'Debes de ingresar fecha y hora para la cita.',
+    //     showConfirmButton: false,
+    //     timer: 3000
+    //   })
+    // }
+    // const data = this.miFormulario.value;
 
-    Swal.fire({
-      position: 'center',
-      icon: 'question',
-      title: '¿Está seguro de que desea agendar cita el día ' + this.formatDate(data.date) + ' en horario de ' + this.formatTime(data.hour) + ' para esta solicitud?',
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Si',
-      cancelButtonText: `No`
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.allService.createQuote(data).subscribe({
-          next: (response) => {
-            if (response.code == 200) {
-              Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: response.message,
-                showConfirmButton: false,
-                timer: 2000
-              })
-              // this.citaCreada.emit();
-              this.cerrarModal();
-            }
-          }, error: (error) => {
-            Swal.fire("Error", "error")
-          }
-        })
-      } else if (result.isDenied) {
-        return;
-      }
-    })
+    // Swal.fire({
+    //   position: 'center',
+    //   icon: 'question',
+    //   title: '¿Está seguro de que desea agendar cita el día ' + this.formatDate(data.date) + ' en horario de ' + this.formatTime(data.hour) + ' para esta solicitud?',
+    //   showConfirmButton: true,
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Si',
+    //   cancelButtonText: `No`
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     this.allService.createQuote(data).subscribe({
+    //       next: (response) => {
+    //         if (response.code == 200) {
+    //           Swal.fire({
+    //             position: 'center',
+    //             icon: 'success',
+    //             title: response.message,
+    //             showConfirmButton: false,
+    //             timer: 2000
+    //           })
+    //           // this.citaCreada.emit();
+    //           this.cerrarModal();
+    //         }
+    //       }, error: (error) => {
+    //         Swal.fire("Error", "error")
+    //       }
+    //     })
+    //   } else if (result.isDenied) {
+    //     return;
+    //   }
+    // })
   }
 
   getRequest(item: any) {

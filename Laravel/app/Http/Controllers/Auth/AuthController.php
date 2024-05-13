@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Aplicant;
 use App\Models\Log;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register','validateUserVisitor']]);
+        $this->middleware('auth:api', ['except' => ['login','logout', 'register', 'validateUserVisitor', 'validateUserAdmin','loginAdmin']]);
     }
 
     /**
@@ -73,6 +74,37 @@ class AuthController extends Controller
         return response()->json(compact('ok', 'token', 'query', 'id', 'name', 'email'));
     }
 
+
+    public function loginAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string',
+            'password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $credentials = $validator->validated();
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Correo y contraseña no coinciden'], 401);
+        }
+
+        if (!$token = auth()->guard('user')->attempt($credentials)) {
+            return response()->json(['message' => 'Correo y contraseña no coinciden'], 401);
+        }
+
+        $this->createNewToken($token);
+        $id = $user->id;
+        $ok = true;
+        $name = $user->name;
+        $email = $user->email;
+
+        return response()->json(compact('ok', 'token', 'id', 'name', 'email'));
+    }
     /**
      * Register a User.
      *
@@ -236,17 +268,17 @@ class AuthController extends Controller
 
     public function validateUserAdmin()
     {
-        JWTAuth::parseToken()->authenticate();
-        // $type = Auth::user()->role_id;
-        // if ($type != 1) {
-        //     return response()->json([
-        //         'ok'    => true
-        //     ], 200);
-        // } else {
-            return response()->json([
-                'ok'    => false
-            ], 401);
-        // }
+        try {
+            $user = Auth::guard('user')->user();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Token inválido'], 401);
+        }
+
+        if ($user instanceof User) {
+            return response()->json(['ok' => true], 200);
+        } else {
+            return response()->json(['error' => 'El token no corresponde a un administrador'], 401);
+        }
     }
 
     public function getCurrentUser()

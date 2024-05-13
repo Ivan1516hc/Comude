@@ -10,6 +10,7 @@ use App\Models\CompetitionType;
 use App\Models\CountriesStates;
 use App\Models\Discipline;
 use App\Models\DocumentProcedure;
+use App\Models\Form;
 use App\Models\JustificationTypes;
 use App\Models\MessageMotive;
 use App\Models\Procedure;
@@ -295,6 +296,41 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Test',
             'force' => 1,
             'procedure_id' => 1
+        ]);
+
+        Form::create([
+            'name' => 'Competición',
+            'procedure_id' => 1,
+            'description' => 'Test',
+            'url' => '/competicion'
+        ]);
+
+        Form::create([
+            'name' => 'Cuenta bancaria',
+            'procedure_id' => 1,
+            'description' => 'Test',
+            'url' => '/cuenta-bancaria'
+        ]);
+
+        Form::create([
+            'name' => 'Documentación',
+            'procedure_id' => 1,
+            'description' => 'Test',
+            'url' => '/documentacion'
+        ]);
+
+        Form::create([
+            'name' => 'Logros importantes',
+            'procedure_id' => 1,
+            'description' => 'Test',
+            'url' => '/logros-importantes'
+        ]);
+
+        Form::create([
+            'name' => 'Evidencias',
+            'procedure_id' => 1,
+            'description' => 'Test',
+            'url' => '/evidencias'
         ]);
     }
 }

@@ -8,9 +8,9 @@ export const validarUserGuard: CanActivateChildFn = (route, state) => {
   const router = inject(Router);
 
   return authService.validarVisitor()
-        .pipe(tap( valid => {
-          if(!valid){
-            router.navigateByUrl('/auth/login');
-          }
-      }))
+    .pipe(tap(valid => {
+      if (!valid) {
+        router.navigateByUrl('/auth/login');
+      }
+    }))
 };

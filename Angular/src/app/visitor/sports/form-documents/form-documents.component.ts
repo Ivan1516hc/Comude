@@ -24,7 +24,7 @@ export class FormDocumentsComponent {
   baseUrl = environment.dowload;
 
   constructor(private fb: FormBuilder,
-    private router: Router, private route: ActivatedRoute,private documentService: DocumentsService
+    private router: Router, private route: ActivatedRoute, private documentService: DocumentsService
   ) { }
 
   miFormulario: FormGroup = this.fb.group({

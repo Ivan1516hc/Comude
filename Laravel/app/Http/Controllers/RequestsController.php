@@ -64,7 +64,7 @@ class RequestsController extends Controller
 
     public function show($id)
     {
-        $query = Requests::where('id', $id)->first();
+        $query = Requests::with('modify_forms.form')->where('id', $id)->first();
 
         return response()->json($query);
     }
@@ -169,7 +169,7 @@ class RequestsController extends Controller
     public function store(Request $request)
     {
         $user = Auth::guard('aplicant')->user();
-        
+
         if (!$user) {
             $response['message'] = "Necesitas loguearte";
             $response['code'] = 404;

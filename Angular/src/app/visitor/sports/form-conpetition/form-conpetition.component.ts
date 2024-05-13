@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CompetitionsService } from '../../services/competitions.service';
+import { RequestsService } from '../../services/requests.service';
 
 interface budget {
   minimum_budget: number,
@@ -26,11 +27,13 @@ export class FormConpetitionComponent {
   onlySee: boolean = false;
   edit: boolean = false;
   previousStartDate: string;
+  request: any;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private route: ActivatedRoute, private competitionService: CompetitionsService
+    private route: ActivatedRoute, private competitionService: CompetitionsService,
+    private requestService: RequestsService
   ) {
     this.miFormulario.get('competition_type_id')?.valueChanges.subscribe((id) => {
       if (this.newData || this.edit) {
@@ -78,6 +81,11 @@ export class FormConpetitionComponent {
       });
       if (id) {
         this.showConpetition(id);
+        this.requestService.show(id).subscribe({
+          next: (response) => {
+            this.request = response;
+          }
+        });
       }
     });
     const numberFields = ['requested_budget'];
@@ -292,5 +300,11 @@ export class FormConpetitionComponent {
       showConfirmButton: false,
       timer: 2000
     });
+  }
+
+  loadingUpdate(): void {
+    this.edit = true;
+    this.onlySee = false;
+    this.miFormulario.enable();
   }
 }

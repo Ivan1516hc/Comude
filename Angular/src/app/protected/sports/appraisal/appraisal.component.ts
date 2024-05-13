@@ -39,14 +39,6 @@ export class AppraisalComponent {
 
   recargarDatosTabla() {
     this.initTable();
-
-    this.allService.getCatalogs().subscribe({
-      next: (response) => {
-        this.catalogo = response;
-      }, error: (err) => {
-        console.log(err);
-      }
-    })
   }
 
   // Función para manejar el cambio de página
@@ -97,7 +89,6 @@ export class AppraisalComponent {
     // })
   }
 
-  catalogo: any = null;
   selectLocation: any = "";
   selectCreche: any = "";
   creches: any = [];
@@ -109,7 +100,6 @@ export class AppraisalComponent {
   historyMessages: any = [];
   showHistory: boolean = false;
   typeForms: any = [];
-  showCatalogo: any = {};
 
   // Obtener la fecha actual en formato ISO (por ejemplo, "2023-09-15")
   currentDate = new Date().toISOString().split('T')[0];

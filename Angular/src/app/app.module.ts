@@ -20,10 +20,10 @@ import { LoaderInterceptor } from './interceptors/loader-interceptor.service';
     AppRoutingModule,
     HttpClientModule,
   ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},
-    [{provide: HTTP_INTERCEPTORS, useClass:HeadersInterceptorService, multi:true},
-      {provide: HTTP_INTERCEPTORS, useClass:LoaderInterceptor, multi:true},
-    {provide: HTTP_INTERCEPTORS,useClass: ErrorInterceptorService,multi: true},{ provide: LOCALE_ID, useValue: 'es' }]],
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy },
+  [{ provide: HTTP_INTERCEPTORS, useClass: HeadersInterceptorService, multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true }, { provide: LOCALE_ID, useValue: 'es' }]],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

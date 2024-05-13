@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { BankAccountsService } from '../../services/bank-accounts.service';
+import { RequestsService } from '../../services/requests.service';
 
 @Component({
   selector: 'app-form-bank-account',
@@ -22,12 +23,13 @@ export class FormBankAccountComponent {
   onlySee: boolean = false;
   edit: boolean = false;
   baseUrl = environment.dowload;
+  request: any;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private bankAccountService: BankAccountsService
+    private bankAccountService: BankAccountsService, private requestService: RequestsService
   ) {
 
   }
@@ -38,6 +40,12 @@ export class FormBankAccountComponent {
       this.request_id = params['id'];
       if (this.request_id) {
         this.showAccountBank(this.request_id);
+
+        this.requestService.show(this.request_id).subscribe({
+          next: (response) => {
+            this.request = response;
+          }
+        });
       }
     });
 
@@ -151,7 +159,7 @@ export class FormBankAccountComponent {
       if (result.isConfirmed && !this.edit) {
         this.ngOnInit();
         this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/logros-importantes');
-      } else  {
+      } else {
         this.ngOnInit();
       }
     });
@@ -196,5 +204,11 @@ export class FormBankAccountComponent {
         this.selectedFilePreview = null;
       }
     }
+  }
+
+  loadingUpdate(): void {
+    this.edit = true;
+    this.onlySee = false;
+    this.miFormulario.enable();
   }
 }

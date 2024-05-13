@@ -36,14 +36,6 @@ export class ValidationComponent {
 
   recargarDatosTabla() {
     this.initTable();
-
-    this.allService.getCatalogs().subscribe({
-      next: (response) => {
-        this.catalogo = response;
-      }, error: (err) => {
-        console.log(err);
-      }
-    })
   }
 
   // Función para manejar el cambio de página
@@ -114,11 +106,6 @@ export class ValidationComponent {
     return ageString;
   }
 
-  locations: any = null;
-  catalogo: any = null;
-  selectLocation: any = "";
-  selectCreche: any = "";
-  creches: any = [];
   dataShow: any;
   motivoMessage: any = '';
   motivosMessage: any = '';
@@ -127,7 +114,6 @@ export class ValidationComponent {
   historyMessages: any = [];
   showHistory: boolean = false;
   typeForms: any = [];
-  showCatalogo: any = {};
 
   miFormulario: FormGroup = this.fb.group({
     request_id: [this.id, [Validators.required]],

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ValidarRolTramiteGuard } from './guards/validar-rol-tramite.guard';
 import { validarUserGuard } from './guards/validar-user.guard';
+import { validarAdminGuard } from './guards/validar-admin.guard';
 
 const routes: Routes = [
   {
@@ -16,19 +16,13 @@ const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./protected/protected.module').then(m => m.ProtectedModule),
-    canActivateChild: [validarUserGuard]
-    // canActivateChild: [ValidarRolTramiteGuard],
-    // data: { expectedRoles: [2], expectedPlatforms: [1] }
+    canActivateChild: [validarAdminGuard]
   },
   {
     path: 'solicitante',
     loadChildren: () => import('./visitor/visitor.module').then(m => m.VisitorModule),
     canActivateChild: [validarUserGuard]
   },
-  // {
-  //   path: 'home',
-  //   loadChildren: () => import('./visitor/homepage/homepage.module').then(m => m.HomepageModule),
-  // },
   {
     path: '**',
     redirectTo: 'solicitante/dashboard'

@@ -64,8 +64,7 @@
                                             class="alert text-center mt-2" role="alert">Solicitud
                                             {{item.status_request.name}}</p>
                                         <div class="d-grid gap-1">
-                                            <ng-container
-                                                *ngIf="item.status_request_id === 1 || (!item.competition || !hasBankAccount || item.documents_count < 6)">
+                                            <ng-container *ngIf="item.status_request_id === 1">
                                                 <button type="button" class="btn-lg btn btn-warning mt-2"
                                                     (click)="continuar(item)">Continuar</button>
                                             </ng-container>
@@ -111,7 +110,7 @@
                         <select class="form-select" formControlName="modality">
                             <option value="">-Seleccionar-</option>
                             <option value="CONVENCIONAL">CONVENCIONAL</option>
-                            <option value="PARAACLETA">PARAACLETA</option>
+                            <option value="PARAACLETA">PARATLETA</option>
                         </select>
                     </div>
                     <div class="m-5">

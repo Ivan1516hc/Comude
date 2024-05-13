@@ -7,6 +7,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { ResetComponent } from './pages/reset/reset.component';
 import { VerifyComponent } from './pages/verify/verify.component';
+import { LoginAdminComponent } from './pages/login-admin/login-admin.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { VerifyComponent } from './pages/verify/verify.component';
     LoginComponent,
     RegisterComponent,
     ResetComponent,
-    VerifyComponent
+    VerifyComponent,
+    LoginAdminComponent
   ],
   imports: [
     CommonModule,

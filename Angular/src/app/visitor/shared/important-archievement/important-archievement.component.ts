@@ -21,7 +21,7 @@ export class ImportantArchievementComponent {
 
   expandedItemIndex: number | null = null;
 
-  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private documentService : DocumentsService) {
+  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private documentService: DocumentsService) {
   }
 
   miFormulario: FormGroup = this.fb.group({
@@ -125,8 +125,7 @@ export class ImportantArchievementComponent {
       position: 'center',
       icon: 'error',
       title: response.message,
-      showConfirmButton: false,
-      timer: 2000
+      showConfirmButton: true
     });
   }
 
