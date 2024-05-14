@@ -6,11 +6,13 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { DashboardComponent } from './dashboard.component';
 import { VisitorModule } from '../visitor.module';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
 
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    DashboardComponent,
+    MexicanCurrencyPipe
   ],
   imports: [
     CommonModule,

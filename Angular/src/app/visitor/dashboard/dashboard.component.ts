@@ -137,9 +137,9 @@ export class DashboardComponent implements OnInit {
     })
   }
 
-  readRegulations() {
+  readRegulations(): any {
     if (this.miFormularioRegulations.invalid) {
-      Swal.fire({
+      return Swal.fire({
         position: 'center',
         icon: 'info',
         title: 'Debes aceptar el reglamento para continuar.',

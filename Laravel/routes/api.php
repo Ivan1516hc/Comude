@@ -121,8 +121,10 @@ Route::middleware('cors')->group(function () {
         Route::post('/appraisal/approved-budget', [ComiteController::class, 'assignmentComite']);
 
         Route::get('/request/formData/{id}', [RequestsController::class, 'showData']);
+        
         Route::get('/request/search/{value}', [RequestsController::class, 'search']);
-        Route::get('/request/search-value/{value}', [RequestsController::class, 'searchValue']);
+        Route::get('/validation/search-value/{value}', [RequestsController::class, 'searchValueValidation']);
+        Route::get('/appraisal/search-value/{value}', [RequestsController::class, 'searchValueAppraisal']);
 
         Route::put('/request/update', [RequestsController::class, 'updateStatus']);
 

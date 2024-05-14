@@ -17,7 +17,7 @@ import { ImportantArchievementComponent } from './shared/important-archievement/
     FooterComponent,
     HeaderHomepageComponent,
     ProfileComponent,
-    ImportantArchievementComponent
+    ImportantArchievementComponent,
   ],
   imports: [
     CommonModule,

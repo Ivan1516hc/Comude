@@ -348,16 +348,11 @@ class RequestsController extends Controller
         $param = explode(":", $value);
 
         // Usuarios con rol 1 no pueden consultar
-        if ($user->role_id == 1) {
+        if (!$user) {
             return;
         }
 
         $model = Requests::query();
-
-        // Roles admin centro y admin trámite solo pueden ver solicitudes de su trámite en específico
-        if ($user->role_id == 2 || $user->role_id == 3) {
-            $model->where('procedure_id', $user->department_id);
-        }
 
         // No se muestran las solicitudes sin terminar o canceladas
         $model->whereNotIn('status_request_id', [1, 6]);
@@ -365,78 +360,101 @@ class RequestsController extends Controller
         // Mostrar las solicitudes de modificación
         $model->with('modify_forms');
 
-        // Admin de centro, solo ver solicitudes de su centro
-        if ($user->role_id == 2) {
-            $model->where('center_id', $user->center_id);
-        }
-
-        // Si el usuario corresponde a NIDOS, la solicitud debe de estar aplicando a una guardería
-        if ($user->department_id == 1 || $user->department_id == 2) {
-            $model->has('crecheRequest')->with('crecheRequest.degree');
-        }
 
         ($param[0] == 'status' ? $model->where('status_request_id', $param[1]) : null);
-        // Las solicitudes deben de tener beneficiarios y se ordenan por edad los beneficiarios
-        $model->has('beneficiaries')->orderBy('id', 'asc')->with(['beneficiaries' => function ($query) {
-            $query->orderBy('id', 'asc');
-        }])->with('priority');
 
-        if ($param[0] == 'quote') {
-            ($param[1] == 1 ? $model->whereHas('quotes', function ($query) {
-                $query->whereNotNull('id');
-            }) : $model->doesntHave('quotes'));
-        }
-
-        $query = $model->withCount('quotes')->paginate(10);
+        $query = $model->with(
+            [
+                'competition' => function ($query) {
+                    $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+                }, 'discipline', 'announcement', 'aplicant'
+            ]
+        )->paginate(10);
 
         return response()->json($query);
     }
 
-    public function searchValue($value)
+    public function searchValueValidation($value)
     {
         $user = Auth::guard('user')->user();
 
-        // Usuarios con rol 1 no pueden consultar
-        if ($user->role_id == 1) {
+        if (!$user) {
             return;
         }
 
         $model = Requests::query();
 
-        // Roles admin centro y admin trámite solo pueden ver solicitudes de su trámite en específico
-        if ($user->role_id == 2 || $user->role_id == 3) {
-            $model->where('procedure_id', $user->department_id);
-        }
-
         // No se muestran las solicitudes sin terminar o canceladas
-        $model->whereNotIn('status_request_id', [1, 6]);
+        $model->whereNotIn('status_request_id', [1, 6, 3, 5]);
 
         // Mostrar las solicitudes de modificación
-        $model->with('modify_forms');
-
-        // Admin de centro, solo ver solicitudes de su centro
-        if ($user->role_id == 2) {
-            $model->where('center_id', $user->center_id);
-        }
-
-        // Si el usuario corresponde a NIDOS, la solicitud debe de estar aplicando a una guardería
-        if ($user->department_id == 1 || $user->department_id == 2) {
-            $model->has('crecheRequest')->with('crecheRequest.degree');
-        }
-
-        $model->has('beneficiaries')->orderBy('id', 'asc')->with(['beneficiaries' => function ($query) {
-            $query->orderBy('id', 'asc');
-        }])->with('priority');
+        $model->with([
+            'competition' => function ($query) {
+                $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+            }, 'discipline', 'announcement', 'aplicant', 'modify_forms'
+        ]);
 
         //REALIZAR BUSQUEDA 
         $query = $model->where(function ($query) use ($value) {
-            $query->where('invoice', 'like', '%' . $value . '%')
-                ->orWhereHas('beneficiaries', function ($query) use ($value) {
-                    $query->whereRaw("CONCAT(nombre, ' ', apaterno, ' ', amaterno) LIKE ?", ['%' . $value . '%']);
-                });
+            $query->where('invoice', 'like', '%' . $value . '%');
+
+            $query->orWhereHas('aplicant', function ($query) use ($value) {
+                $query->where('name', 'like', '%' . $value . '%');
+            });
+
+            $query->orWhereHas('competition.competition_type', function ($query) use ($value) {
+                $query->where('name', 'like', '%' . $value . '%');
+            });
+
+            $query->orWhereHas('discipline', function ($query) use ($value) {
+                $query->where('name', 'like', '%' . $value . '%');
+            });
         })
-            ->withCount('quotes')
             ->paginate(10);
+
+
+        return response()->json($query);
+    }
+
+
+    public function searchValueAppraisal($value)
+    {
+        $user = Auth::guard('user')->user();
+
+        if (!$user) {
+            return;
+        }
+
+        $model = Requests::query();
+
+        // No se muestran las solicitudes sin terminar o canceladas
+        $model->whereNotIn('status_request_id', [1, 6, 2, 4]);
+
+        // Mostrar las solicitudes de modificación
+        $model->with([
+            'competition' => function ($query) {
+                $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+            }, 'discipline', 'announcement', 'aplicant', 'modify_forms'
+        ]);
+
+        //REALIZAR BUSQUEDA 
+        $query = $model->where(function ($query) use ($value) {
+            $query->where('invoice', 'like', '%' . $value . '%');
+
+            $query->orWhereHas('aplicant', function ($query) use ($value) {
+                $query->where('name', 'like', '%' . $value . '%');
+            });
+
+            $query->orWhereHas('competition.competition_type', function ($query) use ($value) {
+                $query->where('name', 'like', '%' . $value . '%');
+            });
+
+            $query->orWhereHas('discipline', function ($query) use ($value) {
+                $query->where('name', 'like', '%' . $value . '%');
+            });
+        })
+            ->paginate(10);
+
 
         return response()->json($query);
     }

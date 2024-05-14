@@ -62,4 +62,19 @@ export class AllService {
     const url = `${this.baseUrl}/admin/import/excel-comite`;
     return this.http.post<any>(url, data);
   }
+
+  search(value:any){
+    const url = this.baseUrl + '/admin/request/search/' + value;
+    return this.http.get<any>(url);
+  }
+  searchValueAppresial(value:any){
+    const url = this.baseUrl + '/admin/appraisal/search-value/' + value;
+    return this.http.get<any>(url);
+  }
+
+  searchValueValidation(value:any){
+    const url = this.baseUrl + '/admin/validation/search-value/' + value;
+    return this.http.get<any>(url);
+  }
+
 }

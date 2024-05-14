@@ -70,11 +70,11 @@ export class AppraisalComponent {
   searchTermChanged: Subject<string> = new Subject<string>();
 
   realizarBusqueda() {
-    // this.crecheService.searchValue(this.searchTerm).subscribe({
-    //   next: (res) => {
-    //     this.data = res;
-    //   }
-    // })
+    this.allService.searchValueAppresial(this.searchTerm).subscribe({
+      next: (res) => {
+        this.data = res;
+      }
+    })
   }
 
   onSearchTermChange(searchTerm: string) {
@@ -82,11 +82,14 @@ export class AppraisalComponent {
   }
 
   search(value: any) {
-    // this.crecheService.search(value).subscribe({
-    //   next: (res) => {
-    //     this.data = res;
-    //   }
-    // })
+    if (value == 1) {
+      return this.initTable();
+    }
+    this.allService.search(value).subscribe({
+      next: (res) => {
+        this.data = res;
+      }
+    })
   }
 
   selectLocation: any = "";
@@ -443,9 +446,9 @@ export class AppraisalComponent {
                 title: `${response?.message}`,
                 showConfirmButton: true
               });
+              this.cerrarModal();
               this.ExcelData = response.valores;
               this.initTable();
-              this.cerrarModal();
             } else {
               let html = `<p style="font-weight: bold; color: red;">${response.message}</p>`;
               Swal.fire({
@@ -507,8 +510,8 @@ export class AppraisalComponent {
               showConfirmButton: false,
               timer: 2000
             })
-            this.initTable();
             this.cerrarModal();
+            this.initTable();
             // this.citaCreada.emit();
           } else {
             Swal.fire("Error", "error")

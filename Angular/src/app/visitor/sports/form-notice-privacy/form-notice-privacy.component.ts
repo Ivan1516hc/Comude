@@ -55,9 +55,15 @@ export class FormNoticePrivacyComponent {
     this.urlPrincipal = '/' + segmentos[1];
   }
 
-  onSubmit() {
+  onSubmit(): any {
     if (this.miFormulario.invalid) {
-      return this.miFormulario.markAllAsTouched();
+      return Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes aceptar el aviso de privacidad y reglamento para continuar.',
+        showConfirmButton: false,
+        timer: 2000
+      })
     }
 
     this.requestService.changeStatusRequest(this.miFormulario.value).subscribe({

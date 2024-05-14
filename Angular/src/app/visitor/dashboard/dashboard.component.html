@@ -53,12 +53,12 @@
                                         <p *ngIf="item?.competition?.start_date"><strong>Fechas de competición:</strong>
                                             {{item?.competition?.start_date}} a {{item?.competition?.ending_date}}</p>
                                         <p *ngIf="item?.competition?.requested_budget"><strong>Presupuesto
-                                                solicitado:</strong> <span
-                                                class="badge bg-warning text-dark">${{item.competition.requested_budget}}</span>
+                                                solicitado:</strong> <span class="badge bg-warning text-dark">$
+                                                {{item.competition.requested_budget | mexicanCurrency}}</span>
                                         </p>
                                         <p *ngIf="item?.competition?.approved_budget"><strong>Presupuesto
-                                                aprovado:</strong> <span
-                                                class="badge bg-info  text-dark">${{item.competition.approved_budget}}</span>
+                                                aprovado:</strong> <span class="badge bg-info  text-dark">$
+                                                {{item.competition.approved_budget | mexicanCurrency}}</span>
                                         </p>
                                         <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 2 ? 'alert-primary': (item.status_request.id == 3 ? 'alert-warning' : (item.status_request.id == 6 ? 'alert-danger' : (item.status_request.id == 5 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-danger' : '')))))"
                                             class="alert text-center mt-2" role="alert">Solicitud

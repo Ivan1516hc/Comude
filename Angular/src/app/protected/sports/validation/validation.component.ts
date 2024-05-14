@@ -68,11 +68,11 @@ export class ValidationComponent {
   searchTermChanged: Subject<string> = new Subject<string>();
 
   realizarBusqueda() {
-    // this.crecheService.searchValue(this.searchTerm).subscribe({
-    //   next: (res) => {
-    //     this.data = res;
-    //   }
-    // })
+    this.allService.searchValueValidation(this.searchTerm).subscribe({
+      next: (res) => {
+        this.data = res;
+      }
+    })
   }
 
   onSearchTermChange(searchTerm: string) {
@@ -80,11 +80,14 @@ export class ValidationComponent {
   }
 
   search(value: any) {
-    // this.crecheService.search(value).subscribe({
-    //   next: (res) => {
-    //     this.data = res;
-    //   }
-    // })
+    if (value == 1) {
+      return this.initTable();
+    }
+    this.allService.search(value).subscribe({
+      next: (res) => {
+        this.data = res;
+      }
+    })
   }
 
   calculateAge(dateOfBirth: string): string {
@@ -138,7 +141,7 @@ export class ValidationComponent {
     Swal.fire({
       position: 'center',
       icon: 'question',
-      title: '¿Está seguro de que desea ' + (data.status_request_id == 3 ? 'validar' : (data.status_request_id == 4 ? 'rechazar' : (data.status_request_id == 9 ? 'reactivar' : ''))) + ' esta solicitud?',
+      title: '¿Está seguro de que desea ' + (data.status_request_id == 3 ? 'validar' : (data.status_request_id == 7 ? 'rechazar' : (data.status_request_id == 2 ? 'reactivar' : ''))) + ' esta solicitud?',
       showConfirmButton: true,
       showCancelButton: true,
       confirmButtonText: 'Si',

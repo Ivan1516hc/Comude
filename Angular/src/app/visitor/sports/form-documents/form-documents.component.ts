@@ -71,7 +71,7 @@ export class FormDocumentsComponent {
       } else {
         this.selectedFilePreview = null;
       }
-    }
+    } 
   }
 
   obtenerURLPrincipal() {
@@ -127,9 +127,7 @@ export class FormDocumentsComponent {
           if (response.total_documents == this.documents.length) {
             this.handleSuccessResponse(response);
           } else {
-            this.fileInput = null;
-            this.selectedFileName = null;
-            this.selectedFilePreview = null;
+            this.clearFileInput();
             Swal.fire({
               position: 'center',
               icon: 'success',
@@ -177,4 +175,10 @@ export class FormDocumentsComponent {
       timer: 2000
     });
   }
+
+  clearFileInput(): void {
+    this.fileInput.nativeElement.value = null;
+    this.selectedFileName = null;
+    this.selectedFilePreview = null;
+  }  
 }

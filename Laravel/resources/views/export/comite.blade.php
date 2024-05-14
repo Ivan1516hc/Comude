@@ -69,27 +69,27 @@
         </thead>
         <tbody>
             @php
-                $i = 0;
+            $i = 0;
             @endphp
             @foreach ($requests as $request)
-                <tr>
-                    <td>{{ $i + 1 }}</td>
-                    <td>{{ $request->invoice ?? 'null' }}</td>
-                    <td>{{ $request->aplicant->name ?? 'null' }}</td>
-                    <td>{{ $request->quantity ?? 'null' }}</td>
-                    <td>{{ $request->discipline->name ?? 'null' }}</td>
-                    <td>{{ $request->competition->name ?? 'null' }}</td>
-                    <td>{{ $request->competition->competition_type->name ?? 'null' }}</td>
-                    <td>{{ $request->competition->competition_type == '1' ? 0 : ($request->competition->competition_type == '2' ? 5000 : 10000) }}</td>
-                    <td>{{ $request->competition->competition_type == '1' ? 5000 : ($request->competition->competition_type == '2' ? 10000 : 20000) }}</td>
-                    <td>{{ $request->competition->requested_budget ?? 'null' }}</td>
-                    <td>{{ $request->competition->approved_budget ?? '' }}</td>
-                    <td>{{ $request->status_request->name ?? 'null' }}</td>
-                    <td>{{ $request->finished ?? 'null' }}</td>
-                </tr>
-                @php
-                    $i++;
-                @endphp
+            <tr>
+                <td>{{ $i + 1 }}</td>
+                <td>{{ $request->invoice ?? 'null' }}</td>
+                <td>{{ $request->aplicant->name ?? 'null' }}</td>
+                <td>{{ $request->quantity ?? 'null' }}</td>
+                <td>{{ $request->discipline->name ?? 'null' }}</td>
+                <td>{{ $request->competition->name ?? 'null' }}</td>
+                <td>{{ $request->competition->competition_type->name ?? 'null' }}</td>
+                <td>{{ $request->competition->competition_type_id == 1 ? 0 : ($request->competition->competition_type_id == 2 ? 5000 : 10000) }}</td>
+                <td>{{ $request->competition->competition_type_id == 1 ? 5000 : ($request->competition->competition_type_id == 2 ? 10000 : 20000) }}</td>
+                <td>{{ $request->competition->requested_budget ?? 'null' }}</td>
+                <td>{{ $request->competition->approved_budget ?? '' }}</td>
+                <td>{{ $request->status_request->name ?? 'null' }}</td>
+                <td>{{ $request->finished ?? 'null' }}</td>
+            </tr>
+            @php
+            $i++;
+            @endphp
             @endforeach
         </tbody>
     </table>
