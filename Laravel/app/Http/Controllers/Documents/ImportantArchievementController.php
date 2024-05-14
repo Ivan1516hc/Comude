@@ -67,7 +67,7 @@ class ImportantArchievementController extends Controller
             $maxFileSize = 1024  * 1024; // 1MB
 
             if ($file->getSize() > $maxFileSize) {
-                throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace https://www.iloveimg.com/es/comprimir-imagen.');
+                throw new \Exception('El tamaño del archivo es demasiado grande, puedes reducir el tamaño en el siguiente enlace https://www.iloveimg.com/es/comprimir-imagen');
             }
 
             $customFileName = 'solicitante_' . $user->id . '_logro_importante_' . ($countDocuments + 1) . '.' . $fileExtension;

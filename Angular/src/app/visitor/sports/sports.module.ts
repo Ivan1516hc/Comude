@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormImportanArchievementComponent } from './form-importan-archievement/form-importan-archievement.component';
 import { FormNoticePrivacyComponent } from './form-notice-privacy/form-notice-privacy.component';
 import { FormJustificationComponent } from './form-justification/form-justification.component';
+import { SharedModule } from 'src/app/protected/shared/shared.module';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { FormJustificationComponent } from './form-justification/form-justificat
     VisitorModule,
     ReactiveFormsModule,
     FormsModule,
+    SharedModule
   ]
 })
 export class SportsModule { }

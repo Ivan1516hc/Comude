@@ -103,7 +103,7 @@ export class AppraisalComponent {
   historyMessages: any = [];
   showHistory: boolean = false;
   typeForms: any = [];
-
+  ExcelData: any = [];
   // Obtener la fecha actual en formato ISO (por ejemplo, "2023-09-15")
   currentDate = new Date().toISOString().split('T')[0];
 
@@ -301,7 +301,6 @@ export class AppraisalComponent {
 
 
   /*** FUNCION PARA LEER EXCEL */
-  ExcelData: any;
   ReadExcel(event: any) {
     let file = event.target.files[0];
     let fileReader = new FileReader();
@@ -386,7 +385,7 @@ export class AppraisalComponent {
   }
 
   clearDataExport() {
-    this.ExcelData = null;
+    this.ExcelData = [];
   }
 
   updateConfirmedValue(item: any, event: Event) {
@@ -415,7 +414,7 @@ export class AppraisalComponent {
 
   importComite() {
     const total = this.getTotalAprobado();
-    if (total == 0) {
+    if (total == 0 || total == null) {
       Swal.fire({
         position: 'center',
         icon: 'info',
@@ -437,16 +436,18 @@ export class AppraisalComponent {
       if (result.isConfirmed) {
         this.allService.importComite(this.ExcelData).subscribe({
           next: (response) => {
-            console.log(response);
             this.updatedData = response?.datos_actualizados ?? [];
             if (response.code == 200) {
+              this.cerrarModal();
               Swal.fire({
                 position: 'center',
                 icon: 'success',
                 title: `${response?.message}`,
-                showConfirmButton: true
+                showConfirmButton: true,
+                didClose: () => {
+                  this.cerrarModal();
+                }
               });
-              this.cerrarModal();
               this.ExcelData = response.valores;
               this.initTable();
             } else {
@@ -456,14 +457,13 @@ export class AppraisalComponent {
                 icon: 'info',
                 title: 'Error al importar los datos',
                 html: html,
-                showConfirmButton: true
+                showConfirmButton: true,
               });
               this.ExcelData = response.valores;
               this.initTable();
             }
           },
           error: (err) => {
-            console.log(err);
             this.initTable();
           }
         });

@@ -18,6 +18,11 @@ export class AllService {
     return this.http.get<Requests>(url);
   }
 
+  indexBeneficiary(): Observable<any> {
+    const url = `${this.baseUrl}/admin/beneficiary/index`;
+    return this.http.get<any>(url);
+  }
+
   updateRequest(data: any) {
     const url = `${this.baseUrl}/admin/request/update`
     return this.http.put<any>(url, data);
@@ -63,16 +68,16 @@ export class AllService {
     return this.http.post<any>(url, data);
   }
 
-  search(value:any){
+  search(value: any) {
     const url = this.baseUrl + '/admin/request/search/' + value;
     return this.http.get<any>(url);
   }
-  searchValueAppresial(value:any){
+  searchValueAppresial(value: any) {
     const url = this.baseUrl + '/admin/appraisal/search-value/' + value;
     return this.http.get<any>(url);
   }
 
-  searchValueValidation(value:any){
+  searchValueValidation(value: any) {
     const url = this.baseUrl + '/admin/validation/search-value/' + value;
     return this.http.get<any>(url);
   }

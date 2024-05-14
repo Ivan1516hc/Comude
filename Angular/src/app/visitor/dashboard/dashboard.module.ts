@@ -2,17 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard.component';
 import { VisitorModule } from '../visitor.module';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
-import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
-
+import { SharedModule } from 'src/app/protected/shared/shared.module';
 
 @NgModule({
   declarations: [
-    DashboardComponent,
-    MexicanCurrencyPipe
+    DashboardComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +18,8 @@ import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
     ReactiveFormsModule,
     FormsModule,
     VisitorModule,
-    NgxDocViewerModule
+    NgxDocViewerModule,
+    SharedModule
   ]
 })
 export class DashboardModule { }

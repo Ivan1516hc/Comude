@@ -10,7 +10,6 @@ import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppraisalComponent } from './appraisal/appraisal.component';
 import { ValidationComponent } from './validation/validation.component';
-import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
 
 
 @NgModule({
@@ -20,8 +19,7 @@ import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
     DashboardComponent,
     SportsComponent,
     AppraisalComponent,
-    ValidationComponent,
-    MexicanCurrencyPipe
+    ValidationComponent
   ],
   imports: [
     CommonModule,

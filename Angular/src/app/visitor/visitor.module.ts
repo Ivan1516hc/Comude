@@ -24,7 +24,6 @@ import { ImportantArchievementComponent } from './shared/important-archievement/
     VisitorRoutingModule,
     ReactiveFormsModule,    
     FormsModule,
-
   ],
   exports: [VisitorComponent, HeaderHomepageComponent, ImportantArchievementComponent]
 })

@@ -54,33 +54,20 @@
                   <table class="table table-striped">
                      <thead>
                         <tr>
-                           <th scope="col"></th>
+                           <th scope="col">No.</th>
+                           <th>Nombre</th>
+                           <th>Fecha de nacimiento</th>
+                           <th>CURP</th>
+                           <th>Apoyos este año</th>
                         </tr>
                      </thead>
                      <tbody>
                         <tr *ngFor="let item of data.data">
                            <th scope="row">{{item.id}}</th>
-                           <td>{{item.nombre ?? null}} {{item.apaterno ?? null}}</td>
-                           <td>{{item.fechanacimiento ?? null}}</td>
-                           <td>{{calculateAge(item.fechanacimiento) ?? null}}</td>
-                           <td>
-                              <div class="text-center"
-                                 [ngClass]="item.beneficiary_creche[0].status == 0 ? 'alert-danger' :  'alert-success' ">
-                                 {{item.beneficiary_creche[0].status == 1 ? 'ACTIVO' : 'INACTIVO' }}
-                              </div>
-                           </td>
-                           <td>{{item.beneficiary_creche[0].creche.degree.name ?? null}}</td>
-                           <td>{{item.beneficiary_creche[0].creche.room.name ?? null}}</td>
-                           <td>
-                              <button *ngIf="item.beneficiary_creche[0].status == 0" class=" btn btn-sm btn-success m-1"
-                                 data-bs-toggle="modal" data-bs-target="#crecheModal">Dar
-                                 De Alta</button>
-                              <button *ngIf="item.beneficiary_creche[0].status == 1" class=" btn btn-sm btn-danger m-1"
-                                 (click)="changeEstatus(item,0)">Dar De Baja</button>
-                              <!-- <button *ngIf="item.beneficiary_creche[0].status == 0" class=" btn btn-sm btn-primary m-1"
-                                 data-bs-toggle="modal" data-bs-target="#locationModal" (click)="getLocations(1,item)">Cambiar
-                                 Centro</button> -->
-                           </td>
+                           <td>{{item.name}}</td>
+                           <td>{{item.birtdate}}</td>
+                           <td>{{item.curp}}</td>
+                           <td>{{item.requests_count}}</td>
                         </tr>
                      </tbody>
                   </table>

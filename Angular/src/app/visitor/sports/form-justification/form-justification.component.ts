@@ -159,6 +159,7 @@ export class FormJustificationComponent {
             timer: 2000
           });
           this.ngOnInit();
+          this.clearFileInput();
         } else {
           this.handleErrorResponse(response);
         }
@@ -228,4 +229,11 @@ export class FormJustificationComponent {
   toggleText(documento: any) {
     documento.mostrarTextoCompleto = !documento.mostrarTextoCompleto;
   }
+
+  clearFileInput(): void {
+    this.fileInput.nativeElement.value = null;
+    this.selectedFileName = null;
+    this.selectedFilePreview = null;
+  }
+
 }

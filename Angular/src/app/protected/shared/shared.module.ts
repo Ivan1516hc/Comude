@@ -1,24 +1,26 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { SidebarComponent } from './layouts/sidebar/sidebar.component';
-import { HeaderComponent } from './layouts/header/header.component';
+import { SidebarComponentAdmin } from './layouts/sidebar/sidebar.component';
+import { HeaderComponentAdmin } from './layouts/header/header.component';
 import { RouterModule } from '@angular/router';
-import { FooterComponent } from './layouts/footer/footer.component';
+import { FooterComponentAdmin } from './layouts/footer/footer.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
 
 @NgModule({
   declarations: [
-    SidebarComponent,
-    HeaderComponent,
-    FooterComponent
+    SidebarComponentAdmin,
+    HeaderComponentAdmin,
+    FooterComponentAdmin,
+    MexicanCurrencyPipe
   ],
   imports: [
     CommonModule,
     RouterModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     FormsModule,
   ],
-  providers: [ DatePipe ],
-  exports: [SidebarComponent, HeaderComponent, FooterComponent]
+  providers: [DatePipe],
+  exports: [SidebarComponentAdmin, HeaderComponentAdmin, FooterComponentAdmin, MexicanCurrencyPipe]
 })
 export class SharedModule { }

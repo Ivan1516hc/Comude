@@ -107,8 +107,7 @@ export class ImportantArchievementComponent {
             timer: 2000
           });
           this.miFormulario.patchValue({ file: null, description: '' });
-          this.selectedFileName = null;
-          this.selectedFilePreview = null;
+          this.clearFileInput();
           this.showImportantArchivements();
         } else {
           this.handleErrorResponse(response);
@@ -179,5 +178,11 @@ export class ImportantArchievementComponent {
   toggleText(documento: any) {
     documento.mostrarTextoCompleto = !documento.mostrarTextoCompleto;
   }
+
+  clearFileInput(): void {
+    this.fileInput.nativeElement.value = null;
+    this.selectedFileName = null;
+    this.selectedFilePreview = null;
+  }  
 
 }

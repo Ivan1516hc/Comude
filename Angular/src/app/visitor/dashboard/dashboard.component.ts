@@ -125,11 +125,13 @@ export class DashboardComponent implements OnInit {
             icon: 'success',
             title: response.message,
             showConfirmButton: false,
-            timer: 2000
+            timer: 2000,
+            didClose: () => {
+              // Obtener la ruta relativa deseada ('../perfil')
+              const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + response.request_id + '/competicion';
+              this.router.navigateByUrl(relativeUrl);
+            }
           })
-          // Obtener la ruta relativa deseada ('../perfil')
-          const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + response.request_id + '/competicion';
-          this.router.navigateByUrl(relativeUrl);
         }
       }, error: (err) => {
 

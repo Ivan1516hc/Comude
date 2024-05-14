@@ -60,14 +60,14 @@ export class BeneficiariesComponent {
   }
 
   private initTable() {
-    // this.allService.indexBeneficiary().subscribe({
-    //   next: (beneficiaries) => {
-    //     this.beneficiaries = beneficiaries;
-    //     this.data = this.beneficiaries;
-    //   }, error: () => {
-    //     this.hayError = true;
-    //   }
-    // });
+    this.allService.indexBeneficiary().subscribe({
+      next: (beneficiaries) => {
+        this.beneficiaries = beneficiaries;
+        this.data = this.beneficiaries;
+      }, error: () => {
+        this.hayError = true;
+      }
+    });
   }
 
   realizarBusqueda() {
@@ -99,7 +99,7 @@ export class BeneficiariesComponent {
   }
 
   ngOnInit(): void {
-
+    this.initTable();
   }
 
   changeEstatus(data: any, status: any) {

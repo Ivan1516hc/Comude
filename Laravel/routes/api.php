@@ -121,7 +121,7 @@ Route::middleware('cors')->group(function () {
         Route::post('/appraisal/approved-budget', [ComiteController::class, 'assignmentComite']);
 
         Route::get('/request/formData/{id}', [RequestsController::class, 'showData']);
-        
+
         Route::get('/request/search/{value}', [RequestsController::class, 'search']);
         Route::get('/validation/search-value/{value}', [RequestsController::class, 'searchValueValidation']);
         Route::get('/appraisal/search-value/{value}', [RequestsController::class, 'searchValueAppraisal']);
@@ -139,6 +139,9 @@ Route::middleware('cors')->group(function () {
 
         //Import excel files
         Route::post('/import/excel-comite', [ComiteController::class, 'comiteImport']);
+
+        //beneficiaries routes
+        Route::get('/beneficiary/index', [AplicantController::class, 'indexBeneficiaries']);
     });
 
     Route::middleware('jwt.verify')->group(function () {

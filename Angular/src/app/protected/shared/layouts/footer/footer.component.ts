@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-footer',
+  selector: 'app-footer-admin',
   templateUrl: './footer.component.html'
 })
-export class FooterComponent {
+export class FooterComponentAdmin {
   constructor() { }
 
   ngOnInit(): void {

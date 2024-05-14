@@ -7,17 +7,17 @@ export interface OpcionSidebar {
 }
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'app-sidebar-admin',
   templateUrl: './sidebar.component.html'
 })
 
-export class SidebarComponent {
+export class SidebarComponentAdmin {
   @Input() opcionesSidebar: OpcionSidebar[];
   @Input() urlLogo: string;
   active: boolean = true; // Puedes inicializarlo según tus necesidades
   constructor() {
     this.opcionesSidebar = [];
-    this.urlLogo='';
+    this.urlLogo = '';
     // Opcionalmente, puedes inicializarla con un valor vacío
   }
 }
