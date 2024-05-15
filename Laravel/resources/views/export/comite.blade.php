@@ -76,7 +76,7 @@
                 <td>{{ $i + 1 }}</td>
                 <td>{{ $request->invoice ?? 'null' }}</td>
                 <td>{{ $request->aplicant->name ?? 'null' }}</td>
-                <td>{{ $request->quantity ?? 'null' }}</td>
+                <td>{{ $request->aplicant->requests_count ?? 'null' }}</td>
                 <td>{{ $request->discipline->name ?? 'null' }}</td>
                 <td>{{ $request->competition->name ?? 'null' }}</td>
                 <td>{{ $request->competition->competition_type->name ?? 'null' }}</td>

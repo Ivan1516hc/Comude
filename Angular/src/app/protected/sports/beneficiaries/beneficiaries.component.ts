@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import Swal from 'sweetalert2';
 import { AllService } from '../../services/all.service';
 import { Subject, debounceTime } from 'rxjs';
-import { differenceInDays, differenceInMonths, differenceInYears, parse } from 'date-fns';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -42,7 +40,6 @@ export class BeneficiariesComponent {
       curpControl.setValue(curpControl.value.toUpperCase(), { emitEvent: false });
     }
   }
-
 
   // Función para manejar el cambio de página
   onPageChange(data: any): void {
@@ -102,67 +99,9 @@ export class BeneficiariesComponent {
     this.initTable();
   }
 
-  changeEstatus(data: any, status: any) {
-
-  }
-
-
-  addBeneficiaryService() {
-
-    let data = {
-      curp: this.miFormularioService.value.curp
-    }
-    // this.allService.addBeneficiaryOfService(data).subscribe({
-    //   next: (response) => {
-    //     if (response.code == 200) {
-
-    //       Swal.fire({
-    //         position: 'center',
-    //         icon: 'success',
-    //         title: response.message,
-    //         showConfirmButton: false,
-    //         timer: 2000
-    //       })
-    //       // this.changeBeneficiary.emit();
-    //     } else {
-
-    //       Swal.fire({
-    //         position: 'center',
-    //         icon: 'error',
-    //         title: response.message,
-    //         showConfirmButton: false,
-    //         timer: 2000
-    //       })
-    //     }
-    //   }, error: (error) => {
-
-    //     Swal.fire("Error", "error");
-    //   }
-    // });
-  }
-
   id: any = null;
 
   getBeneficiary(data: any) {
     this.beneficiary = data.beneficiary;
-  }
-
-  calculateAge(dateOfBirth: string): string {
-    const parsedDateOfBirth = parse(dateOfBirth, 'yyyy-MM-dd', new Date());
-    const currentDate = new Date();
-    const years = differenceInYears(currentDate, parsedDateOfBirth);
-    const months = differenceInMonths(currentDate, parsedDateOfBirth) % 12;
-    const days = differenceInDays(currentDate, parsedDateOfBirth) % 30;
-    let ageString = '';
-    if (years > 0) {
-      ageString += `${years} ${years === 1 ? 'AÑO' : 'AÑOS'}`;
-    }
-    if (months > 0) {
-      ageString += `${ageString ? ', ' : ''}${months} ${months === 1 ? 'MES' : 'MESES'}`;
-    }
-    if (days > 0) {
-      ageString += `${ageString ? ' Y ' : ''}${days} ${days === 1 ? 'DÍA' : 'DÍAS'}`;
-    }
-    return ageString;
   }
 }

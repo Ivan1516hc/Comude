@@ -157,4 +157,20 @@ class AplicantController extends Controller
 
         return response()->json($query);
     }
+
+    public function searchBeneficiaries($value)
+    {
+        $user = Auth::guard('user')->user();
+        if (!$user) {
+            return response()->json(['message' => 'Necesitas iniciar sesión', 'code' => 404]);
+        }
+
+        $query = Aplicant::whereHas('requests', function ($query) use ($value) {
+            $query->where('status_request_id', 5)->where('name', 'like', '%' . $value . '%', 'or', 'curp', 'like', '%' . $value . '%');
+        })->withCount(['requests' => function ($query) {
+            $query->where('status_request_id', 5)->whereYear('created_at', date('Y'));
+        }])->paginate(10);
+
+        return response()->json($query);
+    }
 }

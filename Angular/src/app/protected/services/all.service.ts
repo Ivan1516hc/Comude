@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Observable, catchError, map, of } from 'rxjs';
 import { Requests } from '../interfaces/requests-interface';
 
 @Injectable({
@@ -58,9 +58,27 @@ export class AllService {
     return this.http.post<any>(url, data)
   }
 
-  exportComite(data) {
+  // exportComite(data) {
+  //   const url = `${this.baseUrl}/admin/export/excel-comite`;
+  //   return this.http.post(url, data, { responseType: 'arraybuffer' });
+  // }
+
+  exportComite(data: any): Observable<{ code: number, message: string }> {
     const url = `${this.baseUrl}/admin/export/excel-comite`;
-    return this.http.post(url, data, { responseType: 'arraybuffer' });
+    return this.http.post(url, data, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      observe: 'response', // Para obtener la respuesta completa
+      responseType: 'arraybuffer' // Indicar que esperamos un arraybuffer como respuesta
+    }).pipe(
+      map((response: HttpResponse<ArrayBuffer>) => {
+        return { code: response.status, message: 'Success' };
+      }),
+      catchError(error => {
+        return of({ code: error.code, message: 'Error downloading the Excel file' });
+      })
+    );
   }
 
   importComite(data) {

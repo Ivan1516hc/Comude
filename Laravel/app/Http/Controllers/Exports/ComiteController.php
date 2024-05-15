@@ -23,25 +23,37 @@ class ComiteController extends Controller
         $model = Requests::query();
         $begin = $request->begin;
         $finish = $request->finish;
-
-        $requests = $model->whereDate('created_at', '>=', $begin)->whereDate('created_at', '<=', $finish)->with(
-            [
+        $requests = $model
+            ->whereDate('finished', '>=', $begin)
+            ->whereDate('finished', '<=', $finish)
+            ->with([
                 'competition' => function ($query) {
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-                }, 'discipline', 'status_request:id,name', 'announcement', 'aplicant'
-            ]
-        )->whereNotIn('status_request_id', [1, 4])->limit(1000)->orderBy('id', 'desc')->get();
+                },
+                'discipline',
+                'status_request:id,name',
+                'announcement',
+                'aplicant' => function ($query) {
+                    $query->withCount(['requests' => function ($query) {
+                        $query->where('status_request_id', 5)->whereYear('finished', date('Y'));
+                    }]);
+                }
+            ])
+            ->where('status_request_id', 3)
+            ->limit(1000)
+            ->orderBy('id', 'desc')
+            ->get();
 
+        if ($requests->isEmpty()) {
+            return response()->json(['message' => 'No hay solicitudes pendientes en el rango de fechas seleccionado.', 'status' => 404],404);
+        }
 
         $totalCost = $requests->sum('competition.requested_budget');
-
         $begin = Carbon::createFromFormat('Y-m-d', $begin);
         $finish = Carbon::createFromFormat('Y-m-d', $finish);
 
         $beginFormatted = $begin->format('d/m/Y');
         $finishFormatted = $finish->format('d/m/Y');
-
-        // return response()->json(['solicitudes' => $requests, 'total' => $totalCost], 200);
 
         return Excel::download(new ComiteExport($requests, $totalCost, $beginFormatted, $finishFormatted), 'reporte-comite.xlsx');
     }
@@ -63,7 +75,7 @@ class ComiteController extends Controller
         $requests->save();
         $competition->save();
 
-        return response()->json(['message' => 'Presupuesto aprobado registrado correctamente para la solicitud '.$requests->invoice.'', 'code' => 200]);
+        return response()->json(['message' => 'Presupuesto aprobado registrado correctamente para la solicitud ' . $requests->invoice . '', 'code' => 200]);
     }
 
     public function comiteImport(Request $request)

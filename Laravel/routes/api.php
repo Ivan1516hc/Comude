@@ -142,6 +142,7 @@ Route::middleware('cors')->group(function () {
 
         //beneficiaries routes
         Route::get('/beneficiary/index', [AplicantController::class, 'indexBeneficiaries']);
+        Route::get('/beneficiary/search-value/{value}', [AplicantController::class, 'searchBeneficiaries']);
     });
 
     Route::middleware('jwt.verify')->group(function () {
