@@ -60,7 +60,7 @@
                                                 aprovado:</strong> <span class="badge bg-info  text-dark">$
                                                 {{item.competition.approved_budget | mexicanCurrency}}</span>
                                         </p>
-                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 2 ? 'alert-primary': (item.status_request.id == 3 ? 'alert-warning' : (item.status_request.id == 6 ? 'alert-danger' : (item.status_request.id == 5 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-danger' : '')))))"
+                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 2 ? 'alert-primary': (item.status_request.id == 3 ? 'alert-warning' : (item.status_request.id == 6 ? 'alert-danger' : (item.status_request.id == 5 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-danger' : 'alert-primary')))))"
                                             class="alert text-center mt-2" role="alert">Solicitud
                                             {{item.status_request.name}}</p>
                                         <div class="d-grid gap-1">

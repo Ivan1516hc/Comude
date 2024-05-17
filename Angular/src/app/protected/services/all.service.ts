@@ -58,28 +58,28 @@ export class AllService {
     return this.http.post<any>(url, data)
   }
 
-  // exportComite(data) {
-  //   const url = `${this.baseUrl}/admin/export/excel-comite`;
-  //   return this.http.post(url, data, { responseType: 'arraybuffer' });
-  // }
-
-  exportComite(data: any): Observable<{ code: number, message: string }> {
+  exportComite(data) {
     const url = `${this.baseUrl}/admin/export/excel-comite`;
-    return this.http.post(url, data, {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-      }),
-      observe: 'response', // Para obtener la respuesta completa
-      responseType: 'arraybuffer' // Indicar que esperamos un arraybuffer como respuesta
-    }).pipe(
-      map((response: HttpResponse<ArrayBuffer>) => {
-        return { code: response.status, message: 'Success' };
-      }),
-      catchError(error => {
-        return of({ code: error.code, message: 'Error downloading the Excel file' });
-      })
-    );
+    return this.http.post(url, data, { responseType: 'arraybuffer' });
   }
+
+  // exportComite(data: any): Observable<{ code: number, message: string, data?: ArrayBuffer }> {
+  //   const url = `${this.baseUrl}/admin/export/excel-comite`;
+  //   return this.http.post(url, data, {
+  //     headers: new HttpHeaders({
+  //       'Content-Type': 'application/json',
+  //     }),
+  //     observe: 'response', // Para obtener la respuesta completa
+  //     responseType: 'arraybuffer' // Indicar que esperamos un arraybuffer como respuesta
+  //   }).pipe(
+  //     map((response: HttpResponse<ArrayBuffer>) => {
+  //       return { code: response.status, message: 'Success', data: response.body };
+  //     }),
+  //     catchError(error => {
+  //       return of({ code: error.status, message: 'Error downloading the Excel file' });
+  //     })
+  //   );
+  // }
 
   importComite(data) {
     const url = `${this.baseUrl}/admin/import/excel-comite`;

@@ -55,7 +55,7 @@ class RequestsController extends Controller
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                 }, 'discipline', 'announcement', 'aplicant'
             ]
-        )->whereIn('status_request_id', [3, 5])
+        )->whereIn('status_request_id', [3, 5, 8])
             ->paginate(10);
 
         return response()->json($query);
@@ -135,8 +135,10 @@ class RequestsController extends Controller
         $documents = $this->getDocument($id);
         $competition = $this->getCompetition($id);
         $general = $this->getGeneral($id);
+        $imprtantArchievements = Aplicant::find($request->aplicant_id)->important_archievements;
+        $documentJustification = $request->justifications;
         DB::commit();
-        return response()->json(['bankAccount' => $bankAccount, 'documents' => $documents, 'competition' => $competition, 'general' => $general]);
+        return response()->json(['bankAccount' => $bankAccount, 'documents' => $documents, 'competition' => $competition, 'general' => $general, 'imprtantArchievements' => $imprtantArchievements, 'documentJustification' => $documentJustification]);
     }
 
     protected function getBankAccount($id)
@@ -385,7 +387,7 @@ class RequestsController extends Controller
         $model = Requests::query();
 
         // No se muestran las solicitudes sin terminar o canceladas
-        $model->whereNotIn('status_request_id', [1, 6, 3, 5]);
+        $model->whereNotIn('status_request_id', [1, 6, 3, 5, 8]);
 
         // Mostrar las solicitudes de modificación
         $model->with([

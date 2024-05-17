@@ -4,6 +4,7 @@ import { BeneficiariesComponent } from './beneficiaries/beneficiaries.component'
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ValidationComponent } from './validation/validation.component';
 import { AppraisalComponent } from './appraisal/appraisal.component';
+import { CatalogsComponent } from './catalogs/catalogs.component';
 
 const routes: Routes = [{
   path: '',
@@ -12,6 +13,7 @@ const routes: Routes = [{
     {path: 'validaciones', component:ValidationComponent},
     {path: 'evaluaciones-comite', component:AppraisalComponent},
     {path: 'beneficiarios', component:BeneficiariesComponent},
+    {path: 'catalogos', component:CatalogsComponent},
     //------------------------------------------------------------------------------------------------------
     {path: '**', redirectTo: 'dashboard'},
   ]

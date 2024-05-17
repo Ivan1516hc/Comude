@@ -348,17 +348,6 @@ export class AppraisalComponent {
 
     this.allService.exportComite(this.miFormularioExport.value).subscribe({
       next: (response) => {
-        if (response.code == 404) {
-          Swal.fire({
-            position: 'center',
-            icon: 'info',
-            title: response?.message,
-            showConfirmButton: false,
-            timer: 2000
-          })
-          return;
-        }
-
         this.cerrarModal();
         this.downLoadFile(response, "application/ms-excel", "reporte-comite.xlsx");
       }, error: (err) => {

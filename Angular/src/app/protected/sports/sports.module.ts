@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule} from '@angular/common';
 
 import { SportsRoutingModule } from './sports-routing.module';
 import { RequestsComponent } from './requests/requests.component';
@@ -10,6 +10,7 @@ import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppraisalComponent } from './appraisal/appraisal.component';
 import { ValidationComponent } from './validation/validation.component';
+import { CatalogsComponent } from './catalogs/catalogs.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { ValidationComponent } from './validation/validation.component';
     DashboardComponent,
     SportsComponent,
     AppraisalComponent,
-    ValidationComponent
+    ValidationComponent,
+    CatalogsComponent,
   ],
   imports: [
     CommonModule,

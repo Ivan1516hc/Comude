@@ -62,6 +62,12 @@ class Requests extends Model
         return $this->hasMany(ModifyForm::class, 'request_id', 'id');
     }
 
+    public function justifications()
+    {
+        return $this->hasMany(RequestJustification::class, 'request_id', 'id');
+    }
+
+
     public function setAttribute($key, $value)
     {
         parent::setAttribute($key, $value);

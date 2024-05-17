@@ -129,7 +129,7 @@ class RequestJustificationController extends Controller
         try {
             $requests = Requests::find($id);
             $requests->update(
-                ['status_request_id' => 7]
+                ['status_request_id' => 8]
             );
 
             DB::commit();

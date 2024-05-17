@@ -44,9 +44,9 @@ class ComiteController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        if ($requests->isEmpty()) {
-            return response()->json(['message' => 'No hay solicitudes pendientes en el rango de fechas seleccionado.', 'status' => 404],404);
-        }
+        // if ($requests->isEmpty()) {
+        //     return response()->json(['message' => 'No hay solicitudes pendientes en el rango de fechas seleccionado.', 'status' => 404], 404);
+        // }
 
         $totalCost = $requests->sum('competition.requested_budget');
         $begin = Carbon::createFromFormat('Y-m-d', $begin);
@@ -57,6 +57,7 @@ class ComiteController extends Controller
 
         return Excel::download(new ComiteExport($requests, $totalCost, $beginFormatted, $finishFormatted), 'reporte-comite.xlsx');
     }
+
 
     public function assignmentComite(Request $request)
     {

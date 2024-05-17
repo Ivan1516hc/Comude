@@ -22,47 +22,51 @@
                             data-bs-target="#importComiteModal"><i class="fa bi-file-earmark-arrow-up-fill"></i> Cargar
                             resultados</button>
                     </div>
-                    <ng-container *ngIf="data?.data?.length > 0; else sinResult">
-                        <div class="search-container">
-                            <ul class="nav nav-tabs w-100" id="myTabs">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
-                                        (click)="search(1)">Todas</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#search">Buscador</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
-                                        (click)="search('status:5')">Aceptadas</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
-                                        (click)="search('status:3')">Pendientes</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
-                                        (click)="search('status:7')">Rechazadas</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane fade show active" id="personalizada" role="tabpanel">
-                                    <!-- Aquí puedes mostrar la tabla completa -->
-                                </div>
-                                <div class="tab-pane fade" id="search" role="tabpanel">
-                                    <div class="content-section">
-                                        <div class="card xu-card">
-                                            <div class="card-body">
-                                                <input type="text" class="form-control mt-2" placeholder="Buscar..."
-                                                    [(ngModel)]="searchTerm" (input)="onSearchTermChange(searchTerm)">
-                                            </div>
+
+                    <div class="search-container">
+                        <ul class="nav nav-tabs w-100" id="myTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search(1)">Todas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#search">Buscador</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:5')">Aceptadas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:8')">Justificadas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:3')">Pendientes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:7')">Rechazadas</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="personalizada" role="tabpanel">
+                                <!-- Aquí puedes mostrar la tabla completa -->
+                            </div>
+                            <div class="tab-pane fade" id="search" role="tabpanel">
+                                <div class="content-section">
+                                    <div class="card xu-card">
+                                        <div class="card-body">
+                                            <input type="text" class="form-control mt-2" placeholder="Buscar..."
+                                                [(ngModel)]="searchTerm" (input)="onSearchTermChange(searchTerm)">
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Aquí puedes agregar más pestañas con su contenido según sea necesario -->
                             </div>
+                            <!-- Aquí puedes agregar más pestañas con su contenido según sea necesario -->
                         </div>
-
+                    </div>
+                    <ng-container *ngIf="data?.data?.length > 0; else sinResult">
                         <div class="table-container">
                             <table class="table table-striped">
                                 <thead>
@@ -85,7 +89,8 @@
                                             <div class="text-center"
                                                 [ngClass]=" item.status_request_id === 3 ? 'alert-warning' : item.status_request_id === 5 ? 'alert-success' :''">
                                                 {{item.status_request_id == 3 ? 'En proceso' : (item.status_request_id
-                                                == 5 ? 'Aceptado' : '')}}</div>
+                                                == 5 ? 'Aceptado' : (item.status_request_id
+                                                == 8 ? 'Justificado' : ''))}}</div>
                                         </td>
                                         <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
                                        <div class="alert-success">Cita Agendada</div>
@@ -121,25 +126,26 @@
                                 </tbody>
                             </table>
                         </div>
-                        <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
-                            <ul class="pagination">
-                                <li class="page-item" *ngFor="let item of data.links; let i = index">
-                                    <button class="page-link" [ngClass]="{'activeLink': item.active}"
-                                        (click)="onPageChange(item.url)" *ngIf="item.url != null">
-                                        <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
-                                        <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
-                                        <ng-container
-                                            *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
-                                            {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»'
-                                            :
-                                            item.label
-                                            }}
-                                        </ng-container>
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
                     </ng-container>
+                    <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
+                        <ul class="pagination">
+                            <li class="page-item" *ngFor="let item of data.links; let i = index">
+                                <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                                    (click)="onPageChange(item.url)" *ngIf="item.url != null">
+                                    <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
+                                    <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
+                                    <ng-container
+                                        *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
+                                        {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»'
+                                        :
+                                        item.label
+                                        }}
+                                    </ng-container>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+
 
                     <!-- Aquí puedes mostrar un mensaje de error si no se encontraron resultados -->
                     <ng-template #sinResult>
