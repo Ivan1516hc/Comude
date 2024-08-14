@@ -43,6 +43,23 @@ export class FormConpetitionComponent {
       }
     });
 
+    this.getDataCompetition();
+    this.obtenerURLPrincipal();
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      this.miFormulario.patchValue({
+        request_id: id
+      });
+      if (id) {
+        this.showConpetition(id);
+        this.requestService.show(id).subscribe({
+          next: (response) => {
+            this.request = response;
+          }
+        });
+      }
+    });
+    
   }
 
   // Obtener la fecha actual en formato ISO (por ejemplo, "2023-09-15")
@@ -74,23 +91,7 @@ export class FormConpetitionComponent {
   }
 
   ngOnInit(): void {
-    this.edit = false;
-    this.getDataCompetition();
-    this.obtenerURLPrincipal();
-    this.route.params.subscribe(params => {
-      const id = params['id'];
-      this.miFormulario.patchValue({
-        request_id: id
-      });
-      if (id) {
-        this.showConpetition(id);
-        this.requestService.show(id).subscribe({
-          next: (response) => {
-            this.request = response;
-          }
-        });
-      }
-    });
+
     const numberFields = ['requested_budget'];
     numberFields.forEach(field => {
       this.subscribeToNumberFieldChanges(field);

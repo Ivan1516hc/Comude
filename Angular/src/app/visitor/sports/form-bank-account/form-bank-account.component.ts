@@ -33,11 +33,6 @@ export class FormBankAccountComponent {
     private route: ActivatedRoute,
     private bankAccountService: BankAccountsService, private requestService: RequestsService
   ) {
-
-  }
-
-  ngOnInit(): void {
-    this.edit = false;
     this.obtenerURLPrincipal();
     this.route.params.subscribe(params => {
       this.request_id = params['id'];
@@ -52,6 +47,9 @@ export class FormBankAccountComponent {
       }
     });
 
+  }
+
+  ngOnInit(): void {
     const numberFields = ['account', 'key_account'];
 
     numberFields.forEach(field => {
@@ -100,7 +98,7 @@ export class FormBankAccountComponent {
     this.requestService.verifyRequest(id, this.form_id).subscribe({
       next: (res) => {
         this.modify = res;
-        if(this.modify.length > 0){
+        if (this.modify.length > 0) {
           this.loadingUpdate();
         }
       }
