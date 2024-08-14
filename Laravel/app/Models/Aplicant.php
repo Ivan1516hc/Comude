@@ -20,13 +20,13 @@ class Aplicant extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'gender',
         'password',
         'phone_number',
         'second_phone_number',
         'curp',
         'rfc',
         'birtdate',
-        'bank_account_id',
         'read_regulations'
     ];
     /**
@@ -73,12 +73,6 @@ class Aplicant extends Authenticatable implements JWTSubject
     {
         return [];
     }
-
-    public function bank_account()
-    {
-        return $this->hasOne(BankAccount::class, 'id', 'bank_account_id');
-    }
-
     public function requests()
     {
         return $this->hasMany(Requests::class, 'aplicant_id', 'id');
@@ -89,6 +83,10 @@ class Aplicant extends Authenticatable implements JWTSubject
         return $this->hasMany(ImportantArchievement::class, 'aplicant_id', 'id');
     }
 
+    public function requestsThroughCompetition()
+    {
+        return $this->hasManyThrough(Requests::class, Competition::class, 'aplicant_id', 'competition_id');
+    }
 
     public function setAttribute($key, $value)
     {

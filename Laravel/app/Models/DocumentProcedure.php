@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DocumentProcedure extends Model
 {
-    use HasFactory;
+    protected $table= 'document_procedures';
+    use HasFactory,SoftDeletes;
     protected $fillable = [
        'name','descripcion','force','procedure_id'
     ];

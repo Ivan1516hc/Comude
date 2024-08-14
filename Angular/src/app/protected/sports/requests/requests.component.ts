@@ -56,7 +56,7 @@ export class RequestsComponent {
       next: (request) => {
         this.request = request;
         this.data = this.request;
-        console.log(request);
+        // console.log(request);
       }, error: () => {
         this.hayError = true;
       }

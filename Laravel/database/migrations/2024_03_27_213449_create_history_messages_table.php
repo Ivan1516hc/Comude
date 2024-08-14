@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('history_messages', function (Blueprint $table) {
             $table->id();
 
-            $table->string('text');
+            $table->longText('text');
             
             $table->unsignedTinyInteger('message_motive_id');
             $table->foreign('message_motive_id')->references('id')->on('message_motives');

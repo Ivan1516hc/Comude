@@ -1,0 +1,49 @@
+/* catalog-view.component.css */
+.container {
+    margin-top: 20px;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .card-opcion {
+    cursor: pointer;
+    transition: transform 0.3s;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: white; /* Fondo blanco */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para mejor visibilidad */
+  }
+  
+  .card-opcion:hover {
+    transform: scale(1.05);
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .card-title {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+  }
+  
+  .card-text {
+    font-size: 1rem;
+  }
+
+  .card-opcion.active {
+    background-color: #01b4e4;
+    color: white;
+  }
+  

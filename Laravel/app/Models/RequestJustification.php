@@ -20,6 +20,11 @@ class RequestJustification extends Model
         'updated_at' => 'datetime:Y-m-d H:00',
     ];
 
+    public function justificationType()
+    {
+        return $this->belongsTo(JustificationTypes::class);
+    }
+
     public function setAttribute($key, $value)
     {
         parent::setAttribute($key, $value);

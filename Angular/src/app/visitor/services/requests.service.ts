@@ -40,4 +40,14 @@ export class RequestsService {
     const url = `${this.baseUrlAplicant}/catalog/discipline`;
     return this.http.get<any>(url);
   }
+
+  verifyRequest(id: number, form: number) {
+    const url = `${this.baseUrlAplicant}/request/verify/update/${id}/${form}`;
+    return this.http.get<any>(url);
+  }
+
+  verifyRequestDocuments(id: number) {
+    const url = `${this.baseUrlAplicant}/request/verify/update/documents/${id}`;
+    return this.http.get<any>(url);
+  }
 }

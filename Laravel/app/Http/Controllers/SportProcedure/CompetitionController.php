@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SportProcedure;
 
 use App\Http\Controllers\Controller;
 use App\Models\Competition;
+use App\Models\ModifyForm;
 use App\Models\Requests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,7 +56,7 @@ class CompetitionController extends Controller
             ]);
 
             DB::commit();
-            $response['message'] = "Información de competición registrada correctamente.";
+            $response['message'] = "Información de competencia registrada correctamente.";
             $response['code'] = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -99,9 +100,47 @@ class CompetitionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Competition $competition)
+    public function update(Request $request)
     {
-        //
+        $user = Auth::guard('aplicant')->user();
+        if (!$user) {
+            $response['message'] = "Necesitas loguearte";
+            $response['code'] = 404;
+            return response()->json($response);
+        }
+
+        $requests = Requests::find($request->request_id);
+
+        if (!$requests) {
+            $response['message'] = "Solicitud no encontrada, intenta de nuevo.";
+            $response['code'] = 202;
+            return response()->json($response);
+        }
+
+        DB::beginTransaction();
+        try {
+            Competition::find($requests->competition_id)->update($request->all());
+
+            if($requests->status_request_id == 4){
+                ModifyForm::where(['request_id' => $requests->id, 'form_id' => 1])->update([
+                    'status' => 1
+                ]);
+                if(ModifyForm::where(['request_id' => $requests->id , 'status' => 0])->count() == 0){
+                    $requests->update([
+                        'status_request_id' => 2
+                    ]);
+                }
+            }
+
+            DB::commit();
+            $response['message'] = "Información de competencia actualizada correctamente.";
+            $response['code'] = 200;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response['message'] = "No se a podido actualizar la información.";
+            $response['code'] = 202;
+        }
+        return response()->json($response);
     }
 
     /**

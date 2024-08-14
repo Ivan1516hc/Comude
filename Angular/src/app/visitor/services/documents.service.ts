@@ -24,6 +24,20 @@ export class DocumentsService {
       );
   }
 
+  changeDocument(data, id: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'multipart/form-data',
+    });
+
+    return this.http.post<any>(`${this.baseUrlAplicant}/request/documents/change/${id}`, data, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error en la solicitud:', error);
+          throw error; // Puedes manejar el error según tus necesidades
+        })
+      );
+  }
+
   storeImportantArchivement(data) {
     const headers = new HttpHeaders({
       'Content-Type': 'multipart/form-data',

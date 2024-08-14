@@ -31,6 +31,10 @@ return new class extends Migration
             $table->unsignedBigInteger('aplicant_id');
             $table->foreign('aplicant_id')->references('id')->on('aplicants');
 
+            $table->unsignedBigInteger('bank_account_id')->nullable();
+            $table->foreign('bank_account_id')->references('id')->on('bank_accounts');
+
+            $table->boolean('notification_received')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

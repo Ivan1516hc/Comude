@@ -1,0 +1,90 @@
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Tabla de tipos de justificación</h5>
+        <div class="text-end">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#disciplineModal"
+                (click)="getItem(null)"><i class="fa bi-plus-circle-fill"></i> Añadir</button>
+        </div>
+        <ng-container *ngIf="data?.data?.length > 0; else sinResult">
+            <div class="table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col" *ngFor="let header of headers">{{header}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of data.data; index as i">
+                            <th scope="row">{{i + 1}}</th>
+                            <td>{{item.name}}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal"
+                                    data-bs-target="#disciplineModal" (click)="getItem(item)">Editar</button>
+                                <button class="btn btn-sm btn-danger" (click)="delete(1, item.id)"
+                                    *ngIf="!item.deleted_at">Deshabilitar</button>
+                                <button class="btn btn-sm btn-warning" (click)="delete(2, item.id)"
+                                    *ngIf="item.deleted_at">Reactivar</button>
+                            </td>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>
+        <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
+            <ul class="pagination">
+                <li class="page-item" *ngFor="let item of data.links; let i = index">
+                    <button class="page-link" [ngClass]="{'activeLink': item.active}" (click)="onPageChange(item.url)"
+                        *ngIf="item.url != null">
+                        <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
+                        <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
+                        <ng-container *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
+                            {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»'
+                            :
+                            item.label
+                            }}
+                        </ng-container>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+
+        <!-- Aquí puedes mostrar un mensaje de error si no se encontraron resultados -->
+        <ng-template #sinResult>
+            <div class="alert alert-danger mt-5" role="alert">
+                No se encontraron resultados
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<div class="modal fade" id="disciplineModal" tabindex="-1" aria-labelledby="disciplineModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="disciplineModalLabel">{{miFormulario.value.id ? 'Editar' : 'Agregar'}} tipo de justificación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form" [formGroup]="miFormulario">
+                    <div class="mb-3 mt-3">
+                        <label for="dateInput" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" placeholder="Nombre de la justificación..."
+                            formControlName="name">
+
+                        <span class="form-text text-danger form"
+                            *ngIf="miFormulario.controls['name'].errors && miFormulario.controls['name'].touched">
+                            Nombre requerido.
+                        </span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" (click)="submit(1)"
+                    *ngIf="!miFormulario.value.id">Crear</button>
+                <button type="button" class="btn btn-primary" (click)="submit(2)"
+                    *ngIf="miFormulario.value.id">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>

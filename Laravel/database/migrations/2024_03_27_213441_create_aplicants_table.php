@@ -24,12 +24,13 @@ return new class extends Migration
             $table->string('curp')->unique();
             $table->string('rfc')->nullable();
             $table->string('birtdate')->nullable();
+            $table->string('gender')->nullable();
             $table->string('verification_token')->nullable();
 
             $table->boolean('read_regulations')->default(0);
 
-            $table->unsignedBigInteger('bank_account_id')->nullable();
-            $table->foreign('bank_account_id')->references('id')->on('bank_accounts');
+            // $table->unsignedBigInteger('bank_account_id')->nullable();
+            // $table->foreign('bank_account_id')->references('id')->on('bank_accounts');
 
             $table->rememberToken();
             $table->timestamps();

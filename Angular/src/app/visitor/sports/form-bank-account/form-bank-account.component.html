@@ -24,8 +24,7 @@
                         <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Anterior
                     </a>
 
-                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/logros-importantes'"
-                        *ngIf="onlySee">
+                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/documentacion'" *ngIf="onlySee">
                         Siguiente <i class="bi bi-arrow-right"></i><span
                             class="glyphicon glyphicon-chevron-right"></span>
                     </a>
@@ -39,8 +38,8 @@
                                         <div class="d-flex align-items-center">
                                             <i class="bi bi-info-circle-fill me-2"></i>
                                             <div>
-                                                <strong>¡Atención!</strong> La información ingresada es de caracter
-                                                delicado, favor de retificar la información con cuidado.
+                                                <strong>¡Atención!</strong> La información ingresada es de carácter
+                                                delicado, favor de rectificar la información con cuidado.
                                             </div>
                                         </div>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
@@ -49,16 +48,16 @@
                                 </div>
 
                                 <div
-                                    *ngIf="!edit && onlySee && (request?.status_request_id == 1 || request?.status_request_id == 4)">
+                                    *ngIf="!edit && onlySee && (request?.status_request_id == 1 ||  (request?.status_request_id == 4 && modify.length > 0))">
                                     <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center "
                                         role="alert">
                                         <div>
-                                            <strong>¡Importante!</strong> ¿Quieres actualizar la información
+                                            <strong>¡Importante!</strong> ¿Quieres editar la información
                                             de la competencia?
                                         </div>
                                         <button type="button" class="btn btn-sm btn-primary" style="margin-left: 5px;"
                                             (click)="loadingUpdate()">
-                                            <i class="bi bi-pencil"></i> Actualizar
+                                            <i class="bi bi-pencil"></i> Editar
                                         </button>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                             aria-label="Cerrar"></button>
@@ -69,7 +68,7 @@
                                     <h5 class="card-title">Cuenta bancaria</h5>
                                     <form class="row g-3" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
 
-                                        <div class="col-12 col-md-6 col-lg-6">
+                                        <!-- <div class="col-12 col-md-6 col-lg-6">
                                             <label class="form-label required">Número de cuenta</label>
                                             <input type="text" class="form-control" formControlName="account"
                                                 minlength="8" maxlength="18">
@@ -77,8 +76,7 @@
                                                 *ngIf="miFormulario.controls['account'].errors && miFormulario.controls['account'].touched">
                                                 Número de cuenta requerido con logitud de 8 a 18 números.
                                             </span>
-                                        </div>
-
+                                        </div> -->
 
                                         <div class="col-12 col-md-6 col-lg-6">
                                             <label class="form-label required">Número de cuenta clabe</label>
@@ -86,12 +84,21 @@
                                                 minlength="18" maxlength="18">
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['key_account'].errors && miFormulario.controls['key_account'].touched">
-                                                Número de cuenta clabe requerido con logitud de 18 números.
+                                                Número de cuenta clabe requerido con longitud de 18 números.
+                                            </span>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-lg-6">
+                                            <label class="form-label required">Banco <span class="text-danger"
+                                                    *ngIf="newData || edit">(debe ser
+                                                    reconocido en México)</span></label>
+                                            <input type="text" class="form-control" formControlName="bank">
+                                            <span class="form-text text-danger form"
+                                                *ngIf="miFormulario.controls['bank'].errors && miFormulario.controls['bank'].touched">
+                                                Banco requerido.
                                             </span>
                                         </div>
 
-
-                                        <div class="col-12 col-lg-8">
+                                        <div class="col-12">
                                             <label class="form-label required">Nombre completo del titular de la
                                                 cuenta</label>
                                             <input type="text" class="form-control"
@@ -103,25 +110,14 @@
                                         </div>
 
 
-                                        <div class="col-12 col-lg-4">
-                                            <label class="form-label required">Banco <span class="text-danger"
-                                                    *ngIf="newData || edit">(debe ser
-                                                    reconocido en México)</span></label>
-                                            <input type="text" class="form-control" formControlName="bank">
-                                            <span class="form-text text-danger form"
-                                                *ngIf="miFormulario.controls['bank'].errors && miFormulario.controls['bank'].touched">
-                                                Banco requerido.
-                                            </span>
-                                        </div>
 
-                                        <div *ngIf="!edit && !onlySee; else existFile">
+                                        <div *ngIf="edit || !onlySee; else existFile">
                                             <label for="fileInput" class="form-label">Estado de cuenta <span
-                                                    class="text-danger" *ngIf="newData || edit">(caratula de estado de
-                                                    cuenta donde se encuentre su numero de cuenta)</span>:</label>
+                                                    class="text-danger" *ngIf="newData || edit">(Carátula de estado de cuenta donde se encuentre su número de cuenta clabe)</span>:</label>
                                             <div class="drop-zone" (dragover)="onDragOver($event)"
                                                 (drop)="onDrop($event)" (click)="fileInput.click()">
                                                 <input #fileInput type="file" class="visually-hidden"
-                                                    accept=".pdf, .jpg, .jpeg, .png" (change)="onFileSelected($event)"
+                                                    accept=".pdf" (change)="onFileSelected($event)"
                                                     (drop)="onFileSelected($event)">
                                                 <div class="preview-container" *ngIf="selectedFileName">
                                                     <img [src]="selectedFilePreview" alt="Archivo seleccionado"
@@ -133,11 +129,11 @@
                                                 </div>
                                             </div>
                                             <small class="form-text text-muted">Formatos permitidos: pdf.</small><br>
-                                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB.
+                                            <small class="form-text text-muted">Tamaño máximo aceptado: 1 MB o 1024 KB.
                                             </small>
                                             <small class="form-text text-center"><a
                                                     href="https://www.ilovepdf.com/es/comprimir_pdf"
-                                                    target="_blank">¿Donde reducir el tamaño de un PDF?</a></small>
+                                                    target="_blank">¿Dónde reducir el tamaño de un PDF?</a></small>
                                         </div>
 
                                         <ng-template #existFile>
@@ -153,6 +149,7 @@
 
 
                                         <div class="text-center" *ngIf="!onlySee">
+                                            <button *ngIf="edit" type="button" class="btn btn-danger" (click)="ngOnInit()">Cancelar</button>
                                             <button type="submit" class="btn btn-primary"
                                                 [ngClass]="newData ? 'btn-success' :  'btn-primary' ">{{newData ?
                                                 'Guardar' : 'Actualizar' }}</button>

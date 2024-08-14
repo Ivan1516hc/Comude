@@ -1,0 +1,4 @@
+/* Estilo para inputs con márgenes rojos */
+.red-margin-input {
+    border: 2px solid red;
+}

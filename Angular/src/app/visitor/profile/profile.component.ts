@@ -11,6 +11,7 @@ import { ProfileService } from '../services/profile.service';
 export class ProfileComponent {
   // Obtener el botón por su ID o cualquier otro selector
   @ViewChild('myButton') myButton: ElementRef;
+  updatedInformation: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,7 +26,8 @@ export class ProfileComponent {
     email: ['', [Validators.required]],
     phone_number: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(10), Validators.maxLength(10)]],
     second_phone_number: ['', [Validators.pattern('^[0-9]+$'), Validators.minLength(10), Validators.maxLength(10)]],
-    curp: [{ value: '', disabled: true }, [Validators.required]],
+    curp: [{ value: '', disabled: true }, [Validators.nullValidator]],
+    gender: ['', [Validators.required]],
     rfc: ['', [Validators.minLength(13), Validators.maxLength(13)]],
     birtdate: ['', [Validators.required]],
   });
@@ -73,6 +75,8 @@ export class ProfileComponent {
     numberFields.forEach(field => {
       this.subscribeToNumberFieldChanges(field);
     });
+
+    this.miFormulario.markAllAsTouched();
   }
 
   getDataUser() {
@@ -102,6 +106,7 @@ export class ProfileComponent {
       password: response.password,
       phone_number: response.phone_number,
       curp: response.curp,
+      gender: response.gender,
       rfc: response.rfc,
       birtdate: response.birtdate,
       second_phone_number: response.second_phone_number
@@ -109,6 +114,8 @@ export class ProfileComponent {
 
     if (!response.name || !response.phone_number || !response.birtdate) {
       this.myButton.nativeElement.click();
+    }else{
+      this.updatedInformation = true;
     }
   }
 

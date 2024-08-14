@@ -1,0 +1,29 @@
+<app-sports>
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>Catálogos</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Catálogos</li>
+                </ol>
+            </nav>
+        </div>
+        <section class="section dashboard">
+            <!-- catalog-view.component.html -->
+            <div class="container">
+                <div class="grid-container">
+                    <div class="card-opcion" [class.active]="catalog.component === selectedComponent" *ngFor="let catalog of catalogs" (click)="selectCatalog(catalog.component)">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ catalog.title }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <div class="container">
+            <ng-container *ngComponentOutlet="selectedComponent"></ng-container>
+        </div>
+    </main>
+</app-sports>

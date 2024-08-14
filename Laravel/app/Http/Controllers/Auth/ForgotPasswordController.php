@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Aplicant;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\DB;
@@ -16,43 +17,40 @@ class ForgotPasswordController extends Controller
     // Método para enviar el correo electrónico de restablecimiento de contraseña
     public function sendResetLinkEmail(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate(['curp' => 'required|regex:/^[A-Z0-9]{18}$/']); // Validar el formato de la CURP
 
-        $user = Aplicant::where('email', $request->get('email'))->first();
+        $user = Aplicant::where('curp', $request->curp)->first();
 
         if (!$user) {
             return response()->json([
-                'code'    => 401,
-                'message' => 'No se pudo enviar el correo electrónico.'
+                'code'    => 404,
+                'message' => 'No se encontró ningún usuario con esa CURP.'
             ]);
         }
 
-
         // Eliminar el token existente si existe
         DB::table('password_reset_tokens')
-            ->where('email', $request->email)
+            ->where('curp', $request->curp)
             ->delete();
 
-        // Generar un nuevo token y guardarlo en la tabla password_reset_tokens
-        $token = Password::getRepository()->create($user);
+        try {
+            // Generar un nuevo token personalizado
+            $token = Str::random(60);
 
-        if ($token) {
-            // Obtener la dirección de correo electrónico del usuario
-            $email = $request->email;
-
-            // Obtener el nombre del usuario (si está disponible)
-            $user = Aplicant::where('email', $email)->first();
-            $name = $user ? $user->name : '';
+            // Guardar el token en la tabla password_reset_tokens
+            DB::table('password_reset_tokens')->insert([
+                'curp' => $user->curp,
+                'token' => hash('sha256', $token),  // O encriptar el token de manera segura
+                'created_at' => now(),
+            ]);
             $appFrontUrl = env('APP_FRONT');
             // Generar la URL de restablecimiento de contraseña con el token
-            $resetUrl = url($appFrontUrl.'/auth/restablecer/'.$token.'/'.$email);
-
+            $resetUrl = url($appFrontUrl.'/auth/restablecer/'.$token.'/'.$user->curp);
             // Enviar el correo electrónico utilizando la vista personalizada
             Mail::send('emails.reset-password', [
-                // 'name' => $name,
-                'resetUrl' => $resetUrl
-            ], function (Message $message) use ($email) {
-                $message->to($email)
+                'resetUrl' => $resetUrl,
+            ], function (Message $message) use ($user) {
+                $message->to($user->email)
                     ->subject('Restablecimiento de Contraseña');
             });
 
@@ -60,13 +58,14 @@ class ForgotPasswordController extends Controller
                 'code'    => 200,
                 'message' => 'Correo electrónico de restablecimiento de contraseña enviado. REVISA TU CORREO.'
             ]);
-        } else {
+        } catch (\Exception $e) {
             return response()->json([
-                'code'    => 401,
-                'message' => 'No se pudo enviar el correo electrónico de restablecimiento de contraseña.'
+                'code'    => 500,
+                'message' => 'Ocurrió un error al intentar enviar el correo electrónico de restablecimiento de contraseña.'
             ]);
         }
     }
+
 
     // Método para obtener la instancia del Password Broker
     public function broker()

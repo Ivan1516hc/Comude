@@ -36,6 +36,7 @@ export interface RequestsResponse {
 export interface Priority {
     name:   string;
 }
+
 export interface Beneficiary {
     id:               number;
     curp:             string;

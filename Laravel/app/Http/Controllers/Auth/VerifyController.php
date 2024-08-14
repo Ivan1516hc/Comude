@@ -59,10 +59,11 @@ class VerifyController extends Controller
         // Enviar el correo electrónico utilizando la vista personalizada
         Mail::send('emails.verify', [
             'name' => $name,
-            'number' => $number
+            'number' => $number,
+            'curp' => $user->curp
         ], function (Message $message) use ($email) {
             $message->to($email)
-                ->subject('Correo de Verificación');
+                ->subject('Portal de Becas - Correo de Verificación');
         });
 
         return response()->json(['message' => 'Correo de verificación enviado', 'code' => 200]);

@@ -60,6 +60,15 @@ export class FormJustificationComponent {
     })
   }
 
+  getIconClass(fileName: string): boolean {
+    const extension = fileName.split('.').pop().toLowerCase();
+    if (extension === 'pdf') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   sendJustification() {
     Swal.fire({
       position: 'center',
@@ -78,8 +87,7 @@ export class FormJustificationComponent {
                 position: 'center',
                 icon: 'success',
                 title: response.message,
-                showConfirmButton: false,
-                timer: 2000
+                showConfirmButton: true
               });
               this.ngOnInit();
             } else {

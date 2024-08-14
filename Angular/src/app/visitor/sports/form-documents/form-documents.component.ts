@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { DocumentsService } from '../../services/documents.service';
+import { RequestsService } from '../../services/requests.service';
 
 @Component({
   selector: 'app-form-documents',
@@ -22,9 +23,11 @@ export class FormDocumentsComponent {
   activeDocument: any;
   indexMayor: number = 0;
   baseUrl = environment.dowload;
+  request: any;
+  modify: any = [];
 
   constructor(private fb: FormBuilder,
-    private router: Router, private route: ActivatedRoute, private documentService: DocumentsService
+    private router: Router, private route: ActivatedRoute, private documentService: DocumentsService, private requestService: RequestsService, private elementRef: ElementRef
   ) { }
 
   miFormulario: FormGroup = this.fb.group({
@@ -33,7 +36,7 @@ export class FormDocumentsComponent {
     file: [null, Validators.required], // Campo de archivo requerido
     type_file: [null, Validators.required],
     name_file: [null, Validators.required],
-    type_person_id: [null, Validators.nullValidator]
+    type_person_id: [null, Validators.nullValidator],
   });
 
   ngOnInit(): void {
@@ -44,6 +47,12 @@ export class FormDocumentsComponent {
         this.showDocuments(this.request_id);
       }
     });
+
+    this.requestService.show(this.request_id).subscribe({
+      next: (response) => {
+        this.request = response;
+      }
+    })
   }
 
   onDragOver(event: DragEvent): void {
@@ -71,13 +80,18 @@ export class FormDocumentsComponent {
       } else {
         this.selectedFilePreview = null;
       }
-    } 
+    }
   }
 
   obtenerURLPrincipal() {
     const urlCompleta = this.router.url;
     const segmentos = urlCompleta.split('/');
     this.urlPrincipal = '/' + segmentos[1];
+  }
+
+  cerrarModal() {
+    const botonCancel: any = this.elementRef.nativeElement.querySelector('#cancel');
+    botonCancel.click();
   }
 
   showDocuments(id: any): void {
@@ -95,6 +109,47 @@ export class FormDocumentsComponent {
           this.primerDocumentoDisponibleIndex = this.documents.length - 1;
         }
         this.mostrar(this.documents[this.primerDocumentoDisponibleIndex], this.primerDocumentoDisponibleIndex);
+      }
+    });
+
+    this.requestService.verifyRequestDocuments(this.miFormulario.value.request_id).subscribe({
+      next: (res) => {
+        this.modify = res;
+      }
+    });
+  }
+
+  changeFile() {
+    if (this.miFormulario.invalid) {
+      return this.miFormulario.markAllAsTouched();
+    }
+    const formData = new FormData();
+    formData.append('request_id', this.miFormulario.get('request_id').value);
+    formData.append('file', this.miFormulario.get('file').value);
+    formData.append('type_file', this.miFormulario.get('type_file').value);
+    formData.append('name_file', this.miFormulario.get('name_file').value);
+    this.documentService.changeDocument(formData, this.activeDocument.documents_request[0]?.id).subscribe({
+      next: (response) => {
+        if (response.code == 200) {
+          this.ngOnInit();
+          this.cerrarModal();
+          if (response.total_documents == this.documents.length) {
+            this.handleSuccessResponse(response);
+          } else {
+            this.clearFileInput();
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            });
+          }
+        } else {
+          this.handleErrorResponse(response);
+        }
+      }, error: (err) => {
+        Swal.fire("Error", "error")
       }
     });
   }
@@ -171,8 +226,7 @@ export class FormDocumentsComponent {
       position: 'center',
       icon: 'error',
       title: response.message,
-      showConfirmButton: false,
-      timer: 2000
+      showConfirmButton: true
     });
   }
 
@@ -180,5 +234,14 @@ export class FormDocumentsComponent {
     this.fileInput.nativeElement.value = null;
     this.selectedFileName = null;
     this.selectedFilePreview = null;
-  }  
+  }
+
+  verify():boolean{
+    for (let i = 0; i < this.modify.length; i++) {
+      if (this.modify[i].document_procedure_id == this.activeDocument.id) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

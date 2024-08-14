@@ -22,7 +22,7 @@ export class AppraisalComponent {
   data: any = [];
   headers = ['No.', 'Folio', 'Solicitante', 'Disciplina', 'Tipo', 'Fecha', 'Monto', 'Status', 'Acciones'];
   updatedData: any = [];
-
+  reason: string = '';
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) {
     this.searchTermChanged.pipe(
@@ -163,6 +163,50 @@ export class AppraisalComponent {
               showConfirmButton: false,
               timer: 2000
             })
+            this.initTable()
+            // this.citaCreada.emit();
+          } else {
+            Swal.fire("Error", "error")
+          }
+        })
+      } else if (result.isDenied) {
+        return;
+      }
+    })
+  }
+
+  declineRequest() {
+    if (this.reason == '') {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de escribir un motivo para poder rechazar la solicitud.',
+        showConfirmButton: true
+      })
+      return;
+    }
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea rechazar esta solicitud? por el motivo de: ' + this.reason,
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let data = { 'id': this.dataShow?.general?.id, 'status_request_id': 7, 'reason': this.reason };
+        this.allService.updateRequest(data).subscribe(response => {
+          if (response.code == 200) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            })
+            this.reason = '';
+            this.cerrarModal();
             this.initTable()
             // this.citaCreada.emit();
           } else {
@@ -413,6 +457,7 @@ export class AppraisalComponent {
   }
 
   importComite() {
+    // console.log(this.ExcelData);
     const total = this.getTotalAprobado();
     if (total == 0 || total == null) {
       Swal.fire({
@@ -438,7 +483,7 @@ export class AppraisalComponent {
           next: (response) => {
             this.updatedData = response?.datos_actualizados ?? [];
             if (response.code == 200) {
-              this.cerrarModal();
+              // this.cerrarModal();
               Swal.fire({
                 position: 'center',
                 icon: 'success',
@@ -521,6 +566,15 @@ export class AppraisalComponent {
         return;
       }
     })
+  }
+
+  limiteCaracteres: number = 50;
+  isLongText(text: string): boolean {
+    return text.length > this.limiteCaracteres;
+  }
+  // Esta función cambiará el estado del texto para mostrar o no mostrar todo el texto.
+  toggleText(documento: any) {
+    documento.mostrarTextoCompleto = !documento.mostrarTextoCompleto;
   }
 
 }

@@ -16,7 +16,7 @@ interface budget {
   styleUrls: ['./form-conpetition.component.css']
 })
 export class FormConpetitionComponent {
-
+  form_id: number = 1;
   urlPrincipal: string;
   catalog: any
   debget: budget = {
@@ -28,6 +28,8 @@ export class FormConpetitionComponent {
   edit: boolean = false;
   previousStartDate: string;
   request: any;
+  modify: any = [];
+
 
   constructor(
     private router: Router,
@@ -72,6 +74,7 @@ export class FormConpetitionComponent {
   }
 
   ngOnInit(): void {
+    this.edit = false;
     this.getDataCompetition();
     this.obtenerURLPrincipal();
     this.route.params.subscribe(params => {
@@ -95,6 +98,15 @@ export class FormConpetitionComponent {
 
     // Guardar el valor inicial de la fecha de inicio
     this.previousStartDate = this.miFormulario.get('start_date').value;
+
+    this.requestService.verifyRequest(this.miFormulario.value.request_id, this.form_id).subscribe({
+      next: (res) => {
+        this.modify = res;
+        if (this.modify.length > 0) {
+          this.loadingUpdate();
+        }
+      }
+    });
   }
 
   private subscribeToNumberFieldChanges(fieldName: string): void {
@@ -124,7 +136,7 @@ export class FormConpetitionComponent {
     else if (id == 2) {
       this.miFormulario.patchValue({
         'country_id': 120,
-        'countries_state_id': null
+        'countries_state_id': this.miFormulario.value.countries_state_id ?? null
       })
       this.debget = {
         minimum_budget: 5000,
@@ -138,7 +150,7 @@ export class FormConpetitionComponent {
         maximum_budget: 20000
       }
       this.miFormulario.patchValue({
-        'country_id': null,
+        'country_id': this.miFormulario.value.country_id ?? null,
         'countries_state_id': null
       })
       this.validatorTypeCompetition(id);
@@ -249,8 +261,37 @@ export class FormConpetitionComponent {
       return this.miFormulario.markAllAsTouched();
     }
 
+    if (this.miFormulario.get('start_date').value > this.miFormulario.get('ending_date').value) {
+      return Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'La fecha de inicio no puede ser mayor a la fecha de finalización',
+        showConfirmButton: true,
+        timer: 2000
+      });
+    }
+
+    this.edit ? this.update() : this.store();
+  }
+
+  store() {
     const data = this.miFormulario.getRawValue();
     this.competitionService.store(data).subscribe({
+      next: (response) => {
+        if (response.code == 200) {
+          this.handleSuccessResponse(response);
+        } else {
+          this.handleErrorResponse(response);
+        }
+      }, error: (err) => {
+        Swal.fire("Error", "error")
+      }
+    });
+  }
+
+  update() {
+    const data = this.miFormulario.getRawValue();
+    this.competitionService.update(data).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.handleSuccessResponse(response);
@@ -267,7 +308,7 @@ export class FormConpetitionComponent {
     this.newData = false;
     this.onlySee = true;
     this.miFormulario.disable();
-    const message = this.edit ? 'Información de la competición actualizada.' : 'Información de la competición guardada correctamente ¿desea continuar con la cuenta bancaria?';
+    const message = this.edit ? 'Información de la competencia actualizada.' : 'Competencia registrada correctamente. ¿Deseas continuar con el registro de cuenta bancaria donde se depositará el apoyo?';
     const swalOptions: any = {
       title: message,
       icon: 'info',
@@ -290,6 +331,10 @@ export class FormConpetitionComponent {
         this.ngOnInit();
       }
     });
+    if (this.edit) {
+      this.ngOnInit();
+      this.edit = false;
+    }
   }
 
   handleErrorResponse(response: any): void {

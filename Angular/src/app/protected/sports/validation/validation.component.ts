@@ -18,7 +18,9 @@ export class ValidationComponent {
   request: Requests;
   hayError: boolean = false;
   data: any = [];
+  type_documents: any = [];
   headers = ['No.', 'Folio', 'Solicitante', 'Disciplina', 'Tipo', 'Fechas', 'Enviada', 'Estado'];
+  reason: string = '';
 
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) {
@@ -54,7 +56,7 @@ export class ValidationComponent {
       next: (request) => {
         this.request = request;
         this.data = this.request;
-        console.log(request);
+        // console.log(request);
       }, error: () => {
         this.hayError = true;
       }
@@ -114,6 +116,7 @@ export class ValidationComponent {
   motivosMessage: any = '';
   newMessage: string = '';
   lugarCorreccion: any = '';
+  documentCorreccion: any = '';
   historyMessages: any = [];
   showHistory: boolean = false;
   typeForms: any = [];
@@ -141,7 +144,7 @@ export class ValidationComponent {
     Swal.fire({
       position: 'center',
       icon: 'question',
-      title: '¿Está seguro de que desea ' + (data.status_request_id == 3 ? 'validar' : (data.status_request_id == 7 ? 'rechazar' : (data.status_request_id == 2 ? 'reactivar' : ''))) + ' esta solicitud?',
+      title: '¿Está seguro de que desea ' + (data.status_request_id == 3 ? 'marcar como revisada' : (data.status_request_id == 7 ? 'rechazar' : (data.status_request_id == 2 ? 'reactivar' : ''))) + ' esta solicitud?',
       showConfirmButton: true,
       showCancelButton: true,
       confirmButtonText: 'Si',
@@ -169,13 +172,58 @@ export class ValidationComponent {
     })
   }
 
+  declineRequest() {
+    if (this.reason == '') {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de escribir un motivo para poder rechazar la solicitud.',
+        showConfirmButton: true
+      })
+      return;
+    }
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea rechazar esta solicitud? por el motivo de: ' + this.reason,
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let data = { 'id': this.dataShow?.general?.id, 'status_request_id': 7, 'reason': this.reason };
+        this.allService.updateRequest(data).subscribe(response => {
+          if (response.code == 200) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            })
+            this.reason = '';
+            this.cerrarModal();
+            this.initTable()
+            // this.citaCreada.emit();
+          } else {
+            Swal.fire("Error", "error")
+          }
+        })
+      } else if (result.isDenied) {
+        return;
+      }
+    })
+  }
+
   getRequest(item: any) {
     this.miFormulario.patchValue({
       request_id: item.id
     });
     this.allService.getForms().subscribe({
       next: (res) => {
-        this.typeForms = res;
+        this.typeForms = res.forms;
+        this.type_documents = res.type_documents;
       }, error: (err) => {
         console.log(err);
       }
@@ -234,8 +282,7 @@ export class ValidationComponent {
         position: 'center',
         icon: 'info',
         title: 'Debes de escribir un mensaje y seleccionar un motivo para poder enviar el correo.',
-        showConfirmButton: false,
-        timer: 2000
+        showConfirmButton: true
       })
       return;
     }
@@ -244,14 +291,22 @@ export class ValidationComponent {
         position: 'center',
         icon: 'info',
         title: 'Debes de seleccionar un formulario para la corrección.',
-        showConfirmButton: false,
-        timer: 2000
+        showConfirmButton: true
+      })
+      return;
+    }
+    if (this.lugarCorreccion == 3 && this.documentCorreccion == '') {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de seleccionar un documento a corregir.',
+        showConfirmButton: true
       })
       return;
     }
 
 
-    const body = { 'message': this.newMessage, 'request_id': this.miFormulario.value.request_id, 'message_motive_id': this.motivoMessage, 'form_id': this.lugarCorreccion };
+    const body = { 'message': this.newMessage, 'request_id': this.miFormulario.value.request_id, 'message_motive_id': this.motivoMessage, 'form_id': this.lugarCorreccion, 'document_procedure_id' : this.documentCorreccion };
     this.allService.sendMessageToRequest(body).subscribe({
       next: (response) => {
         if (response.code == 200) {
@@ -264,6 +319,9 @@ export class ValidationComponent {
           })
           this.newMessage = null;
           this.motivoMessage = null;
+          this.lugarCorreccion = null;
+          this.documentCorreccion = null;
+          this.cerrarModal();
         } else {
           Swal.fire({
             position: 'center',
@@ -293,5 +351,14 @@ export class ValidationComponent {
     const month = dateObject.getMonth() + 1;
     const year = dateObject.getFullYear();
     return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+  }
+
+  limiteCaracteres: number = 50;
+  isLongText(text: string): boolean {
+    return text.length > this.limiteCaracteres;
+  }
+  // Esta función cambiará el estado del texto para mostrar o no mostrar todo el texto.
+  toggleText(documento: any) {
+    documento.mostrarTextoCompleto = !documento.mostrarTextoCompleto;
   }
 }

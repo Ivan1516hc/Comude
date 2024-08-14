@@ -1,0 +1,549 @@
+<app-sports>
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>Histórico</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/admin">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Histórico</li>
+                </ol>
+            </nav>
+        </div>
+        <section class="section dashboard">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tabla de solicitudes</h5>
+
+                    <div class="text-end">
+                        <div class="row flex justify-content-end align-items-center">
+                            <div class="col-6 col-md-4 col-lg-3" *ngIf="filter">
+                                <label for="">Fecha inicio</label>
+                                <input type="date" class="m-2 form-control" id="dateStart" [(ngModel)]="dateStart"
+                                    (ngModelChange)="search(valueFilter)">
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-3" *ngIf="filter">
+                                <label>Fecha fin</label>
+                                <input type="date" class="m-2 form-control" id="dateEnd" [(ngModel)]="dateEnd"
+                                    (ngModelChange)="search(valueFilter)">
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <input type="checkbox" id="filter" [(ngModel)]="filter"
+                                    (ngModelChange)="search(valueFilter)">
+                                <label class="m-2"><strong>Filtrar por fechas</strong></label>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-3" *ngIf="data?.data?.length > 0">
+                                <button class="btn btn-primary" (click)="export()"><i class="fa fa-download"></i>
+                                    Exportar</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="search-container">
+                        <ul class="nav nav-tabs w-100" id="myTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search(1)">Todas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#search">Buscador</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:2')">Por revisar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:3')">Pendientes a Comite</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:5')">Aceptadas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:8')">Justificadas</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#personalizada"
+                                    (click)="search('status:7')">Rechazadas</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="personalizada" role="tabpanel">
+                                <!-- Aquí puedes mostrar la tabla completa -->
+                            </div>
+                            <div class="tab-pane fade" id="search" role="tabpanel">
+                                <div class="content-section">
+                                    <div class="card xu-card">
+                                        <div class="card-body">
+                                            <input type="text" class="form-control mt-2" placeholder="Buscar..."
+                                                [(ngModel)]="searchTerm" (input)="onSearchTermChange(searchTerm)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Aquí puedes agregar más pestañas con su contenido según sea necesario -->
+                        </div>
+                    </div>
+                    <ng-container *ngIf="data?.data?.length > 0; else sinResult">
+                        <div class="table-container">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" *ngFor="let header of headers">{{header}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of data.data; index as i">
+                                        <th scope="row">{{i+1}}</th>
+                                        <th>{{item.invoice}}</th>
+                                        <td>{{item.aplicant?.name}}</td>
+                                        <td>{{item.discipline?.name}}</td>
+                                        <td>{{item.competition?.competition_type?.name}}</td>
+                                        <td>{{item.finished}}</td>
+                                        <td>${{item.competition?.approved_budget | mexicanCurrency}}</td>
+                                        <!-- <td>{{calculateAge(item.beneficiaries[0].fechanacimiento) }}</td> -->
+                                        <!-- <td>{{formatDate(item.finished) ?? null}}</td> -->
+                                        <td>
+                                            <div class="text-center"
+                                                [ngClass]=" item.status_request_id === 3 ? 'alert-warning' : item.status_request_id === 5 ? 'alert-success' :(item.status_request_id === 2 ? 'alert-primary': (item.status_request_id === 7 ? 'alert-danger': 'alert-warning'))">
+                                                {{item.status_request_id == 3 ? 'En Comite' : (item.status_request_id
+                                                == 5 ? 'Aceptado' : (item.status_request_id
+                                                == 8 ? 'Justificado' : (item.status_request_id == 2 ? 'Por revisar':
+                                                (item.status_request_id == 7 ? 'Rechazada':
+                                                (item.status_request_id
+                                                == 4 ? 'Modificando' : '')))))}}</div>
+                                        </td>
+                                        <!-- <td *ngIf="item.quotes_count != 0 && item.status_request_id == 3">
+                                       <div class="alert-success">Cita Agendada</div>
+                                    </td> -->
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                                    id="optionsDropdown_{{item.id}}" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    Opciones
+                                                </button>
+                                                <!-- Aplica la clase "striped" de manera condicional a cada elemento de menú -->
+                                                <ul class="dropdown-menu"
+                                                    [attr.aria-labelledby]="'optionsDropdown_' + item.id">
+                                                    <li>
+                                                        <button class="dropdown-item" data-bs-toggle="modal"
+                                                            data-bs-target="#dataModal"
+                                                            (click)="selectData(item.id)">Ver
+                                                            información</button>
+                                                    </li>
+                                                    <li *ngIf="item.status_request_id == 5">
+                                                        <button class="dropdown-item"
+                                                            (click)="sendMessageJustificacion(item.id)">Pedir
+                                                            justificación</button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </ng-container>
+                    <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
+                        <ul class="pagination">
+                            <li class="page-item" *ngFor="let item of data.links; let i = index">
+                                <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                                    (click)="onPageChange(item.url)" *ngIf="item.url != null">
+                                    <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
+                                    <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
+                                    <ng-container
+                                        *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
+                                        {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»'
+                                        :
+                                        item.label
+                                        }}
+                                    </ng-container>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+
+
+                    <!-- Aquí puedes mostrar un mensaje de error si no se encontraron resultados -->
+                    <ng-template #sinResult>
+                        <div class="alert alert-danger mt-5" role="alert">
+                            No se encontraron resultados
+                        </div>
+                    </ng-template>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal fade py-5" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content rounded-4 shadow">
+
+                <div class="modal-header border-bottom-0">
+                    <ul class="nav nav-tabs w-100" id="myTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab-general" data-bs-toggle="tab"
+                                href="#tabGeneral">General</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-aplicant" data-bs-toggle="tab"
+                                href="#tabAplicant">Solicitante</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-competition" data-bs-toggle="tab"
+                                href="#tabCompetition">Competencia</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-bank-account" data-bs-toggle="tab" href="#tabBankAccount">Cuenta
+                                bancaria</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-important-archievents" data-bs-toggle="tab"
+                                href="#tabImportantArchievents">Logros importantes</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab-documents" data-bs-toggle="tab"
+                                href="#tabDocuments">Documentos</a>
+                        </li>
+
+                        <li class="nav-item" *ngIf="dataShow?.documentJustification.length > 0">
+                            <a class="nav-link" id="tab-justification-documents" data-bs-toggle="tab"
+                                href="#tabJustificationDocuments">Evidencias</a>
+                        </li>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+
+                <div class="modal-body py-0 text-justify-custom">
+                    <div class="tab-content">
+                        <!-- Pestaña info General -->
+                        <div class="tab-pane fade show active" id="tabGeneral">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for General tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="invoice" class="form-label">Folio</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.invoice" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="status" class="form-label">Estatus</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.status_request.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Fecha de envió</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.finished" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Presupuesto
+                                                        solicitado</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.requested_budget | mexicanCurrency"
+                                                        disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" *ngIf="dataShow?.competition?.approved_budget">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Presupuesto
+                                                        aprobado</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.approved_budget | mexicanCurrency"
+                                                        disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12" *ngIf="dataShow?.general?.reason_decline?.id">
+                                                <div class="mb-3">
+                                                    <label for="finished" class="form-label">Motivo de
+                                                        cancelación</label>
+                                                    <textarea class="form-control"
+                                                        [value]="dataShow?.general?.reason_decline?.reason"
+                                                        disabled></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info aplicant -->
+                        <div class="tab-pane fade" id="tabAplicant">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Competition tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Nombre</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Correo</label>
+                                                    <input type="email" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.email" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="curp" class="form-label">CURP</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.curp" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="phone_number" class="form-label">Número celular</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.aplicant?.phone_number" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info competition -->
+                        <div class="tab-pane fade" id="tabCompetition">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Competition tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Nombre</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="competition_type" class="form-label">Tipo de
+                                                        competencia</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.competition_type.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="discipline" class="form-label">Disciplina</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.general?.discipline.name" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6"
+                                                *ngIf="dataShow?.competition?.competition_type_id != 1">
+                                                <div class="mb-3">
+                                                    <label for="country" class="form-label">País</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.country.common_spa" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6"
+                                                *ngIf="dataShow?.competition?.competition_type_id != 3">
+                                                <div class="mb-3">
+                                                    <label for="state" class="form-label">Estado</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.state.name" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="start_date" class="form-label">Fecha de inicio</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.start_date" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="ending_date" class="form-label">Fecha de fin</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.competition?.ending_date" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info bank account -->
+                        <div class="tab-pane fade" id="tabBankAccount">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Bank Account tab here -->
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="bank" class="form-label">Banco</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.bank" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="account_number" class="form-label">Número de
+                                                        cuenta</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.account" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="clabe" class="form-label">CLABE</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.key_account" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="beneficiary" class="form-label">Beneficiario</label>
+                                                    <input type="text" class="form-control"
+                                                        [value]="dataShow?.bankAccount?.titular_persona_name" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="text-center">
+                                            <a class="mt-3"
+                                                href="{{ baseUrl+'sports/'+dataShow?.bankAccount?.account_status_url }}" target="_blank">
+                                                <p>
+                                                    Abrir estado de cuenta
+                                                </p>
+                                                <span><i class="bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña info important archievents-->
+                        <div class="tab-pane fade" id="tabImportantArchievents">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Important Archievents tab here -->
+                                        <h6 class="card-title">Logros importantes</h6>
+                                        <div class="row">
+                                            <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                                *ngFor="let item of dataShow?.imprtantArchievements">
+
+                                                <article class="card">
+                                                    <img [src]="baseUrl+'sports/'+item.file_name"
+                                                        class="card-img-top m-1" alt="Imagen"
+                                                        style="align-self: center">
+                                                    <div class="container">
+                                                        <p><strong>Descripción:</strong></p>
+                                                        <p *ngIf="item.mostrarTextoCompleto">{{item.description}}</p>
+                                                        <p *ngIf="!item.mostrarTextoCompleto">{{item.description |
+                                                            slice:0:50}}</p>
+                                                        <!-- Mostrar solo los primeros 50 caracteres -->
+                                                        <div class="d-grid gap-1">
+                                                            <!-- Cambiamos el botón por un enlace -->
+                                                            <a href="javascript:void(0);"
+                                                                *ngIf="isLongText(item.description)"
+                                                                (click)="toggleText(item)">
+                                                                {{ item.mostrarTextoCompleto ? 'Ver menos' : 'Leer más'
+                                                                }}
+                                                            </a>
+
+                                                        </div>
+                                                    </div>
+                                                </article>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña documents -->
+                        <div class="tab-pane fade" id="tabDocuments">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Documents tab here -->
+                                        <h6 class="card-title">Documentación</h6>
+                                        <div class="row">
+                                            <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                                *ngFor="let item of dataShow?.documents">
+                                                <a class="mt-3" href="{{ baseUrl+'sports/'+item.file_name }}"
+                                                    target="_blank">
+                                                    <p>
+                                                        Abrir '{{item?.document_procedure?.name}}'
+                                                    </p>
+                                                    <span><i
+                                                            class="'bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pestaña documents -->
+                        <div class="tab-pane fade" id="tabJustificationDocuments">
+                            <div class="content-section">
+                                <div class="card xu-card">
+                                    <div class="card-body">
+                                        <!-- Add content for Documents tab here -->
+                                        <h6 class="card-title">Evidencias</h6>
+                                        <div class="row">
+                                            <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                                *ngFor="let item of dataShow?.documentJustification">
+                                                <a class="mt-3" href="{{ baseUrl+'sports/'+item.file_name }}"
+                                                    target="_blank">
+                                                    <p>
+                                                        Abrir '{{item?.justification_type?.name}}'
+                                                    </p>
+                                                    <span><i
+                                                            class="'bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                                </a>
+                                                <p>{{item?.description}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-sports>

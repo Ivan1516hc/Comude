@@ -12,6 +12,7 @@ import { DocumentsService } from '../../services/documents.service';
 })
 export class ImportantArchievementComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('myModalButton') myModalButton: ElementRef;
   selectedFileName: string | null = null;
   selectedFilePreview: string | null = null;
   urlPrincipal: string;
@@ -21,7 +22,7 @@ export class ImportantArchievementComponent {
 
   expandedItemIndex: number | null = null;
 
-  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private documentService: DocumentsService) {
+  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private documentService: DocumentsService, private elementRef: ElementRef) {
   }
 
   miFormulario: FormGroup = this.fb.group({
@@ -44,6 +45,7 @@ export class ImportantArchievementComponent {
           this.documents = response;
         } else {
           this.documents = [];
+          this.myModalButton.nativeElement.click();
         }
       }
     });
@@ -99,16 +101,37 @@ export class ImportantArchievementComponent {
     this.documentService.storeImportantArchivement(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000
-          });
-          this.miFormulario.patchValue({ file: null, description: '' });
-          this.clearFileInput();
-          this.showImportantArchivements();
+          if (this.documents.length > 0) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            });
+            this.miFormulario.patchValue({ file: null, description: '' });
+            this.clearFileInput();
+            this.showImportantArchivements();
+          } else {
+            Swal.fire({
+              position: 'center',
+              icon: 'question',
+              title: 'Se ha actualizado tu perfil, para continuar con tu solicitud, dar clic de nuevo en el botón Iniciar Solicitud.',
+              showConfirmButton: true,
+              showCancelButton: true,
+              confirmButtonText: 'Continuar',
+              cancelButtonText: `No`
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigateByUrl(this.urlPrincipal + '/dashboard');
+              } else if (result.isDenied) {
+                this.miFormulario.patchValue({ file: null, description: '' });
+                this.clearFileInput();
+                this.ngOnInit();
+                return;
+              }
+            })
+          }
         } else {
           this.handleErrorResponse(response);
         }
@@ -126,6 +149,7 @@ export class ImportantArchievementComponent {
       title: response.message,
       showConfirmButton: true
     });
+    this.myModalButton.nativeElement.click();
   }
 
   delete(id) {
@@ -139,10 +163,10 @@ export class ImportantArchievementComponent {
       cancelButtonText: `No`
     }).then((result) => {
       if (result.isConfirmed) {
-
         this.documentService.deleteImportantArchivement(id).subscribe({
           next: (response) => {
             if (response.code == 200) {
+              this.cerrarModal();
               Swal.fire({
                 position: 'center',
                 icon: 'success',
@@ -183,6 +207,11 @@ export class ImportantArchievementComponent {
     this.fileInput.nativeElement.value = null;
     this.selectedFileName = null;
     this.selectedFilePreview = null;
-  }  
+  }
+
+  cerrarModal() {
+    const botonCancel: any = this.elementRef.nativeElement.querySelector('#cancel');
+    botonCancel.click();
+  }
 
 }

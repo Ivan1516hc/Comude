@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Requests extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $fillable = [
         'invoice',
         'modality',
@@ -18,14 +18,20 @@ class Requests extends Model
         'announcement_id',
         'status_request_id',
         'competition_id',
-        'aplicant_id'
-        
+        'aplicant_id',
+        'bank_account_id',
+        'notification_received',
     ];
 
     protected $casts = [
         'created_at'  => 'date:Y-m-d',
         'updated_at' => 'datetime:Y-m-d H:00',
     ];
+
+    public function bank_account()
+    {
+        return $this->belongsTo(BankAccount::class, 'bank_account_id', 'id');
+    }
 
     public function competition()
     {
@@ -51,6 +57,12 @@ class Requests extends Model
     {
         return $this->belongsTo(Discipline::class, 'discipline_id', 'id');
     }
+
+    public function reason_decline()
+    {
+        return $this->belongsTo(CancelHistoryRequest::class, 'id', 'request_id');
+    }
+
 
     public function documents()
     {

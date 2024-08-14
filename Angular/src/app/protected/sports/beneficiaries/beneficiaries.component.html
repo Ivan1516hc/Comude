@@ -42,43 +42,52 @@
 
                   </div>
                </div>
-               <div class="table-container" *ngIf="data?.data?.length > 0">
-                  <table class="table table-striped">
-                     <thead>
-                        <tr>
-                           <th scope="col">No.</th>
-                           <th>Nombre</th>
-                           <th>Fecha de nacimiento</th>
-                           <th>CURP</th>
-                           <th>Apoyos este año</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        <tr *ngFor="let item of data.data">
-                           <th scope="row">{{item.id}}</th>
-                           <td>{{item.name}}</td>
-                           <td>{{item.birtdate}}</td>
-                           <td>{{item.curp}}</td>
-                           <td>{{item.requests_count}}</td>
-                        </tr>
-                     </tbody>
-                  </table>
-                  <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
-                     <ul class="pagination">
-                        <li class="page-item" *ngFor="let item of data.links; let i = index">
-                           <button class="page-link" [ngClass]="{'activeLink': item.active}"
-                              (click)="onPageChange(item.url)" *ngIf="item.url != null">
-                              <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
-                              <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
-                              <ng-container *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
-                                 {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' :
-                                 item.label }}
-                              </ng-container>
-                           </button>
-                        </li>
-                     </ul>
-                  </nav>
-               </div>
+               <ng-container *ngIf="data?.data?.length > 0; else sinResult">
+                  <div class="table-container">
+                     <table class="table table-striped">
+                        <thead>
+                           <tr>
+                              <th scope="col">No.</th>
+                              <th>Nombre</th>
+                              <th>Fecha de nacimiento</th>
+                              <th>CURP</th>
+                              <th>Apoyos este año</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr *ngFor="let item of data.data">
+                              <th scope="row">{{item.id}}</th>
+                              <td>{{item.name}}</td>
+                              <td>{{item.birtdate}}</td>
+                              <td>{{item.curp}}</td>
+                              <td>{{item.requests_count}}</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                     <nav aria-label="Page navigation example" *ngIf="data?.total > data?.per_page ">
+                        <ul class="pagination">
+                           <li class="page-item" *ngFor="let item of data.links; let i = index">
+                              <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                                 (click)="onPageChange(item.url)" *ngIf="item.url != null">
+                                 <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
+                                 <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
+                                 <ng-container
+                                    *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
+                                    {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»' :
+                                    item.label }}
+                                 </ng-container>
+                              </button>
+                           </li>
+                        </ul>
+                     </nav>
+                  </div>
+               </ng-container>
+               <!-- Aquí puedes mostrar un mensaje de error si no se encontraron resultados -->
+               <ng-template #sinResult>
+                  <div class="alert alert-danger mt-5" role="alert">
+                     No se encontraron resultados
+                  </div>
+               </ng-template>
             </div>
          </div>
       </section>

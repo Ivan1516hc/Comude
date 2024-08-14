@@ -2,7 +2,6 @@ export interface RequestsResponse {
     message: string;
     code: number;
     data: DataRequest;
-    hasBankAccount: boolean;
     readRegulations: boolean;
     hasImportantArchievements: boolean;
 }
@@ -31,15 +30,26 @@ export interface Datum {
     announcement_id: number;
     status_request_id: number;
     competition_id: number | null;
+    bank_account_id: number | null;
     aplicant_id: number;
     created_at: Date;
     updated_at: Date | null;
     deleted_at: Date | null;
     competition: Competition | null;
+    bank_account: BankAccount | null;
     status_request: Announcement;
     announcement: Announcement;
     discipline: Announcement;
     documents_count: number;
+    modify_forms : DataModifyForms[] | null;
+}
+
+export interface BankAccount {
+    account: string;
+    key_account: string;
+    titular_persona_name: string;
+    bank: string;
+    account_status_url: string;
 }
 
 export interface Announcement {
@@ -76,4 +86,30 @@ export interface Link {
     url: null | string;
     label: string;
     active: boolean;
+}
+
+export interface DataModifyForms {
+    id: number;
+    request_id: number;
+    form_id: number;
+    history_message_id: number;
+    status: number;
+    form: Forms | null;
+    document_modify: DocumentModify[] | null;
+    created_at: Date;
+    updated_at: Date | null;
+}
+
+export interface Forms{
+    id : number;
+    name: string;
+}
+
+export interface DocumentModify{
+    id: number;
+    modify_form_id: number;
+    document_id: number;
+    created_at: Date;
+    updated_at: Date | null;
+    document_procedure: Forms[];
 }

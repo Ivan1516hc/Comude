@@ -28,7 +28,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','logout', 'register', 'validateUserVisitor', 'validateUserAdmin','loginAdmin']]);
+        $this->middleware('auth:api', ['except' => ['login', 'logout', 'register', 'validateUserVisitor', 'validateUserAdmin', 'loginAdmin']]);
     }
 
     /**
@@ -73,7 +73,6 @@ class AuthController extends Controller
 
         return response()->json(compact('ok', 'token', 'query', 'id', 'name', 'email'));
     }
-
 
     public function loginAdmin(Request $request)
     {
@@ -132,9 +131,23 @@ class AuthController extends Controller
             return response()->json($response);
         }
 
+        // Obtener fecha de nacimiento y género a partir de la CURP
+        $curp = $request->curp;
+        $year = substr($curp, 4, 2); // Año de nacimiento
+        $month = substr($curp, 6, 2); // Mes de nacimiento
+        $day = substr($curp, 8, 2); // Día de nacimiento
+        $genderChar = substr($curp, 10, 1); // Género
+        // Formato de fecha de nacimiento: 19XX o 20XX basado en los primeros dos dígitos del año
+        $century = $year >= '00' && $year <= '23' ? '20' : '19';
+        $birthdate = $century . $year . '-' . $month . '-' . $day;
+
         $user = Aplicant::create(array_merge(
             $validator->validated(),
-            ['password' => $request->password]
+            [
+                'password' => $request->password,
+                'birtdate' => $birthdate, // Guardar la fecha de nacimiento
+                'gender' => $genderChar, // Guardar el género
+            ]
         ));
 
         $user->verification_token = rand(10000, 99999); // Generar un número aleatorio de 5 dígitos
@@ -149,10 +162,10 @@ class AuthController extends Controller
         // Enviar el correo electrónico utilizando la vista personalizada
         Mail::send('emails.verify', [
             'curp' => $curp,
-            'number' => $number
+            'number' => $number,
         ], function (Message $message) use ($email) {
             $message->to($email)
-                ->subject('Correo de Verificación');
+                ->subject('Portal de Becas - Correo de Verificación');
         });
         // Mail::to($user->email)->send(new VerificationEmail($verificationUrl)); // Enviar correo
 
@@ -178,6 +191,10 @@ class AuthController extends Controller
      */
     public function logout()
     {
+        if (auth()->guard('user')->check()) {
+            auth()->guard('user')->logout();
+            return response()->json(['message' => 'User successfully signed out']);
+        }
         auth()->guard('aplicant')->logout();
         return response()->json(['message' => 'User successfully signed out']);
     }

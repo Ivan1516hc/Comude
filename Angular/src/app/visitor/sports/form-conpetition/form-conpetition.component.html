@@ -11,12 +11,12 @@
         <div class="row">
             <div class="col-10 offset-1 content-center">
                 <div class="pagetitle">
-                    <h1>Competición
+                    <h1>Competencia
                     </h1>
                     <nav>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a routerLink="/solicitante/dashboard">Inicio</a></li>
-                            <li class="breadcrumb-item active">Competición</li>
+                            <li class="breadcrumb-item active">Competencia</li>
                         </ol>
                     </nav>
                 </div>
@@ -41,7 +41,7 @@
                                             <i class="bi bi-info-circle-fill me-2"></i>
                                             <div>
                                                 <strong>¡Atención!</strong> La información proporcionada es
-                                                exclusivamente del evento/competición para la cual se pide el apoyo.
+                                                exclusivamente del evento/competencia para la cual se pide el apoyo.
                                             </div>
                                         </div>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
@@ -50,16 +50,16 @@
                                 </div>
 
                                 <div
-                                    *ngIf="!edit && onlySee && (request?.status_request_id == 1 || request?.status_request_id == 4)">
+                                    *ngIf="!edit && onlySee && (request?.status_request_id == 1 || (request?.status_request_id == 4 && modify.length > 0))">
                                     <div class="alert alert-primary alert-dismissible fade show d-flex align-items-center "
                                         role="alert">
                                         <div>
-                                            <strong>¡Importante!</strong> ¿Quieres actualizar la información
+                                            <strong>¡Importante!</strong> ¿Quieres editar la información
                                             de la competencia?
                                         </div>
                                         <button type="button" class="btn btn-sm btn-primary" style="margin-left: 5px;"
                                             (click)="loadingUpdate()">
-                                            <i class="bi bi-pencil"></i> Actualizar
+                                            <i class="bi bi-pencil"></i> Editar
                                         </button>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                             aria-label="Cerrar"></button>
@@ -67,11 +67,11 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <h5 class="card-title">Formulario de competición</h5>
+                                    <h5 class="card-title">Formulario de competencia</h5>
                                     <form class="row g-3" [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
 
                                         <div class="col-12 col-lg-8">
-                                            <label class="form-label required">Nombre de evento/competición</label>
+                                            <label class="form-label required">Nombre de evento/competencia</label>
                                             <input type="text" class="form-control" formControlName="name">
                                             <span class="form-text text-danger form"
                                                 *ngIf="miFormulario.controls['name'].errors && miFormulario.controls['name'].touched">
@@ -80,7 +80,7 @@
                                         </div>
 
                                         <div class="col-12 col-md-6 col-lg-4">
-                                            <label class="form-label required">Tipo de competición</label>
+                                            <label class="form-label required">Tipo de competencia</label>
                                             <select class="form-control" formControlName="competition_type_id">
                                                 <option value="">-Seleccionar-</option>
                                                 <option *ngFor="let item of catalog?.conpetition_types"
@@ -149,7 +149,8 @@
                                                 </button>
                                                 <span id="alert" role="alert" class="alert-info m-1"
                                                     style="display: none;">
-                                                    Si el evento al qué asistirás con la beca, es clasificatorio o sirve para integrar alguna selección. Señala para qué evento.
+                                                    Si el evento al que asistirás con la beca, es clasificatorio o sirve
+                                                    para integrar alguna selección. Señala para qué evento.
                                                 </span>
                                             </label>
                                             <input type="text" class="form-control" formControlName="classify">
@@ -175,7 +176,7 @@
 
 
                                         <div class="col-12">
-                                            <label class="form-label required">Justificación (redacción clara y consisa
+                                            <label class="form-label required">Justificación (redacción clara y concisa
                                                 de los motivos para ser beneficiario de esta beca)</label>
                                             <textarea type="text" class="form-control"
                                                 formControlName="justification"></textarea>
@@ -187,7 +188,9 @@
 
 
                                         <div class="text-center" *ngIf="!onlySee">
-                                            <button type="submit" class="btn btn-primary"
+                                            <button *ngIf="edit" type="button" class="btn btn-danger" (click)="ngOnInit()">Cancelar</button>
+                                            
+                                            <button type="submit" class="btn"
                                                 [ngClass]="newData ? 'btn-success' :  'btn-primary' ">{{newData ?
                                                 'Guardar' : 'Actualizar' }}</button>
                                         </div>

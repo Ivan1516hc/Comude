@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { DataRequest, Datum } from '../interfaces/request-aplicant';
+import { DataRequest, Datum, RequestsResponse } from '../interfaces/request-aplicant';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequestsService } from '../services/requests.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,13 +13,12 @@ import { RequestsService } from '../services/requests.service';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private router: Router, private fb: FormBuilder, private requestService: RequestsService) {
+  constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private requestService: RequestsService) {
   }
   catalog: any;
   requests: DataRequest;
   readRegulation: boolean = false;
   competition: number;
-  hasBankAccount: boolean = false;
   hasImportantArchievements: boolean = false;
   currentUrl = window.location.pathname;
 
@@ -48,7 +48,6 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.code == 200 || response.code == 404) {
           this.requests = response.data ?? null;
-          this.hasBankAccount = response.hasBankAccount ?? null;
           this.readRegulation = response.readRegulations ?? false;
           this.hasImportantArchievements = response.hasImportantArchievements ?? false;
         } else {
@@ -69,7 +68,7 @@ export class DashboardComponent implements OnInit {
     Swal.fire({
       position: 'center',
       icon: 'info',
-      title: 'Necesitas registrar al menos un logro deportivo importante ¿desea registrar un logro?',
+      title: 'Haz leído el Reglamento, deberás actualizar la información de tu perfil y registrar al menos un logro deportivo para poder continuar.  ¿Deseas continuar con tu solicitud?',
       showConfirmButton: true,
       showCancelButton: true,
       confirmButtonText: 'Continuar',
@@ -160,6 +159,7 @@ export class DashboardComponent implements OnInit {
             timer: 2000
           })
           this.readRegulation = true;
+          this.needImportantArchievement();
         } else {
           Swal.fire({
             position: 'center',
@@ -174,28 +174,81 @@ export class DashboardComponent implements OnInit {
   }
 
   updateStatus(id, status_request_id) {
+    this.requestService.changeStatusRequest({ 'request_id': id, 'status_request_id': status_request_id }).subscribe({
+      next: (response) => {
+        if (response.code == 200) {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: response.message,
+            showConfirmButton: true
+          })
 
+          this.ngOnInit();
+        } else {
+          Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: response.message,
+            showConfirmButton: false,
+            timer: 2000
+          })
+        }
+      }, error: (err) => {
+        console.log(err);
+      }
+    });
   }
 
   continuar(request: Datum): any {
+    // console.log(request)
     if (request.finished) {
       return
     }
-    if (!request.competition) {
-      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/competicion';
-      return this.router.navigateByUrl(relativeUrl);
+    if (!request.competition || request.competition_id == null) {
+      return this.routes(1, request.id)
     }
-    if (!this.hasBankAccount) {
-      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/cuenta-bancaria';
-      return this.router.navigateByUrl(relativeUrl);
+    if (!request.bank_account || request.bank_account_id == null) {
+      return this.routes(2, request.id)
     }
     if (request.documents_count < 6) {
-      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/documentacion';
-      return this.router.navigateByUrl(relativeUrl);
+      return this.routes(3, request.id)
     }
     if (request.status_request_id == 1) {
-      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request.id + '/reglamento';
+      return this.routes(7, request.id)
+    }
+    alert('No se puede continuar con la solicitud')
+  }
+
+  redirectTo(data, request_id) {
+    this.routes(data.form.id, request_id)
+  }
+
+  routes(form, request_id): any {
+    if (form == 1) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request_id + '/competicion';
       return this.router.navigateByUrl(relativeUrl);
     }
+    if (form == 2) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request_id + '/cuenta-bancaria';
+      return this.router.navigateByUrl(relativeUrl);
+    }
+    if (form == 3) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request_id + '/documentacion';
+      return this.router.navigateByUrl(relativeUrl);
+    }
+    if (form == 7) {
+      const relativeUrl = this.currentUrl.substring(0, this.currentUrl.lastIndexOf('/')) + '/solicitante/beca-deportiva/' + request_id + '/reglamento';
+      return this.router.navigateByUrl(relativeUrl);
+    }
+  }
+
+  onPageChange(url:string) {
+    const res = this.http.get<RequestsResponse>(url);
+    res.subscribe({
+      next: (response) => {
+        this.requests = response.data  ?? null;
+      }
+    })
   }
 }

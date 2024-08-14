@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Exports;
 
 use App\Exports\ComiteExport;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendEmailBudgetJob;
 use App\Models\Competition;
 use App\Models\Requests;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ComiteController extends Controller
@@ -34,15 +37,33 @@ class ComiteController extends Controller
                 'status_request:id,name',
                 'announcement',
                 'aplicant' => function ($query) {
-                    $query->withCount(['requests' => function ($query) {
-                        $query->where('status_request_id', 5)->whereYear('finished', date('Y'));
-                    }]);
+                    $query->withCount([
+                        'requests as accepted_requests_count' => function ($query) {
+                            $query->where('status_request_id', 5)->whereYear('finished', date('Y'));
+                        },
+                        'requests as other_requests_count' => function ($query) {
+                            $query->where('status_request_id', '<>', 1)
+                                ->where('status_request_id', '<>', 6)
+                                ->whereYear('finished', date('Y'));
+                        }
+                    ]);
                 }
             ])
             ->where('status_request_id', 3)
             ->limit(1000)
             ->orderBy('id', 'desc')
             ->get();
+
+        $requests->each(function ($request) {
+            $approvedBudgetSum = $request->aplicant->requests()
+                ->where('status_request_id', 5)
+                ->with('competition')
+                ->get()
+                ->sum(function ($request) {
+                    return $request->competition->approved_budget;
+                });
+            $request->aplicant->approved_budget_sum = $approvedBudgetSum;
+        });
 
         // if ($requests->isEmpty()) {
         //     return response()->json(['message' => 'No hay solicitudes pendientes en el rango de fechas seleccionado.', 'status' => 404], 404);
@@ -73,8 +94,29 @@ class ComiteController extends Controller
 
         $competition->approved_budget = $request->approved_budget;
         $requests->status_request_id = 5;
+        if ($competition->ending_date) {
+            // Añadir 30 días a la última fecha
+            $sendDate = date('Y-m-d', strtotime($competition->ending_date . ' +30 days'));
+        } else {
+            // Manejar el caso en el que no se pudo obtener la última fecha
+            $sendDate = null; // O algún valor por defecto que desees asignar
+        }
+        $requests->notification_received = 1;
         $requests->save();
         $competition->save();
+
+        Mail::send('emails.allocated-budget', [
+            'name' => $requests->aplicant->name,
+            'invoice' => $request->invoice,
+            'amount' => $competition->approved_budget,
+            'dates' => $competition->start_date . ' a ' . $competition->ending_date,
+            'send_date' => $sendDate,
+            'competition' => $competition,
+        ], function (Message $message) use ($requests) {
+            $message->to($requests->aplicant->email)
+                ->subject('Felicidades, tu solicitud de beca deportiva ha sido aprobada');
+        });
+
 
         return response()->json(['message' => 'Presupuesto aprobado registrado correctamente para la solicitud ' . $requests->invoice . '', 'code' => 200]);
     }
@@ -89,14 +131,14 @@ class ComiteController extends Controller
         $valores = $request->all();
         $datos_actualizados = [];
         foreach ($valores as $key => $registro) {
-            if ($registro['confirmed'] == true) {
+            if ($registro['confirmed'] == true && $registro['monto_aprobado'] != null && $registro['monto_aprobado'] > 0) {
                 $competition = Competition::whereHas('request', function ($query) use ($registro) {
-                    $query->where('invoice', $registro['folio']);
+                    $query->where('invoice', $registro['folio_de_solicitud']);
                 })->first();
-                $requests = Requests::where('invoice', $registro['folio'])->first();
+                $requests = Requests::where('invoice', $registro['folio_de_solicitud'])->first();
 
                 if (!$competition || !$requests || $competition->approved_budget != null || $requests->status_request_id == 1) {
-                    $errorMessage = 'Datos inválidos, error en el folio ' . $registro['folio'] . '.';
+                    $errorMessage = 'Datos inválidos, error en el folio ' . $registro['folio_de_solicitud'] . '.';
                     if (!$requests) {
                         $errorMessage .= ' No se encuentra una solicitud con ese folio.';
                     } else if ($competition->approved_budget != null) {
@@ -110,23 +152,42 @@ class ComiteController extends Controller
                     }
                     // Reindexar el arreglo después de eliminar el elemento
                     $valores = array_values($valores);
+
                     return response()->json(['message' => $errorMessage, 'code' => 400, 'datos_actualizados' => $datos_actualizados, 'valores' => $valores]);
                 }
-
                 $competition->approved_budget = $registro['monto_aprobado'];
                 $requests->status_request_id = 5;
                 $requests->save();
                 $competition->save();
+                // Dividir la cadena por " a " para obtener las fechas individuales
+                $fechas = explode(" a ", $registro['fecha_de_competencia']);
+                // Obtener la última fecha (segundo elemento del array)
+                $ultimaFecha = end($fechas); // Esto obtiene el último elemento del array
+                // Asegurarse de que $ultimaFecha contiene la fecha esperada
+                if ($ultimaFecha) {
+                    // Añadir 30 días a la última fecha
+                    $sendDate = date('Y-m-d', strtotime($ultimaFecha . ' +30 days'));
+                } else {
+                    // Manejar el caso en el que no se pudo obtener la última fecha
+                    $sendDate = null; // O algún valor por defecto que desees asignar
+                }
 
                 $datos_actualizados[] = [
-                    'folio' => $registro['folio'],
-                    'monto_aprobado' => $registro['monto_aprobado']
+                    'folio' => $registro['folio_de_solicitud'],
+                    'monto_aprobado' => $registro['monto_aprobado'],
+                    'name' => $registro['nombre(s)'] . ' ' . $registro['apellido_paterno'] . ' ' . $registro['apellido_materno'],
+                    'email' => $registro['correo'],
+                    'dates' => $registro['fecha_de_competencia'],
+                    'send_date' => $sendDate,
+                    'competition' => $competition,
                 ];
                 unset($valores[$key]);
             }
         }
         // Reindexar el arreglo después de eliminar el elemento
         $valores = array_values($valores);
+
+        dispatch(new SendEmailBudgetJob($datos_actualizados));
 
         return response()->json(['message' => 'Importación exitosa', 'code' => 200, 'datos_actualizados' => $datos_actualizados, 'valores' => $valores], 200);
     }

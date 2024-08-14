@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Mails;
 
 use App\Http\Controllers\Controller;
+use App\Models\DocumentModify;
+use App\Models\DocumentProcedure;
 use App\Models\Form;
 use App\Models\HistoryMessage;
 use App\Models\Log;
@@ -60,24 +62,27 @@ class MessageRequestController extends Controller
 
             $request = Requests::find($body['request_id']);
             $motivo = MessageMotive::find($body['message_motive_id']);
+            $form = Form::find($body['form_id']);
             $email = $request->aplicant->email;
 
-            Mail::send('emails.message-request', [
-                'name' => $request->aplicant->name,
-                'request' => $request,
-                'text' => $body['message'],
-                'motivo' => $motivo
-            ], function (Message $message) use ($email) {
-                $message->to($email)
-                    ->subject('COMUDE Zapopan');
-            });
+            if ($body['message_motive_id'] != 4) {
+                Mail::send('emails.message-request', [
+                    'name' => $request->aplicant->name,
+                    'request' => $request,
+                    'text' => $body['message'],
+                    'motivo' => $motivo
+                ], function (Message $message) use ($email) {
+                    $message->to($email)
+                        ->subject('COMUDE Zapopan');
+                });
+            }
 
-            // $history = HistoryMessage::create([
-            //     'text' => $body['message'],
-            //     'message_motive_id' => $body['message_motive_id'],
-            //     'user_id' => $user->id,
-            //     'request_id' => $body['request_id'],
-            // ]);
+            $history = HistoryMessage::create([
+                'text' => $body['message'],
+                'message_motive_id' => $body['message_motive_id'],
+                'user_id' => $user->id,
+                'request_id' => $body['request_id'],
+            ]);
 
             // Log::create([
             //     'user_id' => auth()->id(), // o null si el usuario no está autenticado
@@ -90,15 +95,35 @@ class MessageRequestController extends Controller
             // ]);
 
             if ($body['message_motive_id'] == 4) {
-                // ModifyForm::create([
-                //     'request_id' => $request->id,
-                //     'form_id' => $body['form_id'],
-                //     'history_message_id' => $history->id,
-                // ]);
+                $modifyForm = ModifyForm::create([
+                    'request_id' => $request->id,
+                    'form_id' => $body['form_id'],
+                    'motive' => $body['message'],
+                    'history_message_id' => $history->id,
+                ])->id;
+
+                if ($body['form_id'] == 3) {
+                    DocumentModify::create([
+                        'modify_form_id' => $modifyForm,
+                        'document_procedure_id' => $body['document_procedure_id']
+                    ]);
+                }
 
                 $request->update([
                     'status_request_id' => 4
                 ]);
+
+                Mail::send('emails.modify-form', [
+                    'name' => $request->aplicant->name,
+                    'invoice' => $request->invoice,
+                    'form' => $form->name,
+                    'document'  => $form->id == 3 ? DocumentProcedure::find($body['document_procedure_id'])->name : null,
+                    'text' => $body['message'],
+                    'competition' => $request->competition
+                ], function (Message $message) use ($email) {
+                    $message->to($email)
+                        ->subject('COMUDE Zapopan');
+                });
             }
 
             DB::commit();
@@ -197,7 +222,8 @@ class MessageRequestController extends Controller
     public function typeForm()
     {
         $query = Form::all();
+        $document = DocumentProcedure::all();
 
-        return response()->json($query);
+        return response()->json(['forms' => $query, 'type_documents' => $document]);
     }
 }

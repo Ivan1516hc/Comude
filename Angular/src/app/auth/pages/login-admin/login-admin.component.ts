@@ -21,6 +21,10 @@ export class LoginAdminComponent {
   }
 
   login() {
+    if (this.miFormulario.invalid) {
+      this.miFormulario.markAllAsTouched();
+      return;
+    }
     const { email, password } = this.miFormulario.value;
     this.authService.loginAdmin(email, password).
       subscribe(response => {
@@ -42,5 +46,11 @@ export class LoginAdminComponent {
           })
         }
       })
+  }
+
+  isPasswordVisible = false;
+
+  togglePasswordVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
   }
 }

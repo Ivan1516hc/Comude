@@ -87,8 +87,7 @@ export class FormNoticePrivacyComponent {
   }
 
   handleSuccessResponse(): void {
-    const message = 'Solicitud enviada correctamente, los administradores del trámite revisarán tu solicitud. Las actualizaciones importantes del estado de la solicitud llegarán al correo registrado.';
-    // Muestra el modal y redirige después de cerrar
+    const message = 'Solicitud enviada correctamente. El Comité de Becas revisará tu solicitud y enviará, de ser necesario, correcciones o comentarios al correo que proporcionaste.';
     // Muestra el modal y redirige después de cerrar
     Swal.fire({
       position: 'center',

@@ -17,7 +17,14 @@ export class RegisterComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
     password_confirmation: ['', [Validators.required, Validators.minLength(6)]]
   });
-  
+  isPasswordVisible = false;
+  togglePasswordVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
+  isPasswordVisible2 = false;
+  togglePasswordVisibility2() {
+    this.isPasswordVisible2 = !this.isPasswordVisible2;
+  }
 
   constructor(private fb: FormBuilder,
     private router: Router, private authService: AuthService) { }
@@ -29,15 +36,15 @@ export class RegisterComponent {
     let data = this.miFormulario.value;
     this.authService.register(data).subscribe({
       next: (response) => {
-        if(response.code == 200){
+        if (response.code == 200) {
           Swal.fire({
             position: 'center',
             icon: 'success',
             title: response.message,
             showConfirmButton: true
           })
-          this.router.navigateByUrl('/auth/verificar/'+data.email)
-        } else if(response.code == 409){
+          this.router.navigateByUrl('/auth/verificar/' + data.email)
+        } else if (response.code == 409) {
           Swal.fire({
             position: 'center',
             icon: 'error',
@@ -45,7 +52,7 @@ export class RegisterComponent {
             showConfirmButton: true
           })
         }
-      }, error: (error)=>{
+      }, error: (error) => {
         Swal.fire("Error", "error");
       }
     });

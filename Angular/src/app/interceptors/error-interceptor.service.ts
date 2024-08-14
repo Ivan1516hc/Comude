@@ -17,7 +17,7 @@ export class ErrorInterceptorService implements HttpInterceptor {
          return;
         }
         this._loading.setLoading(false, req.url);
-        this.router.navigate(['/auth/login']);
+        // this.router.navigate(['/auth/login']);
       }
     }));
   }

@@ -25,6 +25,11 @@ class ModifyForm extends Model
         return $this->hasOne('App\Models\Form', 'id', 'form_id');
     }
 
+    public function document_modify()
+    {
+        return $this->hasMany('App\Models\DocumentModify', 'modify_form_id', 'id');
+    }
+
     public function history_message()
     {
         return $this->hasOne('App\Models\HistoryMenssage', 'id', 'history_message_id');

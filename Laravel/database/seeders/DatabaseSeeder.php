@@ -172,6 +172,9 @@ class DatabaseSeeder extends Seeder
         StatusRequest::create([
             'name'  => 'RECHAZADA'
         ]);
+        StatusRequest::create([
+            'name'  => 'JUSTIFICADAS'
+        ]);
 
 
         //Roles de usuario
@@ -299,7 +302,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Form::create([
-            'name' => 'Competición',
+            'name' => 'Competencia',
             'procedure_id' => 1,
             'description' => 'Test',
             'url' => '/competicion'

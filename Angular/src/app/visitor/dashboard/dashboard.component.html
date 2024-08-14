@@ -5,23 +5,44 @@
                 <div class="container">
                     <h2>Mis solicitudes</h2>
                     <hr>
+                    <div class="mt-4 mb-3">
+                    <span class="alert alert-danger d-flex" *ngIf="requests?.data?.length < 1"><b>Para dar inicio a tu primer solicitud y completar tu registro en plataforma dar clic al botón INICIAR SOLICITUD</b>.</span>
+                    </div>
+                    <nav aria-label="Page navigation example" *ngIf="requests?.total > requests?.per_page ">
+                        <ul class="pagination">
+                            <li class="page-item" *ngFor="let item of requests.links; let i = index">
+                                <button class="page-link" [ngClass]="{'activeLink': item.active}"
+                                    (click)="onPageChange(item.url)" *ngIf="item.url != null">
+                                    <ng-container *ngIf="item.label === '&laquo; Previous'">«</ng-container>
+                                    <ng-container *ngIf="item.label === 'Next &raquo;'">»</ng-container>
+                                    <ng-container
+                                        *ngIf="item.label !== '&laquo; Previous' && item.label !== 'Next &raquo;'">
+                                        {{ item.label.includes('Previous') ? '«' : item.label.includes('Next') ? '»'
+                                        :
+                                        item.label
+                                        }}
+                                    </ng-container>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-4 mt-2">
                             <div class="card card-start">
                                 <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#exampleModal"
                                     data-bs-whatever="@getbootstrap"
                                     *ngIf="readRegulation == true && hasImportantArchievements == true">
-                                    <span>Iniciar solicitud</span>
+                                    <span class="btn btn-card btn-primary" style="color: aliceblue;">Iniciar solicitud</span>
                                 </article>
 
                                 <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#privacyModal"
                                     data-bs-whatever="@getbootstrap" *ngIf="readRegulation == false">
-                                    <span>Iniciar solicitud</span>
+                                    <span class="btn btn-card btn-primary" style="color: aliceblue;">Iniciar solicitud</span>
                                 </article>
 
                                 <article class="drop-zone" (click)="needImportantArchievement()"
                                     *ngIf="hasImportantArchievements == false && readRegulation">
-                                    <span>Iniciar solicitud</span>
+                                    <span class="btn btn-card btn-primary" style="color: aliceblue;">Iniciar solicitud</span>
                                 </article>
                             </div>
                         </div>
@@ -29,61 +50,78 @@
                         <ng-container *ngIf="requests">
                             <div class="col-12 col-md-6 col-lg-4 mt-2" *ngFor="let item of requests.data">
                                 <article class="card">
-                                    <img src="assets/img/logo_comude.png" class="card-img-top" alt="Imagen"
+                                    <img src="assets/img/title_card.png" class="card-img-top" alt="Imagen"
                                         style="align-self: center">
-                                    <div class="container text-card">
-                                        <h1 class="text-center" *ngIf="!item.invoice;else folio"><strong>Solicitud
-                                                No.{{item.id}}</strong></h1>
-                                        <ng-template #folio>
-                                            <h1 class="text-center"><strong>Solicitud folio {{item.invoice}}</strong>
-                                            </h1>
-                                        </ng-template>
+                                    <div class="text-card">
+                                        <div class="m-2">
+                                            <h1 class="text-center mt-2" *ngIf="!item.invoice;else folio">
+                                                <strong>Solicitud
+                                                    No.{{item.id}}</strong></h1>
+                                            <ng-template #folio>
+                                                <h1 class="text-center"><strong>Solicitud folio
+                                                        {{item.invoice}}</strong>
+                                                </h1>
+                                            </ng-template>
 
-                                        <h2 class="text-center" *ngIf="item.finished"><strong>Fecha
-                                                {{item.finished}}</strong></h2>
-                                        <p *ngIf="item?.discipline"><strong>Disciplina:</strong>
-                                            {{item.discipline.name}}</p>
-                                        <p *ngIf="item?.competition"><strong>Competencia:</strong>
-                                            {{item.competition.name}}</p>
-                                        <p *ngIf="item?.competition?.country"><strong>Lugar:</strong>
-                                            {{item.competition?.state?.name ? item.competition.state.name+',':''}}
-                                            {{item.competition.country.common_spa}}</p>
-                                        <p *ngIf="item?.competition?.competition_type"><strong>Tipo de
-                                                competencia:</strong> {{item.competition.competition_type.name}}</p>
-                                        <p *ngIf="item?.competition?.start_date"><strong>Fechas de competición:</strong>
-                                            {{item?.competition?.start_date}} a {{item?.competition?.ending_date}}</p>
-                                        <p *ngIf="item?.competition?.requested_budget"><strong>Presupuesto
-                                                solicitado:</strong> <span class="badge bg-warning text-dark">$
-                                                {{item.competition.requested_budget | mexicanCurrency}}</span>
-                                        </p>
-                                        <p *ngIf="item?.competition?.approved_budget"><strong>Presupuesto
-                                                aprovado:</strong> <span class="badge bg-info  text-dark">$
-                                                {{item.competition.approved_budget | mexicanCurrency}}</span>
-                                        </p>
-                                        <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 2 ? 'alert-primary': (item.status_request.id == 3 ? 'alert-warning' : (item.status_request.id == 6 ? 'alert-danger' : (item.status_request.id == 5 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-danger' : 'alert-primary')))))"
-                                            class="alert text-center mt-2" role="alert">Solicitud
-                                            {{item.status_request.name}}</p>
-                                        <div class="d-grid gap-1">
-                                            <ng-container *ngIf="item.status_request_id === 1">
-                                                <button type="button" class="btn-lg btn btn-warning mt-2"
-                                                    (click)="continuar(item)">Continuar</button>
-                                            </ng-container>
-                                            <ng-container
-                                                *ngIf="item.status_request_id != 1 && (item.competition && hasBankAccount && item.documents_count >= 6)">
-                                                <button type="button" class="btn-lg btn btn-info mt-2"
-                                                    [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/competicion'">Ver</button>
-                                            </ng-container>
-                                            <ng-container
-                                                *ngIf="item.status_request_id == 5 && isCompetitionOver(item.competition.ending_date)">
-                                                <button type="button" class="btn-lg btn btn-primary mt-2"
-                                                    [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/evidencias'">Enviar
-                                                    evidencias</button>
-                                            </ng-container>
-                                            <ng-container *ngIf="item.status_request_id == 1">
-                                                <button type="button" class="btn-lg btn btn-danger mt-2"
-                                                    (click)="updateStatus(item,6)">Cancelar</button>
-                                            </ng-container>
+                                            <h2 class="text-center" *ngIf="item.finished"><strong>Fecha
+                                                    {{item.finished}}</strong></h2>
+                                            <p *ngIf="item?.discipline"><strong>Disciplina:</strong>
+                                                {{item.discipline.name}}</p>
+                                            <p *ngIf="item?.competition"><strong>Competencia:</strong>
+                                                {{item.competition.name}}</p>
+                                            <p *ngIf="item?.competition?.country"><strong>Lugar:</strong>
+                                                {{item.competition?.state?.name ? item.competition.state.name+',':''}}
+                                                {{item.competition.country.common_spa}}</p>
+                                            <p *ngIf="item?.competition?.competition_type"><strong>Tipo de
+                                                    competencia:</strong> {{item.competition.competition_type.name}}</p>
+                                            <p *ngIf="item?.competition?.start_date"><strong>Fechas de
+                                                    competencia:</strong>
+                                                {{item?.competition?.start_date}} a {{item?.competition?.ending_date}}
+                                            </p>
+                                            <p *ngIf="item?.competition?.requested_budget"><strong>Presupuesto
+                                                    solicitado:</strong> <span class="badge bg-warning text-dark">$
+                                                    {{item.competition.requested_budget | mexicanCurrency}}</span>
+                                            </p>
+                                            <p *ngIf="item?.competition?.approved_budget"><strong>Presupuesto
+                                                    aprovado:</strong> <span class="badge bg-info  text-dark">$
+                                                    {{item.competition.approved_budget | mexicanCurrency}}</span>
+                                            </p>
+                                            <p [ngClass]="item.status_request.id == 1 ? 'alert-secondary':(item.status_request.id == 2 ? 'alert-primary': (item.status_request.id == 3 ? 'alert-warning' : (item.status_request.id == 6 ? 'alert-danger' : (item.status_request.id == 5 ? 'alert-success' : (item.status_request.id == 7 ? 'alert-danger' : 'alert-primary')))))"
+                                                class="alert text-center mt-2 mb-2" role="alert">Solicitud
+                                                {{item.status_request.name}}</p>
                                         </div>
+                                    </div>
+
+                                    <div class="d-grid gap-1" style="justify-items: center;">
+                                        <ng-container *ngIf="item.status_request_id === 1">
+                                            <button type="button" class="btn-card  btn btn-warning mt-2"
+                                                (click)="continuar(item)">Continuar</button>
+                                        </ng-container>
+                                        <ng-container
+                                            *ngIf="item.status_request_id != 1 && (item.competition && item.bank_account && item.documents_count >= 6)">
+                                            <button type="button" class="btn-card btn btn-info mt-2"
+                                                [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/competicion'">Ver</button>
+                                        </ng-container>
+                                        <ng-container
+                                            *ngIf="(item.status_request_id == 5 || item.status_request_id == 8) && isCompetitionOver(item.competition.ending_date)">
+                                            <button type="button" class="btn-card  btn btn-primary mt-2"
+                                                [routerLink]="'/solicitante/beca-deportiva/' + item?.id + '/evidencias'">
+                                                {{item.status_request_id == 5 ?'Enviar evidencias':'Ver evidencias'}}</button>
+                                        </ng-container>
+                                        <ng-container *ngIf="item.status_request_id == 1">
+                                            <button type="button" class="btn-card btn btn-danger mt-2"
+                                                (click)="updateStatus(item.id,6)">Cancelar</button>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="item.status_request_id == 4">
+                                            <span>Modificaciones pendientes:</span>
+                                            <button type="button" class="btn-card btn btn-warning"
+                                                *ngFor="let modify of item.modify_forms"
+                                                (click)="redirectTo(modify, item.id)">
+                                                {{modify.form.name}}
+                                                {{modify.document_modify[0]?.document_procedure[0]?.name ?? ''}}
+                                            </button>
+                                        </ng-container>
                                     </div>
                                 </article>
                             </div>
@@ -111,6 +149,7 @@
                             <option value="">-Seleccionar-</option>
                             <option value="CONVENCIONAL">CONVENCIONAL</option>
                             <option value="PARAACLETA">PARATLETA</option>
+                            <option value="GUÍA">GUÍA</option>
                         </select>
                     </div>
                     <div class="m-5">

@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-12 col-md-6 col-lg-4 mt-2">
             <div class="card card-start">
-                <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                <article class="drop-zone" data-bs-toggle="modal" data-bs-target="#exampleModal" #myModalButton
                     data-bs-whatever="@getbootstrap">
                     <span>Registrar logro</span>
                 </article>
@@ -47,7 +47,7 @@
                             <label for="fileInput" class="form-label">Subir evidencia del logro:</label>
                             <div class="drop-zone-new" (dragover)="onDragOver($event)" (drop)="onDrop($event)"
                                 (click)="fileInput.click()">
-                                <input #fileInput type="file" class="visually-hidden" accept=".pdf, .jpg, .jpeg, .png"
+                                <input #fileInput type="file" class="visually-hidden" accept=".jpg, .jpeg, .png"
                                     (change)="onFileSelected($event)" (drop)="onFileSelected($event)">
                                 <div class="preview-container" *ngIf="selectedFileName">
                                     <img [src]="selectedFilePreview" alt="Archivo seleccionado" class="preview-image">
@@ -57,11 +57,10 @@
                                     <span>Arrastra o selecciona un archivo</span>
                                 </div>
                             </div>
-                            <small class="form-text text-muted">Formatos permitidos: jpg, jpeg,
-                                png.</small><br>
-                            <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o 1024 KB. </small>
+                            <small class="form-text text-muted">Formatos permitidos: jpg, jpeg, png.</small><br>
+                            <small class="form-text text-muted">Tamaño máximo aceptado: 1 MB o 1024 KB. </small>
                             <small class="form-text text-center"><a href="https://www.iloveimg.com/es/comprimir-imagen"
-                                    target="_blank">¿Donde reducir el tamaño de una imagen?</a></small>
+                                    target="_blank">¿Dónde reducir el tamaño de una imagen?</a></small>
                         </div>
                         <div>
                             <label for="description" class="col-form-label">Descripción breve:</label>
@@ -70,8 +69,7 @@
                         </div>
 
                         <div class="modal-footer flex-column border-top-0">
-                            <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2"
-                                data-bs-dismiss="modal">Guardar
+                            <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2">Guardar
                                 logro</button>
                             <button type="button" class="btn btn-lg btn-light w-100 mx-0"
                                 data-bs-dismiss="modal">Cerrar</button>

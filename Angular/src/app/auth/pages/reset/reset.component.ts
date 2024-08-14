@@ -15,7 +15,7 @@ export class ResetComponent {
     password_confirmation: ['', [Validators.required, Validators.minLength(6)]]
   });
 
-  email: string;
+  curp: string;
   token: string;
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder,
@@ -27,14 +27,14 @@ export class ResetComponent {
 
   getParams() {
     this.route.params.subscribe(params => {
-      this.email = params['email'];
+      this.curp = params['email'];
       this.token = params['token'];
     });
   }
 
   reset() {
     let data = this.miFormulario.value;
-    data['email'] = this.email;
+    data['curp'] = this.curp;
     data['token'] = this.token;
     this.authService.resetPassword(data, this.token).subscribe({
       next: (response) => {
@@ -43,9 +43,11 @@ export class ResetComponent {
             position: 'center',
             icon: 'success',
             title: response.message,
-            showConfirmButton: true
+            showConfirmButton: true,
+            didClose: () => {
+              this.router.navigateByUrl('/auth/login');
+            }
           })
-          this.router.navigateByUrl('/auth/login');
         } else {
           Swal.fire({
             position: 'center',

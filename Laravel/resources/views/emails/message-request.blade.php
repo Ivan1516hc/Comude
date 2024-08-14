@@ -7,7 +7,7 @@
 
 <body style="font-family: Arial, sans-serif;">
 
-    <h1>Mensaje por mitivo de {{$motivo->name}}</h1>
+    <h1>Mensaje por motivo de {{$motivo->name}}</h1>
 
     <p>Hola {{ $name }}.</p>
 

@@ -25,10 +25,29 @@ export class LoginComponent {
     private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
-
+    Swal.fire({
+      position: 'center',
+      icon: 'info',
+      title: 'Bienvenido a la plataforma de Becas Deportivas del Consejo Municipal del Deporte de Zapopan.',
+      text: '¿Cuentas ya con alguna cuenta?',
+      showConfirmButton: true,
+      showDenyButton: true,
+      confirmButtonText: 'SÍ',
+      denyButtonText: 'NO',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        return;
+      } else if (result.isDenied) {
+        this.router.navigateByUrl('/auth/registrar')
+      }
+    })
   }
 
   login() {
+    if (this.miFormulario.invalid) {
+      this.miFormulario.markAllAsTouched();
+      return;
+    }
     const { curp, password } = this.miFormulario.value;
     this.authService.login(curp, password).
       subscribe(response => {
@@ -85,7 +104,7 @@ export class LoginComponent {
   }
 
   sendEmail() {
-    this.authService.sendResetMenssage({ email: this.emailReset }).subscribe({
+    this.authService.sendResetMenssage({ curp: this.emailReset }).subscribe({
       next: (response) => {
         if (response.code == 200) {
           Swal.fire({
@@ -114,5 +133,11 @@ export class LoginComponent {
         })
       }
     })
+  }
+
+  isPasswordVisible = false;
+
+  togglePasswordVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
   }
 }

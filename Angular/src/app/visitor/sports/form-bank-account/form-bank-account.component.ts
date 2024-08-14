@@ -24,6 +24,8 @@ export class FormBankAccountComponent {
   edit: boolean = false;
   baseUrl = environment.dowload;
   request: any;
+  form_id: number = 2;
+  modify: any = [];
 
   constructor(
     private router: Router,
@@ -35,6 +37,7 @@ export class FormBankAccountComponent {
   }
 
   ngOnInit(): void {
+    this.edit = false;
     this.obtenerURLPrincipal();
     this.route.params.subscribe(params => {
       this.request_id = params['id'];
@@ -71,7 +74,7 @@ export class FormBankAccountComponent {
 
   miFormulario: FormGroup = this.fb.group({
     request_id: ['', [Validators.required]],
-    account: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(8), Validators.maxLength(18)]],
+    // account: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(8), Validators.maxLength(18)]],
     key_account: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.minLength(18), Validators.maxLength(18)]],
     titular_persona_name: ['', [Validators.required]],
     bank: ['', [Validators.required]],
@@ -93,11 +96,20 @@ export class FormBankAccountComponent {
         }
       }
     });
+
+    this.requestService.verifyRequest(id, this.form_id).subscribe({
+      next: (res) => {
+        this.modify = res;
+        if(this.modify.length > 0){
+          this.loadingUpdate();
+        }
+      }
+    });
   }
 
   populateForm(response: any): void {
     this.miFormulario.patchValue({
-      account: response.account,
+      // account: response.account,
       key_account: response.key_account,
       titular_persona_name: response.titular_persona_name,
       bank: response.bank,
@@ -115,16 +127,37 @@ export class FormBankAccountComponent {
     if (this.miFormulario.invalid) {
       return this.miFormulario.markAllAsTouched();
     }
-
     const formData = new FormData();
     formData.append('request_id', this.miFormulario.get('request_id').value);
-    formData.append('account', this.miFormulario.get('account').value);
+    // formData.append('account', this.miFormulario.get('account').value);
     formData.append('key_account', this.miFormulario.get('key_account').value);
     formData.append('titular_persona_name', this.miFormulario.get('titular_persona_name').value);
     formData.append('bank', this.miFormulario.get('bank').value);
     formData.append('account_status_url', this.miFormulario.get('account_status_url').value);
 
+    if (this.edit) {
+      this.update(formData);
+    } else {
+      this.store(formData);
+    }
+  }
+
+  store(formData) {
     this.bankAccountService.storeBankAccount(formData).subscribe({
+      next: (response) => {
+        if (response.code == 200) {
+          this.handleSuccessResponse(response);
+        } else {
+          this.handleErrorResponse(response);
+        }
+      }, error: (err) => {
+        Swal.fire("Error", "error")
+      }
+    });
+  }
+
+  update(formData) {
+    this.bankAccountService.updateBankAccount(formData).subscribe({
       next: (response) => {
         if (response.code == 200) {
           this.handleSuccessResponse(response);
@@ -157,12 +190,16 @@ export class FormBankAccountComponent {
     }
     Swal.fire(swalOptions).then((result) => {
       if (result.isConfirmed && !this.edit) {
+        this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/documentacion');
         this.ngOnInit();
-        this.router.navigateByUrl(this.urlPrincipal + '/beca-deportiva/' + this.miFormulario.value.request_id + '/logros-importantes');
       } else {
         this.ngOnInit();
       }
     });
+
+    if (this.edit) {
+      this.ngOnInit();
+    }
   }
 
   handleErrorResponse(response: any): void {

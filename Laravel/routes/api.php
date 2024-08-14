@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Documents\DocumentController;
 use App\Http\Controllers\Documents\ImportantArchievementController;
 use App\Http\Controllers\Documents\RequestJustificationController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\Payments\BankAccountController;
 use App\Http\Controllers\SportProcedure\CompetitionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Jobs\Logger;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +36,16 @@ Route::middleware('cors')->group(function () {
     Route::post('password/reset', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
+    Route::get('email-test', function () {
+        $details = [
+            ['name' => 'Ivan', 'email' => 'ivan1516hc@gmail.com', 'folio' => '123456'],
+            ['name' => 'Ivan', 'email' => 'bihernandez@difzapopan.gob.mx', 'folio' => '123456'],
+            ['name' => 'Benja', 'email' => 'benjaminivan1508@gmail.com', 'folio' => '123456']];
+
+        dispatch(new App\Jobs\SendEmailBudgetJob($details));
+        dd('Email is Sent.');
+    });
+
 
     Route::get('send/verification/{email}', [VerifyController::class, 'resendVerificationEmail']);
     Route::post('verify/email/{email}', [VerifyController::class, 'verify']);
@@ -42,7 +55,7 @@ Route::middleware('cors')->group(function () {
         'prefix' => 'auth'
     ], function ($router) {
         // Rutas para mostrar y procesar el formulario de restablecimiento de contraseña
-        Route::post('/password/reset/{token}', [ResetPasswordController::class, 'reset'])->name('password.update');
+        Route::post('/password/reset/{token}', [ResetPasswordController::class, 'resetAplicant'])->name('password.update');
 
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/admin-login', [AuthController::class, 'loginAdmin']);
@@ -74,16 +87,19 @@ Route::middleware('cors')->group(function () {
         Route::post('/request/create', [RequestsController::class, 'store']);
 
         Route::get('/request', [RequestsController::class, 'showVisitorRequest']);
-        Route::get('request/show/{id}', [RequestsController::class, 'show']);
-        Route::post('request/update/status', [RequestsController::class, 'changeStatus']);
-
+        Route::get('/request/show/{id}', [RequestsController::class, 'show']);
+        Route::post('/request/update/status', [RequestsController::class, 'changeStatus']);
+        Route::get('/request/verify/update/documents/{id}', [RequestsController::class, 'verifyUpdateDocument']);
+        Route::get('/request/verify/update/{id}/{form}', [RequestsController::class, 'verifyUpdate']);
         //Competitions Routs
         Route::get('/request/competitions/show/{id}', [CompetitionController::class, 'show']);
         Route::post('/request/competitions/store', [CompetitionController::class, 'store']);
+        Route::put('/request/competitions/update', [CompetitionController::class, 'update']);
 
         //Bank Accounts Routs
         Route::get('/request/bank-account/show/{id}', [BankAccountController::class, 'show']);
         Route::post('/request/bank-account/store', [BankAccountController::class, 'store']);
+        Route::post('/request/bank-account/update', [BankAccountController::class, 'update']);
 
         //Aplicant Profile Routs
         Route::get('/profile/show', [AplicantController::class, 'show']);
@@ -95,6 +111,7 @@ Route::middleware('cors')->group(function () {
         //Documents Routs
         Route::get('/request/documents/show/{id}', [DocumentController::class, 'show']);
         Route::post('/request/documents/store', [DocumentController::class, 'store']);
+        Route::post('/request/documents/change/{id}', [DocumentController::class, 'update']);
 
         //Important Archivement Routs
         Route::get('/important-archivement/show', [ImportantArchievementController::class, 'show']);
@@ -122,16 +139,20 @@ Route::middleware('cors')->group(function () {
 
         Route::get('/request/formData/{id}', [RequestsController::class, 'showData']);
 
-        Route::get('/request/search/{value}', [RequestsController::class, 'search']);
+        Route::get('/request/search/{value}/{dateStart?}/{dateEnd?}/{exportExcel?}', [RequestsController::class, 'search']);
         Route::get('/validation/search-value/{value}', [RequestsController::class, 'searchValueValidation']);
         Route::get('/appraisal/search-value/{value}', [RequestsController::class, 'searchValueAppraisal']);
 
         Route::put('/request/update', [RequestsController::class, 'updateStatus']);
+        Route::get('/request/sendMessageJustificacion/{id}', [RequestsController::class, 'sendMessageJustificacion']);
 
         Route::get('/request/message/form', [MessageRequestController::class, 'typeForm']);
         Route::get('/request/message/history', [MessageRequestController::class, 'index']);
         Route::post('/request/message/create', [MessageRequestController::class, 'store']);
         Route::get('/request/message/{id}/history', [MessageRequestController::class, 'show']);
+
+        //Historical Routs
+        Route::get('/historical/index/{dateStart?}/{dateEnd?}/{exportExcel?}', [RequestsController::class, 'showHistorical']);
 
         //Export excel files
         Route::post('/export/excel-comite', [ComiteController::class, 'comiteExport']);
@@ -143,12 +164,48 @@ Route::middleware('cors')->group(function () {
         //beneficiaries routes
         Route::get('/beneficiary/index', [AplicantController::class, 'indexBeneficiaries']);
         Route::get('/beneficiary/search-value/{value}', [AplicantController::class, 'searchBeneficiaries']);
+
+        Route::get('/catalog/user/data', [CatalogController::class, 'getDataUser']);
+        Route::get('/catalog/user/index', [CatalogController::class, 'indexUser']);
+        Route::post('/catalog/user/create', [CatalogController::class, 'storeUser']);
+        Route::delete('/catalog/user/delete/{id}', [CatalogController::class, 'deleteUser']);
+        Route::delete('/catalog/user/restore/{id}', [CatalogController::class, 'restoreUser']);
+        Route::put('/catalog/user/update', [CatalogController::class, 'updateUser']);
+
+        Route::get('/catalog/discipline/index', [CatalogController::class, 'indexDiscipline']);
+        Route::post('/catalog/discipline/create', [CatalogController::class, 'storeDiscipline']);
+        Route::delete('/catalog/discipline/delete/{id}', [CatalogController::class, 'deleteDiscipline']);
+        Route::delete('/catalog/discipline/restore/{id}', [CatalogController::class, 'restoreDiscipline']);
+        Route::put('/catalog/discipline/update', [CatalogController::class, 'updateDiscipline']);
+
+        Route::get('/catalog/justification/index', [CatalogController::class, 'indexJustification']);
+        Route::post('/catalog/justification/create', [CatalogController::class, 'storeJustification']);
+        Route::delete('/catalog/justification/delete/{id}', [CatalogController::class, 'deleteJustification']);
+        Route::delete('/catalog/justification/restore/{id}', [CatalogController::class, 'restoreJustification']);
+        Route::put('/catalog/justification/update', [CatalogController::class, 'updateJustification']);
+
+        Route::get('/catalog/document/index', [CatalogController::class, 'indexDocument']);
+        Route::post('/catalog/document/create', [CatalogController::class, 'storeDocument']);
+        Route::delete('/catalog/document/delete/{id}', [CatalogController::class, 'deleteDocument']);
+        Route::delete('/catalog/document/restore/{id}', [CatalogController::class, 'restoreDocument']);
+        Route::put('/catalog/document/update', [CatalogController::class, 'updateDocument']);
+
+        Route::get('/dashboard/count-request/{status}/{date}', [DashboardController::class, 'getCountRequest']);
+        Route::get('/dashboard/count-beneficiary/{date}', [DashboardController::class, 'getCountBeneficiary']);
+        Route::get('/dashboard/history-messages', [DashboardController::class, 'getHistoryMessages']);
     });
 
     Route::middleware('jwt.verify')->group(function () {
         //Requests
         Route::get('request', [RequestsController::class, 'index']);
     });
+
+    Route::get('/clear-cache', function () {
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+    });    
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

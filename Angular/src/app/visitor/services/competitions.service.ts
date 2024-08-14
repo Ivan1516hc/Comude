@@ -28,4 +28,9 @@ export class CompetitionsService {
     const url = `${this.baseUrlAplicant}/catalog/country-state/${id}`;
     return this.http.get<any>(url);
   }
+
+  update(data) {
+    const url = `${this.baseUrlAplicant}/request/competitions/update`;
+    return this.http.put<any>(url, data);
+  }
 }

@@ -44,9 +44,21 @@
                                             <div class="col-12 col-md-6 col-lg-4 "
                                                 *ngFor="let item of documents; let i = index">
                                                 <article class="card">
-                                                    <img [src]="baseUrl+'sports/'+item.file_name"
-                                                        class="card-img-top m-1" alt="Imagen"
-                                                        style="align-self: center">
+                                                    <ng-container *ngIf="getIconClass(item.file_name)">
+                                                        <a class="text-center"
+                                                            href="{{ baseUrl+'sports/'+item.file_name }}"
+                                                            target="_blank" download>
+                                                            <i class="bi bi-file-earmark-medical-fill"
+                                                                style="font-size: 150px; color: black;"></i>
+                                                        </a>
+                                                    </ng-container>
+
+                                                    <ng-container *ngIf="!getIconClass(item.file_name)">
+                                                        <img [src]="baseUrl+'sports/'+item.file_name"
+                                                            class="card-img-top m-1" alt="Imagen"
+                                                            style="align-self: center">
+                                                    </ng-container>
+
                                                     <div class="container">
                                                         <p><strong>Descripción:</strong></p>
                                                         <p *ngIf="item.mostrarTextoCompleto">{{item.description}}</p>
@@ -61,7 +73,7 @@
                                                                 {{ item.mostrarTextoCompleto ? 'Ver menos' : 'Leer más'
                                                                 }}
                                                             </a>
-                                                            <button *ngIf="request?.status_request_id == 3"
+                                                            <button *ngIf="request?.status_request_id == 7"
                                                                 type="button" class="btn-lg btn btn-warning mt-2"
                                                                 (click)="delete(item?.id)">Eliminar</button>
                                                         </div>
@@ -119,7 +131,6 @@
                             <textarea name="description" type="text" class="form-control" id="description"
                                 formControlName="description" maxlength="150"> </textarea>
                         </div>
-
                         <div class="modal-footer flex-column border-top-0">
                             <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2"
                                 data-bs-dismiss="modal">Guardar
@@ -129,7 +140,6 @@
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>

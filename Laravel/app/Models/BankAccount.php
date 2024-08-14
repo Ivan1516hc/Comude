@@ -9,7 +9,7 @@ class BankAccount extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'account',
+        // 'account',
         'key_account',
         'titular_persona_name',
         'bank',
@@ -21,9 +21,9 @@ class BankAccount extends Model
         'updated_at' => 'datetime:Y-m-d H:00',
     ];
 
-    public function aplicant()
+    public function request()
     {
-        return $this->belongsTo(Aplicant::class, 'id','bank_account_id' );
+        return $this->belongsTo(Requests::class, 'id','bank_account_id' );
     }
 
     public function setAttribute($key, $value)

@@ -22,7 +22,6 @@
 
                 <section class="section profile">
                     <div class="row">
-
                         <div class="col-xl-12">
                             <div class="card">
                                 <div class="card-body pt-3">
@@ -38,7 +37,6 @@
                                     <div class="tab-content pt-2">
                                         <div class="tab-pane fade show active profile-overview" id="profile-overview">
                                             <h5 class="card-title">Detalles de perfil</h5>
-
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Nombre completo</div>
                                                 <div class="col-lg-9 col-md-8">{{miFormulario.controls['name'].value}}
@@ -51,6 +49,11 @@
                                                 <div class="col-lg-9 col-md-8">{{miFormulario.controls['curp'].value}}
                                                 </div>
                                             </div>
+                                            <!-- <div class="row">
+                                                <div class="col-lg-3 col-md-4 label">Genero</div>
+                                                <div class="col-lg-9 col-md-8">{{miFormulario.controls['gender'].value == 'H' ? 'HOMBRE' : 'MUJER'}}
+                                                </div>
+                                            </div> -->
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label">RFC</div>
                                                 <div class="col-lg-9 col-md-8">
@@ -87,7 +90,8 @@
                                                         class="col-md-4 col-lg-3 col-form-label required">Nombre</label>
                                                     <div class="col-md-8 col-lg-9">
                                                         <input name="name" type="text" formControlName="name"
-                                                            class="form-control" id="name">
+                                                            class="form-control" id="name"
+                                                            [ngClass]="{'red-margin-input': miFormulario.controls['name'].errors && miFormulario.controls['name'].touched}">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['name'].errors && miFormulario.controls['name'].touched">
@@ -101,7 +105,8 @@
                                                         paterno</label>
                                                     <div class="col-md-8 col-lg-9">
                                                         <input name="last_name" type="text" formControlName="last_name"
-                                                            class="form-control" id="last_name">
+                                                            class="form-control" id="last_name"
+                                                            [ngClass]="{'red-margin-input': miFormulario.controls['last_name'].errors && miFormulario.controls['last_name'].touched}">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['last_name'].errors && miFormulario.controls['last_name'].touched">
@@ -116,7 +121,8 @@
                                                     <div class="col-md-8 col-lg-9">
                                                         <input name="mother_last_name" type="text"
                                                             formControlName="mother_last_name" class="form-control"
-                                                            id="mother_last_name">
+                                                            id="mother_last_name"
+                                                            [ngClass]="{'red-margin-input': miFormulario.controls['mother_last_name'].errors && miFormulario.controls['mother_last_name'].touched}">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['mother_last_name'].errors && miFormulario.controls['mother_last_name'].touched">
@@ -132,6 +138,22 @@
                                                             formControlName="curp">
                                                     </div>
                                                 </div>
+
+                                                <!-- <div class="row mb-3">
+                                                    <label for="gender"
+                                                        class="col-md-4 col-lg-3 col-form-label">Genero</label>
+                                                    <div class="col-md-8 col-lg-9">
+                                                        <select name="gender" id="gender" class="form-control" formControlName="gender">
+                                                            <option value="">Selecciona una opción</option>
+                                                            <option value="H">HOMBRE</option>
+                                                            <option value="M">MUJER</option>
+                                                        </select>
+                                                    </div>
+                                                    <span class="form-text text-danger form"
+                                                        *ngIf="miFormulario.controls['gender'].errors && miFormulario.controls['gender'].touched">
+                                                        Debes de seleccionar una opción.
+                                                    </span>
+                                                </div> -->
 
                                                 <div class="row mb-3">
                                                     <label for="rfc"
@@ -152,7 +174,8 @@
                                                         nacimiento</label>
                                                     <div class="col-md-8 col-lg-9">
                                                         <input name="birtdate" type="date" class="form-control"
-                                                            id="birtdate" formControlName="birtdate">
+                                                            id="birtdate" formControlName="birtdate"
+                                                            [ngClass]="{'red-margin-input': miFormulario.controls['birtdate'].errors && miFormulario.controls['birtdate'].touched}">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['birtdate'].errors && miFormulario.controls['birtdate'].touched">
@@ -167,7 +190,8 @@
                                                     <div class="col-md-8 col-lg-9">
                                                         <input name="phone_number" type="text" class="form-control"
                                                             id="phone_number" maxlength="10" minlength="10"
-                                                            formControlName="phone_number">
+                                                            formControlName="phone_number"
+                                                            [ngClass]="{'red-margin-input': miFormulario.controls['phone_number'].errors && miFormulario.controls['phone_number'].touched}">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['phone_number'].errors && miFormulario.controls['phone_number'].touched">
@@ -182,7 +206,8 @@
                                                     <div class="col-md-8 col-lg-9">
                                                         <input name="second_phone_number" type="text"
                                                             class="form-control" id="second_phone_number" maxlength="10"
-                                                            minlength="10" formControlName="second_phone_number">
+                                                            minlength="10" formControlName="second_phone_number"
+                                                            [ngClass]="{'red-margin-input': miFormulario.controls['second_phone_number'].errors && miFormulario.controls['second_phone_number'].touched}">
                                                     </div>
                                                     <span class="form-text text-danger form"
                                                         *ngIf="miFormulario.controls['second_phone_number'].errors && miFormulario.controls['second_phone_number'].touched">
@@ -246,9 +271,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-footer">
+                                <div *ngIf="updatedInformation">
                                     <app-important-archievement></app-important-archievement>
-
                                 </div>
                             </div>
                         </div>

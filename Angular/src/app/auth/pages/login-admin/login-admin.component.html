@@ -11,20 +11,32 @@
                                             src="assets/img/logo_comude.png" width="300px"></a>
                                     <h5 class="card-title text-center pb-0 fs-4">ADMINISTRADOR BECA DEPORTIVA</h5>
                                 </div>
-                                <form class="row g-3 needs-validation" [formGroup]="miFormulario" (ngSubmit)="login()">
+                                <form class="row g-3 " [formGroup]="miFormulario" (ngSubmit)="login()">
                                     <div class="col-12">
                                         <label for="yourUsername" class="form-label">Correo</label>
                                         <div class="input-group has-validation">
                                             <input type="email" name="username" class="form-control" id="yourUsername"
                                                 formControlName="email" maxlength="100">
-                                            <div class="invalid-feedback">Por favor ingrese su correo.</div>
                                         </div>
+                                        <span class="form-text text-danger form"
+                                            *ngIf="miFormulario.controls['email'].errors && miFormulario.controls['email'].touched">
+                                            Por favor ingrese un correo valido.
+                                        </span>
                                     </div>
                                     <div class="col-12">
                                         <label for="yourPassword" class="form-label">Contraseña</label>
-                                        <input type="password" name="password" class="form-control" id="yourPassword"
-                                            formControlName="password">
-                                        <div class="invalid-feedback">Por favor ingresa tu contraseña.</div>
+                                        <div class="input-group">
+                                            <input [type]="isPasswordVisible ? 'text' : 'password'" name="password"
+                                                class="form-control" id="yourPassword" formControlName="password">
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                (click)="togglePasswordVisibility()">
+                                                <i [class]="isPasswordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                            </button>
+                                        </div>
+                                        <span class="form-text text-danger form"
+                                            *ngIf="miFormulario.controls['password'].errors && miFormulario.controls['password'].touched">
+                                            Por favor ingresa tu contraseña.
+                                        </span>
                                     </div>
                                     <div class="col-12">
                                         <button class="btn btn-primary w-100" type="submit">Ingresar</button>

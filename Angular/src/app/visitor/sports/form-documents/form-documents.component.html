@@ -21,11 +21,11 @@
                 </div>
 
                 <div class="pagetitle flex-container">
-                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/logros-importantes'">
+                    <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/cuenta-bancaria'">
                         <span class="glyphicon glyphicon-chevron-left"></span><i class="bi bi-arrow-left"></i> Anterior
                     </a>
                     <a [routerLink]="'/solicitante/beca-deportiva/' + request_id + '/reglamento'"
-                        *ngIf="total_documents == 6">
+                        *ngIf="total_documents == documents.length">
                         Siguiente <i class="bi bi-arrow-right"></i><span
                             class="glyphicon glyphicon-chevron-right"></span>
                     </a>
@@ -65,7 +65,7 @@
                                         <ng-container
                                             *ngIf="activeDocument?.documents_request?.length == 0; else existFile">
                                             <form [formGroup]="miFormulario" (ngSubmit)="onSubmit()">
-                                                <div *ngIf="activeDocument.id == 2">
+                                                <!-- <div *ngIf="activeDocument.id == 2">
                                                     <label for="type_person_id" class="form-label">Tipo de
                                                         identificación:</label>
                                                     <select class="form-control" formControlName="type_person_id">
@@ -73,14 +73,14 @@
                                                         <option value="1">INE</option>
                                                         <option value="2">Pasaporte</option>
                                                     </select>
-                                                </div>
+                                                </div> -->
                                                 <div>
                                                     <label for="fileInput" class="form-label">Subir
-                                                        {{activeDocument?.name}}:</label>
+                                                        {{activeDocument?.name}} <span class="text-danger" *ngIf="activeDocument?.descripcion">({{activeDocument?.descripcion}})</span>:</label>
                                                     <div class="drop-zone" (dragover)="onDragOver($event)"
                                                         (drop)="onDrop($event)" (click)="fileInput.click()">
                                                         <input #fileInput type="file" class="visually-hidden"
-                                                            accept=".pdf, .jpg, .jpeg, .png"
+                                                            accept=".pdf, .jpg, .jpeg, .png, .PDF, .JPG, .JPEG, .PNG"
                                                             (change)="onFileSelected($event)"
                                                             (drop)="onFileSelected($event)">
                                                         <div class="preview-container" *ngIf="selectedFileName">
@@ -94,16 +94,16 @@
                                                     </div>
                                                     <small class="form-text text-muted">Formatos permitidos:
                                                         pdf, jpg, jpeg, png.</small><br>
-                                                    <small class="form-text text-muted">Tamaño maximo aceptado: 1 MB o
+                                                    <small class="form-text text-muted">Tamaño máximo aceptado: 1 MB o
                                                         1024 KB.
                                                     </small><br>
                                                     <small class="form-text text-muted"><a
                                                             href="https://www.ilovepdf.com/es/comprimir_pdf"
-                                                            target="_blank">¿Donde reducir el tamaño de un
+                                                            target="_blank">¿Dónde reducir el tamaño de un
                                                             PDF?</a></small><br>
                                                     <small class="form-text text-muted"><a
                                                             href="https://www.iloveimg.com/es/comprimir-imagen"
-                                                            target="_blank">¿Donde reducir el tamaño de una
+                                                            target="_blank">¿Dónde reducir el tamaño de una
                                                             imagen?</a></small>
                                                 </div>
 
@@ -120,6 +120,15 @@
                                                     <i class="bi bi-file-earmark-arrow-down-fill my-icon"></i>
                                                     <h2>Descargar {{activeDocument?.name}}</h2>
                                                 </a>
+
+                                                <div class="mt-3"
+                                                    *ngIf="request?.status_request_id == 1 || (request?.status_request_id == 4 && verify())">
+                                                    <button class="btn btn-warning" data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">
+                                                        <i class="bi bi-arrow-left-right"></i>
+                                                        Cambiar {{activeDocument?.name}}
+                                                    </button>
+                                                </div>
                                             </div>
                                         </ng-template>
                                     </div>
@@ -132,3 +141,49 @@
         </div>
     </main>
 </app-visitor>
+
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cambiar {{activeDocument?.name}}</h5>
+                <button id="cancel" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-0 text-justify-custom">
+                <form [formGroup]="miFormulario" (ngSubmit)="changeFile()">
+                    <div>
+                        <label for="fileInput" class="form-label">Subir nuevo/a
+                            {{activeDocument?.name}}:</label>
+                        <div class="drop-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)"
+                            (click)="fileInput.click()">
+                            <input #fileInput type="file" class="visually-hidden" accept=".pdf, .jpg, .jpeg, .png"
+                                (change)="onFileSelected($event)" (drop)="onFileSelected($event)">
+                            <div class="preview-container" *ngIf="selectedFileName">
+                                <img [src]="selectedFilePreview" alt="Archivo seleccionado" class="preview-image">
+                                <p>{{ selectedFileName }}</p>
+                            </div>
+                            <div class="file-input-placeholder" *ngIf="!selectedFileName">
+                                <p>Arrastra o selecciona un archivo</p>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Formatos permitidos:
+                            pdf, jpg, jpeg, png.</small><br>
+                        <small class="form-text text-muted">Tamaño máximo aceptado: 1 MB o
+                            1024 KB.
+                        </small><br>
+                        <small class="form-text text-muted"><a href="https://www.ilovepdf.com/es/comprimir_pdf"
+                                target="_blank">¿Dónde reducir el tamaño de un
+                                PDF?</a></small><br>
+                        <small class="form-text text-muted"><a href="https://www.iloveimg.com/es/comprimir-imagen"
+                                target="_blank">¿Dónde reducir el tamaño de una
+                                imagen?</a></small>
+                    </div>
+                    <div class="text-center m-2">
+                        <button type="submit" class="btn btn-success">Cambiar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

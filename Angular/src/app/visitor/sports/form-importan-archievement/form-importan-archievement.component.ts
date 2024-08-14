@@ -10,13 +10,11 @@ export class FormImportanArchievementComponent {
   request_id: number;
   urlPrincipal: string;
   
-  constructor(    private router: Router,
+  constructor( private router: Router,
     private route: ActivatedRoute
   ) {
 
   }
-
-
   ngOnInit(): void {
     this.obtenerURLPrincipal();
     this.route.params.subscribe(params => {

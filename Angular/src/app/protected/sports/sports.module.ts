@@ -11,6 +11,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppraisalComponent } from './appraisal/appraisal.component';
 import { ValidationComponent } from './validation/validation.component';
 import { CatalogsComponent } from './catalogs/catalogs.component';
+import { UserCatalogComponent } from './user-catalog/user-catalog.component';
+import { DisciplineCatalogComponent } from './discipline-catalog/discipline-catalog.component';
+import { DocumentProcedureCatalogComponent } from './document-procedure-catalog/document-procedure-catalog.component';
+import { JustificationTypeCatalogComponent } from './justification-type-catalog/justification-type-catalog.component';
+import { HistoricalComponent } from './historical/historical.component';
 
 
 @NgModule({
@@ -22,6 +27,11 @@ import { CatalogsComponent } from './catalogs/catalogs.component';
     AppraisalComponent,
     ValidationComponent,
     CatalogsComponent,
+    UserCatalogComponent,
+    DisciplineCatalogComponent,
+    DocumentProcedureCatalogComponent,
+    JustificationTypeCatalogComponent,
+    HistoricalComponent
   ],
   imports: [
     CommonModule,

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Aplicant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+
 
 class ResetPasswordController extends Controller
 {
@@ -25,7 +29,7 @@ class ResetPasswordController extends Controller
         // return response()->json($request->all());
         // $request->validate($this->rules(), $this->validationErrorMessages());
 
-        if($request->password != $request->password_confirmation){
+        if ($request->password != $request->password_confirmation) {
             return response()->json(['success' => true, 'error' => 'Las contraseñas no coinciden.'], 200);
         }
         $response = Password::reset($request->only('email', 'password', 'password_confirmation', 'token'), function ($user, $password) {
@@ -46,6 +50,40 @@ class ResetPasswordController extends Controller
             return response()->json(['success' => false, 'error' => 'No se pudo restablecer la contraseña'], 200);
         }
     }
+
+
+    public function resetAplicant(Request $request)
+    {
+        // Validar que las contraseñas coinciden
+        if ($request->password !== $request->password_confirmation) {
+            return response()->json(['success' => false, 'error' => 'Las contraseñas no coinciden.'], 200);
+        }
+    
+        // Buscar el token en la tabla de password_reset_tokens
+        $tokenRecord = DB::table('password_reset_tokens')->where('token', hash('sha256', $request->token))->first();
+        
+        if (!$tokenRecord) {
+            return response()->json(['success' => false, 'error' => 'El token de restablecimiento de contraseña es inválido.'], 200);
+        }
+    
+        // Verificar que la CURP del token coincida con la CURP proporcionada
+        if ($tokenRecord->curp !== $request->curp) {
+            return response()->json(['success' => false, 'error' => 'La CURP no coincide con la del token.'], 200);
+        }
+    
+        // Actualizar la contraseña del usuario
+        $response = Aplicant::where('curp', $request->curp)->update(['password' => Hash::make($request->password)]);
+    
+        if ($response) {
+            // Eliminar el token después de haber restablecido la contraseña
+            DB::table('password_reset_tokens')->where('curp', $request->curp)->delete();
+    
+            return response()->json(['success' => true, 'message' => 'Contraseña restablecida exitosamente'], 200);
+        } else {
+            return response()->json(['success' => false, 'error' => 'No se pudo restablecer la contraseña'], 200);
+        }
+    }
+    
 
     // Método para obtener las reglas de validación para restablecer la contraseña
     protected function rules()

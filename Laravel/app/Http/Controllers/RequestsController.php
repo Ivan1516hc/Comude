@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ComiteExport;
 use App\Models\Announcement;
 use App\Models\Aplicant;
 use App\Models\BankAccount;
+use App\Models\CancelHistoryRequest;
 use App\Models\Competition;
+use App\Models\DocumentModify;
 use App\Models\DocumentsRequest;
+use App\Models\ImportantArchievement;
+use App\Models\ModifyForm;
+use App\Models\RequestJustification;
 use App\Models\Requests;
 use App\Models\StatusRequest;
 use Carbon\Carbon;
@@ -16,6 +22,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
+use Illuminate\Mail\Message;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RequestsController extends Controller
 {
@@ -55,7 +64,74 @@ class RequestsController extends Controller
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                 }, 'discipline', 'announcement', 'aplicant'
             ]
-        )->whereIn('status_request_id', [3, 5, 8])
+        )->whereIn('status_request_id', [3])
+            ->paginate(10);
+
+        return response()->json($query);
+    }
+
+    public function showHistorical($dateStart = null, $dateEnd = null, $exportExcel = null)
+    {
+        $user = Auth::guard('user')->user();
+        if (!$user) {
+            return response()->json(['message' => 'Necesitas loguearte', 'code' => 404]);
+        }
+        $model = Requests::query();
+
+        $query = $model->with(
+            [
+                'competition' => function ($query) {
+                    $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
+                }, 'discipline', 'status_request:id,name', 'announcement', 'aplicant'
+            ]
+        )->where('status_request_id', '<>', 6)->where('status_request_id', '<>', 1);
+
+        if ($dateStart && $dateEnd && $dateStart != 'null' && $dateEnd != 'null') {
+            $query = $query->whereBetween('finished', [$dateStart, $dateEnd]);
+        }
+
+        if ($exportExcel && $exportExcel != 'null') {
+            $requests = $query->with([
+                'aplicant' => function ($query) {
+                    $query->withCount([
+                        'requests as accepted_requests_count' => function ($query) {
+                            $query->where('status_request_id', 5)->whereYear('finished', date('Y'));
+                        },
+                        'requests as other_requests_count' => function ($query) {
+                            $query->where('status_request_id', '<>', 1)
+                                ->where('status_request_id', '<>', 6)
+                                ->whereYear('finished', date('Y'));
+                        }
+                    ]);
+                }
+            ])->where('status_request_id', '<>', 1)->get();
+
+            $requests->each(function ($request) {
+                $approvedBudgetSum = $request->aplicant->requests()
+                    ->where('status_request_id', 5)
+                    ->with('competition')
+                    ->get()
+                    ->sum(function ($request) {
+                        return $request->competition->approved_budget;
+                    });
+                $request->aplicant->approved_budget_sum = $approvedBudgetSum;
+            });
+
+            $totalCost = $requests->sum('competition.requested_budget');
+            if ($dateStart && $dateEnd && $dateStart != 'null' && $dateEnd != 'null') {
+                $begin = Carbon::createFromFormat('Y-m-d', $dateStart);
+                $finish = Carbon::createFromFormat('Y-m-d', $dateEnd);
+
+                $beginFormatted = $begin->format('d/m/Y');
+                $finishFormatted = $finish->format('d/m/Y');
+            } else {
+                $beginFormatted = Carbon::now()->format('d/m/Y');
+                $finishFormatted = Carbon::now()->format('d/m/Y');
+            }
+            return Excel::download(new ComiteExport($requests, $totalCost, $beginFormatted, $finishFormatted), 'reporte-comite.xlsx');
+        }
+
+        $query = $query->where('status_request_id', '<>', 1)
             ->paginate(10);
 
         return response()->json($query);
@@ -83,10 +159,17 @@ class RequestsController extends Controller
                     'competition' => function ($query) {
                         $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                     },
+                    'bank_account',
                     'status_request:id,name',
                     'announcement:id,name',
                     'discipline:id,name',
-                    'announcement.procedure'
+                    'announcement.procedure',
+                    'modify_forms.form:id,name',
+                    'modify_forms' => function ($query) {
+                        $query->where('status', 0)->with(['form:id,name', 'document_modify' => function ($query) {
+                            $query->with('document_procedure:id,name');
+                        }]);
+                    },
                 ])
                 ->withCount('documents')
                 ->orderBy('id', 'desc') // Ordenar por ID de forma ascendente
@@ -94,14 +177,13 @@ class RequestsController extends Controller
 
 
             // Verificar si el usuario tiene un registro en la tabla bank_accounts relacionada
-            $hasBankAccount = !is_null($user->bank_account);
             $hasImportantArchievements = !$user->important_archievements->isEmpty();
 
             if ($requests->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron solicitudes para este usuario.', 'code' => 404, 'readRegulations' => $user->read_regulations, 'hasImportantArchievements' => $hasImportantArchievements]);
             }
 
-            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'hasBankAccount' => $hasBankAccount, 'readRegulations' => $user->read_regulations, 'hasImportantArchievements' => $hasImportantArchievements]);
+            return response()->json(['message' => 'Solicitudes recuperadas exitosamente.', 'code' => 200, 'data' => $requests, 'readRegulations' => $user->read_regulations, 'hasImportantArchievements' => $hasImportantArchievements]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'No se encontró el usuario.', 'code' => 404]);
         } catch (ValidationException $e) {
@@ -131,19 +213,19 @@ class RequestsController extends Controller
             return response()->json(['message' => 'No existe la solicitud', 'code' => 202]);
         }
         DB::beginTransaction();
-        $bankAccount = $this->getBankAccount($request->aplicant_id);
+        $bankAccount = $this->getBankAccount($id);
         $documents = $this->getDocument($id);
         $competition = $this->getCompetition($id);
         $general = $this->getGeneral($id);
-        $imprtantArchievements = Aplicant::find($request->aplicant_id)->important_archievements;
-        $documentJustification = $request->justifications;
+        $imprtantArchievements = ImportantArchievement::where('aplicant_id', $request->aplicant_id)->get();
+        $documentJustification = RequestJustification::where('request_id', $id)->with('justificationType')->get();
         DB::commit();
         return response()->json(['bankAccount' => $bankAccount, 'documents' => $documents, 'competition' => $competition, 'general' => $general, 'imprtantArchievements' => $imprtantArchievements, 'documentJustification' => $documentJustification]);
     }
 
     protected function getBankAccount($id)
     {
-        return  BankAccount::whereHas('aplicant', function ($query) use ($id) {
+        return  BankAccount::whereHas('request', function ($query) use ($id) {
             $query->where('id', $id);
         })->first();
     }
@@ -162,7 +244,7 @@ class RequestsController extends Controller
 
     public function getGeneral($id)
     {
-        return Requests::where('id', $id)->with('discipline', 'aplicant:id,name,phone_number,email,birtdate,curp', 'status_request:id,name')->first();
+        return Requests::where('id', $id)->with('discipline', 'aplicant:id,name,phone_number,email,birtdate,curp', 'status_request:id,name', 'reason_decline')->first();
     }
 
     /**
@@ -179,22 +261,40 @@ class RequestsController extends Controller
         }
 
         $aplicant = Aplicant::with('important_archievements')->find($user->id);
+
         if (!$aplicant->phone_number || !$aplicant->birtdate || !$aplicant->name || $aplicant->important_archievements->isEmpty()) {
             $response['message'] = "No tiene su perfil completo.";
             $response['code'] = 201;
             return response()->json($response);
         }
 
-        $announcement = Announcement::where('status', 1)->first();
-        if (!$announcement) {
-            $response['message'] = "No hay convocatorias abiertas actualmente.";
-            $response['code'] = 202;
+        if ($aplicant->requests()->where('status_request_id', 5)->whereYear('finished', date('Y'))->count() >= 5) {
+            $response['message'] = "Ya tienes 5 solicitudes aceptadas en este año.";
+            $response['code'] = 201;
             return response()->json($response);
         }
 
-        $requests = Requests::where('announcement_id', $announcement->id)->where('aplicant_id', $user->id)->where('status_request_id', 1)->first();
-        if ($requests) {
+        if ($aplicant->requests()->where('status_request_id', 1)->count() > 0) {
             $response['message'] = "Tienes una solicitud en proceso.";
+            $response['code'] = 201;
+            return response()->json($response);
+        }
+        // Suponiendo que $aplicant es una instancia del modelo Applicant
+        // if (
+        //     $aplicant->requests()->where('status_request_id', 5)
+        //     ->whereHas('competition', function ($query) {
+        //         $query->whereDate('end_date', '<=', Carbon::now()->subDays(30));
+        //     })->count() > 0
+        // ) {
+        //     $response['message'] = "Tienes una solicitud sin justificar.";
+        //     $response['code'] = 201;
+        //     return response()->json($response);
+        // }
+
+
+        $announcement = Announcement::where('status', 1)->first();
+        if (!$announcement) {
+            $response['message'] = "No hay convocatorias abiertas actualmente.";
             $response['code'] = 202;
             return response()->json($response);
         }
@@ -223,28 +323,48 @@ class RequestsController extends Controller
 
     public function changeStatus(Request $request)
     {
+        // return response()->json(Auth::guard('aplicant')->user());
         $query = Requests::find($request->request_id);
         $year = Carbon::now()->format('Y');
         if ($request->status_request_id == 2) {
-            if (!$query->invoice) {
-                $number = Requests::select('invoice')->where('invoice', 'like', 'BECA' . $year . '%')->whereYear('created_at', $year)->orderBy('invoice', 'desc')->get()->count();
+            DB::beginTransaction();
+            try {
+                if (!$query->invoice) {
+                    $number = Requests::select('invoice')->where('invoice', 'like', 'BECA' . $year . '%')->whereYear('created_at', $year)->orderBy('invoice', 'desc')->get()->count();
 
-                if ($number > 0) {
-                    $folio = 'BECA' . $year . '-' . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
-                } else {
-                    $folio = 'BECA' . $year . '-0001';
+                    if ($number > 0) {
+                        $folio = 'BECA' . $year . '-' . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+                    } else {
+                        $folio = 'BECA' . $year . '-0001';
+                    }
+
+                    $query->update([
+                        'invoice' => $folio,
+                        'finished' => Carbon::now()
+                    ]);
                 }
-
                 $query->update([
-                    'invoice' => $folio,
-                    'finished' => Carbon::now()
+                    'status_request_id' => $request->status_request_id
                 ]);
+                DB::commit();
+                $user = Auth::guard('aplicant')->user();
+
+                Mail::send('emails.request-sent', [
+                    'name' => $user->name,
+                    'invoice' => $folio,
+                    'competition' => $query->competition,
+                ], function (Message $message) use ($user) {
+                    $message->to($user->email)
+                        ->subject('Solicitud de beca deportiva recibida');
+                });
+
+                $response['code'] = 200;
+                $response['message'] = "La solicitud se ha enviado correctamente.";
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                $response['message'] = "No se a podido enviar la solicitud.";
+                $response['code'] = 202;
             }
-            $query->update([
-                'status_request_id' => $request->status_request_id
-            ]);
-            $response['code'] = 200;
-            $response['message'] = "La solicitud se ha enviado correctamente.";
         } else if ($request->status_request_id == 6) {
             if ($query->status_request_id != 1) {
                 $response['code'] = 200;
@@ -286,12 +406,31 @@ class RequestsController extends Controller
     public function updateStatus(Request $request)
     {
         $query = Requests::where('id', $request->id)->first();
-
-        $statusAnterior = $query->status_request->name;
-
+        $user = $query->aplicant;
         $query->update([
             'status_request_id' => $request->status_request_id
         ]);
+
+        if ($request->status_request_id == 7) {
+            CancelHistoryRequest::create([
+                'request_id' => $request->id,
+                'reason' => $request->reason
+            ]);
+
+            Mail::send('emails.cancel-request', [
+                'name' => $user->name,
+                'invoice' => $query->invoice,
+                'competition' => $query->competition,
+                'reason' => $request->reason
+            ], function (Message $message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Solicitud rechazada');
+            });
+        }
+
+        if ($request->status_request_id == 2) {
+            CancelHistoryRequest::where('request_id', $request->id)->delete();
+        }
 
         $statusMessages = [
             3 => "Solicitud en Proceso.",
@@ -310,27 +449,16 @@ class RequestsController extends Controller
 
         $newStatus = StatusRequest::find($request->status_request_id);
 
-
-        $label = 'Solicitud No.' . $query->id . ' ha sido actualizada, los administradores del trámite han cambiado el estado de "' . $statusAnterior . '" a "' . $newStatus->name . '".';
-
-        // Mail::send('emails.request-status-change', [
-        //     'name' => $query->user->name,
-        //     'request' => $query,
-        //     'label' => $label
-        // ], function (Message $message) use ($email) {
-        //     $message->to($email)
-        //         ->subject('Estado De Solicitud Actualizado');
-        // });
-
-        // Log::create([
-        //     'user_id' => auth()->id(), // o null si el usuario no está autenticado
-        //     'receiver_id' => $query->user->id,
-        //     'request_id' => $query->id,
-        //     'action' => 'Solicitud actualizada',
-        //     'description' => 'Solicitud con folio No.' . $query->invoice . ' actualizada, nuevo estado de solicitud ' . $newStatus->name . '.',
-        //     'status' => 1,
-        //     'read' => 0
-        // ]);
+        if ($request->status_request_id == 3) {
+            Mail::send('emails.revised-request', [
+                'name' => $user->name,
+                'invoice' => $query->invoice,
+                'competition' => $query->competition,
+            ], function (Message $message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Documentación completa y revisada');
+            });
+        }
 
         return response()->json($response);
     }
@@ -343,7 +471,7 @@ class RequestsController extends Controller
         //
     }
 
-    public function search($value)
+    public function search($value, $dateStart = null, $dateEnd = null, $exportExcel)
     {
         $user = Auth::guard('user')->user();
 
@@ -359,6 +487,9 @@ class RequestsController extends Controller
         // No se muestran las solicitudes sin terminar o canceladas
         $model->whereNotIn('status_request_id', [1, 6]);
 
+        if ($dateStart && $dateEnd && $dateStart != 'null' && $dateEnd != 'null') {
+            $model->whereBetween('finished', [$dateStart, $dateEnd]);
+        }
         // Mostrar las solicitudes de modificación
         $model->with('modify_forms');
 
@@ -371,7 +502,47 @@ class RequestsController extends Controller
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
                 }, 'discipline', 'announcement', 'aplicant'
             ]
-        )->paginate(10);
+        );
+        if ($exportExcel && $exportExcel != 'null') {
+            $requests = $query->with([
+                'aplicant' => function ($query) {
+                    $query->withCount([
+                        'requests as accepted_requests_count' => function ($query) {
+                            $query->where('status_request_id', 5)->whereYear('finished', date('Y'));
+                        },
+                        'requests as other_requests_count' => function ($query) {
+                            $query->where('status_request_id', '<>', 1)
+                                ->where('status_request_id', '<>', 6)
+                                ->whereYear('finished', date('Y'));
+                        }
+                    ]);
+                }
+            ])->get();
+            $requests->each(function ($request) {
+                $approvedBudgetSum = $request->aplicant->requests()
+                    ->where('status_request_id', 5)
+                    ->with('competition')
+                    ->get()
+                    ->sum(function ($request) {
+                        return $request->competition->approved_budget;
+                    });
+                $request->aplicant->approved_budget_sum = $approvedBudgetSum;
+            });
+
+            $totalCost = $requests->sum('competition.requested_budget');
+            if ($dateStart && $dateEnd && $dateStart != 'null' && $dateEnd != 'null') {
+                $begin = Carbon::createFromFormat('Y-m-d', $dateStart);
+                $finish = Carbon::createFromFormat('Y-m-d', $dateEnd);
+
+                $beginFormatted = $begin->format('d/m/Y');
+                $finishFormatted = $finish->format('d/m/Y');
+            } else {
+                $beginFormatted = Carbon::now()->format('d/m/Y');
+                $finishFormatted = Carbon::now()->format('d/m/Y');
+            }
+            return Excel::download(new ComiteExport($requests, $totalCost, $beginFormatted, $finishFormatted), 'reporte-comite.xlsx');
+        }
+        $query = $query->paginate(10);
 
         return response()->json($query);
     }
@@ -430,7 +601,7 @@ class RequestsController extends Controller
         $model = Requests::query();
 
         // No se muestran las solicitudes sin terminar o canceladas
-        $model->whereNotIn('status_request_id', [1, 6, 2, 4]);
+        $model->whereIn('status_request_id', [3, 7]);
 
         // Mostrar las solicitudes de modificación
         $model->with([
@@ -459,5 +630,37 @@ class RequestsController extends Controller
 
 
         return response()->json($query);
+    }
+
+    public function verifyUpdate($id, $form)
+    {
+        $request = ModifyForm::where('request_id', $id)->where('form_id', $form)->where('status', 0)->with('document_modify')->get();
+
+        return response()->json($request);
+    }
+
+    public function verifyUpdateDocument($id)
+    {
+        $request = DocumentModify::whereHas('modify_form', function ($query) use ($id) {
+            $query->where('request_id', $id)->where('status', 0);
+        })->get();
+
+        return response()->json($request);
+    }
+
+    public function sendMessageJustificacion($id)
+    {
+        $request = Requests::find($id);
+        $user = $request->aplicant;
+        Mail::send('emails.justification', [
+            'name' => $user->name,
+            'invoice' => $request->invoice,
+            'competition' => $request->competition->name,
+        ], function (Message $message) use ($user) {
+            $message->to($user->email)
+                ->subject('Necesario realizar la comprobación de la beca recibida');
+        });
+
+        return response()->json(['message' => 'Correo enviado correctamente', 'code' => 200]);
     }
 }
