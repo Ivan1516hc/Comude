@@ -1,0 +1,76 @@
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+       <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title" id="messageModalLabel">Enviar mensaje para la solicitud con folio No.{{
+                item?.invoice
+                ??
+                null }}</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+             <div class="mb-3">
+                <label for="motivoMessage" class="form-label">Motivo</label>
+                <select class="form-select" id="motivoMessage" [(ngModel)]="motivoMessage">
+                   <option value="" selected>-Seleccionar-</option>
+                   <option *ngFor="let item of motivosMessage" [value]="item?.id">{{ item?.name }}</option>
+                </select>
+             </div>
+
+             <div class="mb-3" *ngIf="motivoMessage == 4">
+                <label for="lugarCorreccion" class="form-label">Lugar</label>
+                <select class="form-select" id="lugarCorreccion" [(ngModel)]="lugarCorreccion">
+                   <option value="" selected>-Seleccionar-</option>
+                   <option *ngFor="let item of typeForms" [value]="item?.id">{{ item?.name }}</option>
+                </select>
+             </div>
+
+             <div class="mb-3" *ngIf="lugarCorreccion == 3">
+                <label for="documentCorreccion" class="form-label">Documento</label>
+                <select class="form-select" id="documentCorreccion" [(ngModel)]="documentCorreccion">
+                   <option value="" selected>-Seleccionar-</option>
+                   <option *ngFor="let item of type_documents" [value]="item?.id">{{ item?.name }}</option>
+                </select>
+             </div>
+
+             <div class="mb-3">
+                <label for="newMessage" class="form-label">Mensaje:</label>
+                <textarea class="form-control" id="newMessage" [(ngModel)]="newMessage"
+                   placeholder="Escriba el contenido del mensaje." rows="10"></textarea>
+             </div>
+             <a (click)="toggleHistory()" style="color: blue;" *ngIf="historyMessages?.length > 0">{{
+                showHistory ?
+                'Ocultar' : 'Mostrar' }} historial ({{historyMessages?.length}})</a>
+             <div class="mb-3" *ngIf="showHistory">
+                <div class="table-responsive">
+                   <table class="table table-striped table-responsive">
+                      <thead>
+                         <tr>
+                            <th>No.</th>
+                            <th>MOTIVO</th>
+                            <th>MENSAJE</th>
+                            <th>FECHA</th>
+                         </tr>
+                      </thead>
+                      <tbody>
+                         <tr *ngFor="let item of historyMessages">
+                            <th scope="row">{{item.id}}</th>
+                            <td>{{item.message_motive.name}}</td>
+                            <td title="{{item.text}}"
+                               style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                               {{item.text}}</td>
+                            <td>{{item.created_at}}</td>
+                         </tr>
+                      </tbody>
+                   </table>
+                </div>
+             </div>
+          </div>
+          <div class="modal-footer">
+             <button type="button" id="cancel" class="btn btn-secondary"
+                data-bs-dismiss="modal">Cancelar</button>
+             <button type="button" class="btn btn-success" (click)="sendMessage()">Enviar</button>
+          </div>
+       </div>
+    </div>
+ </div>

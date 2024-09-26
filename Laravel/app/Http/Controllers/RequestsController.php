@@ -43,9 +43,12 @@ class RequestsController extends Controller
             [
                 'competition' => function ($query) {
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-                }, 'discipline', 'announcement', 'aplicant'
+                },
+                'discipline',
+                'announcement',
+                'aplicant'
             ]
-        )->whereIn('status_request_id', [4, 2, 7])->paginate(10);
+        )->whereIn('status_request_id', [4, 2, 7])->orderBy('invoice', 'desc')->paginate(10);
 
         return response()->json($query);
     }
@@ -62,9 +65,12 @@ class RequestsController extends Controller
             [
                 'competition' => function ($query) {
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-                }, 'discipline', 'announcement', 'aplicant'
+                },
+                'discipline',
+                'announcement',
+                'aplicant'
             ]
-        )->whereIn('status_request_id', [3])
+        )->whereIn('status_request_id', [3, 2, 7, 4])->orderBy('invoice', 'desc')
             ->paginate(10);
 
         return response()->json($query);
@@ -82,7 +88,11 @@ class RequestsController extends Controller
             [
                 'competition' => function ($query) {
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-                }, 'discipline', 'status_request:id,name', 'announcement', 'aplicant'
+                },
+                'discipline',
+                'status_request:id,name',
+                'announcement',
+                'aplicant'
             ]
         )->where('status_request_id', '<>', 6)->where('status_request_id', '<>', 1);
 
@@ -131,7 +141,7 @@ class RequestsController extends Controller
             return Excel::download(new ComiteExport($requests, $totalCost, $beginFormatted, $finishFormatted), 'reporte-comite.xlsx');
         }
 
-        $query = $query->where('status_request_id', '<>', 1)
+        $query = $query->where('status_request_id', '<>', 1)->orderBy('invoice', 'desc')
             ->paginate(10);
 
         return response()->json($query);
@@ -436,6 +446,9 @@ class RequestsController extends Controller
             3 => "Solicitud en Proceso.",
             5 => "Solicitud Aceptada",
             7 => "Solicitud Rechazada",
+            9 => "Solicitud cancelada con recurso no devuelto",
+            10 => "Solicitud cancelada con recurso devuelto",
+            11 => "Solicitud aprobada"
         ];
 
         $response = [
@@ -493,14 +506,27 @@ class RequestsController extends Controller
         // Mostrar las solicitudes de modificación
         $model->with('modify_forms');
 
-
-        ($param[0] == 'status' ? $model->where('status_request_id', $param[1]) : null);
+        // Validar si $param[0] es 'status'
+        if ($param[0] == 'status') {
+            // Verificar si $param[1] tiene comas
+            if (strpos($param[1], ',') !== false) {
+                // Si tiene comas, hacer explode y usar whereIn
+                $statuses = explode(',', $param[1]);
+                $model->whereIn('status_request_id', $statuses);
+            } else {
+                // Si no tiene comas, usar where normal
+                $model->where('status_request_id', $param[1]);
+            }
+        }
 
         $query = $model->with(
             [
                 'competition' => function ($query) {
                     $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-                }, 'discipline', 'announcement', 'aplicant'
+                },
+                'discipline',
+                'announcement',
+                'aplicant'
             ]
         );
         if ($exportExcel && $exportExcel != 'null') {
@@ -558,13 +584,17 @@ class RequestsController extends Controller
         $model = Requests::query();
 
         // No se muestran las solicitudes sin terminar o canceladas
-        $model->whereNotIn('status_request_id', [1, 6, 3, 5, 8]);
+        $model->whereNotIn('status_request_id', [1, 6, 3, 5, 8, 9, 10, 11]);
 
         // Mostrar las solicitudes de modificación
         $model->with([
             'competition' => function ($query) {
                 $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-            }, 'discipline', 'announcement', 'aplicant', 'modify_forms'
+            },
+            'discipline',
+            'announcement',
+            'aplicant',
+            'modify_forms'
         ]);
 
         //REALIZAR BUSQUEDA 
@@ -607,7 +637,11 @@ class RequestsController extends Controller
         $model->with([
             'competition' => function ($query) {
                 $query->with(['competition_type:id,name', 'state:id,name', 'country:id,common_spa']);
-            }, 'discipline', 'announcement', 'aplicant', 'modify_forms'
+            },
+            'discipline',
+            'announcement',
+            'aplicant',
+            'modify_forms'
         ]);
 
         //REALIZAR BUSQUEDA 

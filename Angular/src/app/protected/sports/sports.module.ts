@@ -16,6 +16,7 @@ import { DisciplineCatalogComponent } from './discipline-catalog/discipline-cata
 import { DocumentProcedureCatalogComponent } from './document-procedure-catalog/document-procedure-catalog.component';
 import { JustificationTypeCatalogComponent } from './justification-type-catalog/justification-type-catalog.component';
 import { HistoricalComponent } from './historical/historical.component';
+import { ApprovalsComponent } from './approvals/approvals.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { HistoricalComponent } from './historical/historical.component';
     DisciplineCatalogComponent,
     DocumentProcedureCatalogComponent,
     JustificationTypeCatalogComponent,
-    HistoricalComponent
+    HistoricalComponent,
+    ApprovalsComponent
   ],
   imports: [
     CommonModule,

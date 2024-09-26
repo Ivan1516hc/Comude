@@ -21,6 +21,7 @@ class Requests extends Model
         'aplicant_id',
         'bank_account_id',
         'notification_received',
+        'session'
     ];
 
     protected $casts = [

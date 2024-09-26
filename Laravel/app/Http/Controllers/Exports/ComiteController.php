@@ -49,14 +49,14 @@ class ComiteController extends Controller
                     ]);
                 }
             ])
-            ->where('status_request_id', 3)
+            ->whereIn('status_request_id', [3, 2, 7, 4])
             ->limit(1000)
             ->orderBy('id', 'desc')
             ->get();
 
         $requests->each(function ($request) {
             $approvedBudgetSum = $request->aplicant->requests()
-                ->where('status_request_id', 5)
+                ->whereIn('status_request_id', [3, 2, 7, 4])
                 ->with('competition')
                 ->get()
                 ->sum(function ($request) {
@@ -102,6 +102,7 @@ class ComiteController extends Controller
             $sendDate = null; // O algún valor por defecto que desees asignar
         }
         $requests->notification_received = 1;
+        $requests->session = $request->sesion;
         $requests->save();
         $competition->save();
 

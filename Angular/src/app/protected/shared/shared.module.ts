@@ -6,13 +6,17 @@ import { RouterModule } from '@angular/router';
 import { FooterComponentAdmin } from './layouts/footer/footer.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
+import { SendingMessagesComponent } from './sending-messages/sending-messages.component';
+import { ShowDataComponent } from './show-data/show-data.component';
 
 @NgModule({
   declarations: [
     SidebarComponentAdmin,
     HeaderComponentAdmin,
     FooterComponentAdmin,
-    MexicanCurrencyPipe
+    MexicanCurrencyPipe,
+    SendingMessagesComponent,
+    ShowDataComponent
   ],
   imports: [
     CommonModule,
@@ -21,6 +25,6 @@ import { MexicanCurrencyPipe } from 'src/app/pipes/mexican-currency.pipe';
     FormsModule,
   ],
   providers: [DatePipe],
-  exports: [SidebarComponentAdmin, HeaderComponentAdmin, FooterComponentAdmin, MexicanCurrencyPipe]
+  exports: [ShowDataComponent, SidebarComponentAdmin, HeaderComponentAdmin, FooterComponentAdmin, MexicanCurrencyPipe]
 })
 export class SharedModule { }

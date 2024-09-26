@@ -12,7 +12,7 @@ import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-historical',
   templateUrl: './historical.component.html',
-  styleUrls: ['./historical.component.css']
+  styleUrls: ['../validation/validation.component.css']
 })
 export class HistoricalComponent {
   request: Requests;

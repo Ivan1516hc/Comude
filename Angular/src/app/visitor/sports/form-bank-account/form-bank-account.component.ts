@@ -38,7 +38,6 @@ export class FormBankAccountComponent {
       this.request_id = params['id'];
       if (this.request_id) {
         this.showAccountBank(this.request_id);
-
         this.requestService.show(this.request_id).subscribe({
           next: (response) => {
             this.request = response;
@@ -50,7 +49,7 @@ export class FormBankAccountComponent {
   }
 
   ngOnInit(): void {
-    const numberFields = ['account', 'key_account'];
+    const numberFields = ['key_account'];
 
     numberFields.forEach(field => {
       this.subscribeToNumberFieldChanges(field);
@@ -59,6 +58,10 @@ export class FormBankAccountComponent {
 
   private subscribeToNumberFieldChanges(fieldName: string): void {
     this.miFormulario.get(fieldName).valueChanges.subscribe(value => {
+      if (!isNaN(parseFloat(value)) && isFinite(value)) {
+        // El valor es un número, mantener el valor actual
+        return;
+      }
       const newValue = value.replace(/\D/g, ''); // Remueve todos los caracteres que no sean dígitos
       this.miFormulario.get(fieldName).setValue(newValue, { emitEvent: false }); // Actualiza el valor en el formulario
     });
@@ -91,15 +94,15 @@ export class FormBankAccountComponent {
           this.newData = false;
           this.populateForm(response);
           this.handleForm(response);
-        }
-      }
-    });
 
-    this.requestService.verifyRequest(id, this.form_id).subscribe({
-      next: (res) => {
-        this.modify = res;
-        if (this.modify.length > 0) {
-          this.loadingUpdate();
+          this.requestService.verifyRequest(id, this.form_id).subscribe({
+            next: (res) => {
+              this.modify = res;
+              if (this.modify.length > 0) {
+                this.loadingUpdate();
+              }
+            }
+          });
         }
       }
     });

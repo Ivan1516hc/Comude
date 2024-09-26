@@ -6,6 +6,7 @@ import { ValidationComponent } from './validation/validation.component';
 import { AppraisalComponent } from './appraisal/appraisal.component';
 import { CatalogsComponent } from './catalogs/catalogs.component';
 import { HistoricalComponent } from './historical/historical.component';
+import { ApprovalsComponent } from './approvals/approvals.component';
 
 const routes: Routes = [{
   path: '',
@@ -16,6 +17,7 @@ const routes: Routes = [{
     {path: 'beneficiarios', component:BeneficiariesComponent},
     {path: 'catalogos', component:CatalogsComponent},
     {path: 'historico', component:HistoricalComponent},
+    {path: 'aprobaciones', component:ApprovalsComponent},
     //------------------------------------------------------------------------------------------------------
     {path: '**', redirectTo: 'dashboard'},
   ]

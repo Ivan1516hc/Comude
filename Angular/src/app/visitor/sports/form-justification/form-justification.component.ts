@@ -73,7 +73,7 @@ export class FormJustificationComponent {
     Swal.fire({
       position: 'center',
       icon: 'question',
-      title: '¿Está seguro de que desea enviar las evidencias? (ya no podra agregar más)',
+      title: '¿Está seguro de que desea enviar las evidencias? (ya no podrá agregar más)',
       showConfirmButton: true,
       showCancelButton: true,
       confirmButtonText: 'Si',

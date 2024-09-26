@@ -114,7 +114,7 @@
                                         </ng-container>
 
                                         <ng-container *ngIf="item.status_request_id == 4">
-                                            <span>Modificaciones pendientes:</span>
+                                            <span style="color: aliceblue;">Modificaciones pendientes:</span>
                                             <button type="button" class="btn-card btn btn-warning"
                                                 *ngFor="let modify of item.modify_forms"
                                                 (click)="redirectTo(modify, item.id)">

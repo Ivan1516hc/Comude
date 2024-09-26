@@ -14,7 +14,7 @@ import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-appraisal',
   templateUrl: './appraisal.component.html',
-  styleUrls: ['./appraisal.component.css']
+  styleUrls: ['../validation/validation.component.css']
 })
 export class AppraisalComponent {
   request: Requests;
@@ -23,6 +23,7 @@ export class AppraisalComponent {
   headers = ['No.', 'Folio', 'Solicitante', 'Disciplina', 'Tipo', 'Fecha', 'Monto', 'Status', 'Acciones'];
   updatedData: any = [];
   reason: string = '';
+
 
   constructor(private http: HttpClient, private router: Router, private fb: FormBuilder, private allService: AllService, private elementRef: ElementRef) {
     this.searchTermChanged.pipe(
@@ -114,12 +115,6 @@ export class AppraisalComponent {
     return tomorrow.toISOString().split('T')[0];
   }
 
-  miFormulario: FormGroup = this.fb.group({
-    request_id: [this.id, [Validators.required]],
-    attended: [2, [Validators.nullValidator]],
-    date: ['', [Validators.required]],
-    hour: ['', [Validators.required]]
-  });
   miFormularioExport: FormGroup = this.fb.group({
     begin: ['', [Validators.required]],
     finish: ['', [Validators.required]]
@@ -175,73 +170,6 @@ export class AppraisalComponent {
     })
   }
 
-  declineRequest() {
-    if (this.reason == '') {
-      Swal.fire({
-        position: 'center',
-        icon: 'info',
-        title: 'Debes de escribir un motivo para poder rechazar la solicitud.',
-        showConfirmButton: true
-      })
-      return;
-    }
-    Swal.fire({
-      position: 'center',
-      icon: 'question',
-      title: '¿Está seguro de que desea rechazar esta solicitud? por el motivo de: ' + this.reason,
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Si',
-      cancelButtonText: `No`
-    }).then((result) => {
-      if (result.isConfirmed) {
-        let data = { 'id': this.dataShow?.general?.id, 'status_request_id': 7, 'reason': this.reason };
-        this.allService.updateRequest(data).subscribe(response => {
-          if (response.code == 200) {
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: response.message,
-              showConfirmButton: false,
-              timer: 2000
-            })
-            this.reason = '';
-            this.cerrarModal();
-            this.initTable()
-            // this.citaCreada.emit();
-          } else {
-            Swal.fire("Error", "error")
-          }
-        })
-      } else if (result.isDenied) {
-        return;
-      }
-    })
-  }
-
-  getRequest(item: any) {
-    this.miFormulario.patchValue({
-      request_id: item.id
-    });
-    this.allService.getForms().subscribe({
-      next: (res) => {
-        this.typeForms = res;
-      }, error: (err) => {
-        console.log(err);
-      }
-    });
-    this.allService.historyMessage(item.id).subscribe({
-      next: (response) => {
-        this.motivosMessage = response.message_motive;
-        this.historyMessages = response.data;
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    })
-    this.id = item;
-  }
-
 
   shouldApplyStripedClass(index: number): boolean {
     // Implementa tu lógica para decidir si aplicar la clase striped
@@ -252,65 +180,6 @@ export class AppraisalComponent {
   cerrarModal() {
     const botonCancel: any = this.elementRef.nativeElement.querySelector('#cancel');
     botonCancel.click();
-  }
-
-  sendMessage() {
-    if (this.newMessage == '' || this.motivoMessage == '') {
-      Swal.fire({
-        position: 'center',
-        icon: 'info',
-        title: 'Debes de escribir un mensaje y seleccionar un motivo para poder enviar el correo.',
-        showConfirmButton: false,
-        timer: 2000
-      })
-      return;
-    }
-    if (this.motivoMessage == 4 && this.lugarCorreccion == '') {
-      Swal.fire({
-        position: 'center',
-        icon: 'info',
-        title: 'Debes de seleccionar un formulario para la corrección.',
-        showConfirmButton: false,
-        timer: 2000
-      })
-      return;
-    }
-
-
-    const body = { 'message': this.newMessage, 'request_id': this.miFormulario.value.request_id, 'message_motive_id': this.motivoMessage, 'form_id': this.lugarCorreccion };
-    this.allService.sendMessageToRequest(body).subscribe({
-      next: (response) => {
-        if (response.code == 200) {
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000
-          })
-          this.newMessage = null;
-          this.motivoMessage = null;
-          this.cerrarModal();
-        } else {
-          Swal.fire({
-            position: 'center',
-            icon: 'info',
-            title: response.message,
-            showConfirmButton: false,
-            timer: 2000
-          })
-        }
-      }, error: (err) => {
-        console.log(err);
-        Swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: err.message,
-          showConfirmButton: false,
-          timer: 2000
-        })
-      }
-    });
   }
 
   // Método para formatear la fecha en formato día-mes-año
@@ -353,20 +222,23 @@ export class AppraisalComponent {
       var workBook = XLSX.read(fileReader.result, { type: 'binary' });
       var sheetNames = workBook.SheetNames;
       this.ExcelData = XLSX.utils.sheet_to_json(workBook.Sheets[sheetNames[0]]);
-      ///iterar para agregar campo comnfirmed
+
+      /// iterar para agregar campo confirmed
       for (let item of this.ExcelData) {
         item.confirmed = false;
       }
-      // Modificar los nombres de las variables
+
+      // Modificar solo los nombres de las columnas y eliminar acentos
       this.ExcelData = this.ExcelData.map((item: any) => {
         const newItem: any = {};
         for (const key in item) {
-          const newKey = key.replace(/ /g, '_').toLowerCase();
-          newItem[newKey] = item[key];
+          const newKey = this.removeAccents(key.replace(/ /g, '_').toLowerCase()); // Eliminar acentos en las columnas
+          newItem[newKey] = item[key]; // Mantener los valores sin cambios
         }
+        console.log(newItem);
         return newItem;
       });
-    }
+    };
   }
 
   getColumns(): string[] {
@@ -435,6 +307,11 @@ export class AppraisalComponent {
   updateConfirmedValue(item: any, event: Event) {
     const target = event.target as HTMLInputElement;
     item.confirmed = target.checked;
+  }
+
+  /*** FUNCION PARA REMOVER ACENTOS SOLO EN NOMBRES DE COLUMNAS */
+  removeAccents(str: string): string {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
 
@@ -523,6 +400,50 @@ export class AppraisalComponent {
       invoice: item.invoice,
       request_id: item.id
     });
+  }
+
+  declineRequest() {
+    if (this.reason == '') {
+      Swal.fire({
+        position: 'center',
+        icon: 'info',
+        title: 'Debes de escribir un motivo para poder rechazar la solicitud.',
+        showConfirmButton: true
+      })
+      return;
+    }
+    Swal.fire({
+      position: 'center',
+      icon: 'question',
+      title: '¿Está seguro de que desea rechazar esta solicitud? por el motivo de: ' + this.reason,
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: `No`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // let data = { 'id': this.dataShow?.general?.id, 'status_request_id': 7, 'reason': this.reason };
+        let data = { 'id': 1, 'status_request_id': 7, 'reason': this.reason };
+        this.allService.updateRequest(data).subscribe(response => {
+          if (response.code == 200) {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: response.message,
+              showConfirmButton: false,
+              timer: 2000
+            })
+            this.reason = '';
+            this.cerrarModal();
+            this.initTable()
+          } else {
+            Swal.fire("Error", "error")
+          }
+        })
+      } else if (result.isDenied) {
+        return;
+      }
+    })
   }
 
 

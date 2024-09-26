@@ -76,7 +76,8 @@
                                                 </div> -->
                                                 <div>
                                                     <label for="fileInput" class="form-label">Subir
-                                                        {{activeDocument?.name}} <span class="text-danger" *ngIf="activeDocument?.descripcion">({{activeDocument?.descripcion}})</span>:</label>
+                                                        {{activeDocument?.name}} <span class="text-danger"
+                                                            *ngIf="activeDocument?.descripcion">({{activeDocument?.descripcion}})</span>:</label>
                                                     <div class="drop-zone" (dragover)="onDragOver($event)"
                                                         (drop)="onDrop($event)" (click)="fileInput.click()">
                                                         <input #fileInput type="file" class="visually-hidden"

@@ -1,0 +1,365 @@
+<div class="modal fade py-5" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel"
+aria-hidden="true">
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content rounded-4 shadow">
+
+        <div class="modal-header border-bottom-0">
+            <ul class="nav nav-tabs w-100" id="myTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-general" data-bs-toggle="tab"
+                        href="#tabGeneral">General</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-aplicant" data-bs-toggle="tab"
+                        href="#tabAplicant">Solicitante</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-competition" data-bs-toggle="tab"
+                        href="#tabCompetition">Competencia</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-bank-account" data-bs-toggle="tab" href="#tabBankAccount">Cuenta
+                        bancaria</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-important-archievents" data-bs-toggle="tab"
+                        href="#tabImportantArchievents">Logros importantes</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-documents" data-bs-toggle="tab"
+                        href="#tabDocuments">Documentos</a>
+                </li>
+
+                <li class="nav-item" *ngIf="data?.documentJustification.length > 0">
+                    <a class="nav-link" id="tab-justification-documents" data-bs-toggle="tab"
+                        href="#tabJustificationDocuments">Evidencias</a>
+                </li>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+
+        <div class="modal-body py-0 text-justify-custom">
+            <div class="tab-content">
+                <!-- Pestaña info General -->
+                <div class="tab-pane fade show active" id="tabGeneral">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for General tab here -->
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="invoice" class="form-label">Folio</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.invoice" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="status" class="form-label">Estatus</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.status_request.name" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="finished" class="form-label">Fecha de envió</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.finished" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="finished" class="form-label">Presupuesto
+                                                solicitado</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.requested_budget | mexicanCurrency"
+                                                disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" *ngIf="data?.competition?.approved_budget">
+                                        <div class="mb-3">
+                                            <label for="finished" class="form-label">Presupuesto
+                                                aprobado</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.approved_budget | mexicanCurrency"
+                                                disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12" *ngIf="data?.general?.reason_decline?.id">
+                                        <div class="mb-3">
+                                            <label for="finished" class="form-label">Motivo de
+                                                cancelación</label>
+                                            <textarea class="form-control"
+                                                [value]="data?.general?.reason_decline?.reason"
+                                                disabled></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña info aplicant -->
+                <div class="tab-pane fade" id="tabAplicant">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for Competition tab here -->
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.aplicant?.name" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Correo</label>
+                                            <input type="email" class="form-control"
+                                                [value]="data?.general?.aplicant?.email" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="curp" class="form-label">CURP</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.aplicant?.curp" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="phone_number" class="form-label">Número celular</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.aplicant?.phone_number" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña info competition -->
+                <div class="tab-pane fade" id="tabCompetition">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for Competition tab here -->
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.name" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="competition_type" class="form-label">Tipo de
+                                                competencia</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.competition_type.name" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="discipline" class="form-label">Disciplina</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.general?.discipline.name" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"
+                                        *ngIf="data?.competition?.competition_type_id != 1">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">País</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.country.common_spa" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6"
+                                        *ngIf="data?.competition?.competition_type_id != 3">
+                                        <div class="mb-3">
+                                            <label for="state" class="form-label">Estado</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.state.name" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="start_date" class="form-label">Fecha de inicio</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.start_date" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="ending_date" class="form-label">Fecha de fin</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.competition?.ending_date" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña info bank account -->
+                <div class="tab-pane fade" id="tabBankAccount">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for Bank Account tab here -->
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="bank" class="form-label">Banco</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.bankAccount?.bank" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="account_number" class="form-label">Número de
+                                                cuenta</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.bankAccount?.account" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="clabe" class="form-label">CLABE</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.bankAccount?.key_account" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="beneficiary" class="form-label">Beneficiario</label>
+                                            <input type="text" class="form-control"
+                                                [value]="data?.bankAccount?.titular_persona_name" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="text-center">
+                                    <a class="mt-3"
+                                        href="{{ baseUrl+'sports/'+data?.bankAccount?.account_status_url }}" target="_blank">
+                                        <p>
+                                            Abrir estado de cuenta
+                                        </p>
+                                        <span><i class="bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña info important archievents-->
+                <div class="tab-pane fade" id="tabImportantArchievents">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for Important Archievents tab here -->
+                                <h6 class="card-title">Logros importantes</h6>
+                                <div class="row">
+                                    <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                        *ngFor="let item of data?.imprtantArchievements">
+                                        <article class="card">
+                                            <img [src]="baseUrl+'sports/'+item.file_name"
+                                                class="card-img-top m-1" alt="Imagen"
+                                                style="align-self: center">
+                                            <div class="container">
+                                                <p><strong>Descripción:</strong></p>
+                                                <p *ngIf="item.mostrarTextoCompleto">{{item.description}}</p>
+                                                <p *ngIf="!item.mostrarTextoCompleto">{{item.description |
+                                                    slice:0:50}}</p>
+                                                <!-- Mostrar solo los primeros 50 caracteres -->
+                                                <div class="d-grid gap-1">
+                                                    <!-- Cambiamos el botón por un enlace -->
+                                                    <a href="javascript:void(0);"
+                                                        *ngIf="isLongText(item.description)"
+                                                        (click)="toggleText(item)">
+                                                        {{ item.mostrarTextoCompleto ? 'Ver menos' : 'Leer más'
+                                                        }}
+                                                    </a>
+
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña documents -->
+                <div class="tab-pane fade" id="tabDocuments">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for Documents tab here -->
+                                <h6 class="card-title">Documentación</h6>
+                                <div class="row">
+                                    <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                        *ngFor="let item of data?.documents">
+                                        <a class="mt-3" href="{{ baseUrl+'sports/'+item.file_name }}"
+                                            target="_blank">
+                                            <p>
+                                                Abrir '{{item?.document_procedure?.name}}'
+                                            </p>
+                                            <span><i
+                                                    class="'bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña documents -->
+                <div class="tab-pane fade" id="tabJustificationDocuments">
+                    <div class="content-section">
+                        <div class="card xu-card">
+                            <div class="card-body">
+                                <!-- Add content for Documents tab here -->
+                                <h6 class="card-title">Evidencias</h6>
+                                <div class="row">
+                                    <div class="card col-12 col-md-6 col-lg-6 text-center"
+                                        *ngFor="let item of data?.documentJustification">
+                                        <a class="mt-3" href="{{ baseUrl+'sports/'+item.file_name }}"
+                                            target="_blank">
+                                            <p>
+                                                Abrir '{{item?.justification_type?.name}}'
+                                            </p>
+                                            <span><i
+                                                    class="'bi bi-file-earmark-arrow-down-fill my-icon"></i></span>
+                                        </a>
+                                        <p>{{item?.description}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>

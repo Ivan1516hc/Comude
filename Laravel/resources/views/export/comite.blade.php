@@ -88,6 +88,9 @@ use Carbon\Carbon;
                 <th style="width: 120px;">CANTIDAD SOLICITUDES PRESENTADAS EN EL AÑO</th>
                 <th style="width: 120px;">CANTIDAD DE SOLICITUDES APOYADAS EN EL AÑO</th>
                 <th style="width: 120px;">TOTAL MONTO ANUAL APOYADO</th>
+
+                <th style="width: 120px;">SESIÓN</th>
+                
                 <!-- <th style="width: 30px;">TOTAL MONTO PAGADO</th>
                 <th style="width: 30px;">TOTAL MONTO COMPROBADO</th>
                 <th style="width: 30px;">TOTAL MONTO DEVUELTO</th> -->

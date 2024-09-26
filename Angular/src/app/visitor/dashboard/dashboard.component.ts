@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
     Swal.fire({
       position: 'center',
       icon: 'info',
-      title: 'Haz leído el Reglamento, deberás actualizar la información de tu perfil y registrar al menos un logro deportivo para poder continuar.  ¿Deseas continuar con tu solicitud?',
+      title: 'Has leído el Reglamento, deberás actualizar la información de tu perfil y registrar al menos un logro deportivo para poder continuar.  ¿Deseas continuar con tu solicitud?',
       showConfirmButton: true,
       showCancelButton: true,
       confirmButtonText: 'Continuar',
